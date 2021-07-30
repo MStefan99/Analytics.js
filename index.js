@@ -18,6 +18,20 @@ app.set('view engine', 'pug');
 app.set('views', path.resolve('./public/views'));
 
 
+app.get('*', (req, res) => {
+	res.render('404');
+});
+
+
+app.use((err, req, res, next) => {
+	res.locals.errorMessage = err.message;
+	res.locals.errorStack = req.app.get('env') === 'development' ? err.stack : {};
+
+	res.status(err.status ?? 500);
+	res.render('error');
+});
+
+
 app.listen(process.env.PORT ?? 3000, () => {
 	console.log('Listening on port', process.env.PORT ?? 3000);
 });

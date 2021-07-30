@@ -1,0 +1,13 @@
+extends layout
+
+block content
+	form(action='/login', method='post')
+		h3 Log in
+		div.form-group
+			label(for='username-input') Username
+			input#username-input(type='text' name='username' placeholder='Username')
+		div.form-group
+			label(for='password-input') Password
+			input#password-input(type='password' name='password' placeholder='Password')
+		input.btn.btn-primary(type='submit' value='Log in')
+		a(href='/signup').btn.btn-secondary Sign up

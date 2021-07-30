@@ -1,0 +1,11 @@
+extends layout
+
+block content
+	h1 Oops, something went really wrong in here!
+
+	if (errorMessage)
+		p Here is a bit more information about the error:
+		p Error message:
+		pre= errorMessage
+		p Error stack:
+		pre= errorStack
