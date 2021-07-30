@@ -9,33 +9,39 @@
 	const aTag = {};
 
 	const analyticsLocation = scriptLocation.host;
-	const websiteID = params.get('_awid');
+	const websiteID = params.get('ajsID');
+
+
+	function sendData(path, data, tag) {
+		return fetch('//' + analyticsLocation + path, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				id: websiteID,
+				ajsSession: localStorage.getItem('ajsSession'),
+				tag: tag,
+				referrer: document.referrer,
+				url: window.location.href,
+				data: data
+			})
+		});
+	}
 
 
 	Object.defineProperty(aTag, 'tag', {
 		writable: false,
-		value: async function (tag, data) {
-			fetch('//' + analyticsLocation + '/tag', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({tag: tag, data: data})
-			});
-		}
+		value: (tag, data) => sendData('/tag', tag, data)
 	});
 	window.aTag = aTag;
 
 
-	fetch('//' + analyticsLocation + '/hit', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({
-			id: websiteID,
-			url: window.location.href,
-			referrer: document.referrer
-		})
-	});
+	sendData('/hit')
+		.then(res => res.json())
+		.then(json => {
+			if (json.session) {
+				localStorage.setItem('ajsSession', json.session);
+			}
+		});
 })();
