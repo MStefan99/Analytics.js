@@ -44,8 +44,7 @@ app.post(['/hit', '/tag'], (req, res) => {
 		data.requests[id] = {};
 	}
 	if (!session) {
-		const uuid = crypto.randomUUID();
-		session = uuid;
+		session = crypto.randomUUID();
 	}
 
 	if (!data.requests[id][session]) {

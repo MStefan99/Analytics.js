@@ -6,13 +6,13 @@
 (async () => {
 	const scriptLocation = new URL(document.currentScript.src);
 	const params = new URLSearchParams(scriptLocation.search);
-	const aTag = {};
+	const ajs = {};
 
 	const analyticsLocation = scriptLocation.host;
 	const websiteID = params.get('ajsID');
 
 
-	function sendData(path, data, tag) {
+	function sendData(path, tag, data) {
 		return fetch('//' + analyticsLocation + path, {
 			method: 'POST',
 			headers: {
@@ -21,7 +21,7 @@
 			body: JSON.stringify({
 				id: websiteID,
 				ajsSession: localStorage.getItem('ajsSession'),
-				tag: tag,
+				tag: tag?.toString(),
 				referrer: document.referrer,
 				url: window.location.href,
 				data: data
@@ -30,11 +30,11 @@
 	}
 
 
-	Object.defineProperty(aTag, 'tag', {
+	Object.defineProperty(ajs, 'tag', {
 		writable: false,
 		value: (tag, data) => sendData('/tag', tag, data)
 	});
-	window.aTag = aTag;
+	window.ajs = ajs;
 
 
 	sendData('/hit')
