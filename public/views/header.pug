@@ -1,5 +1,9 @@
-a.mr-3(href='/')
-	span Analyze.js
+if (user)
+	a.mr-3(href='/dashboard')
+		span Analyze.js
+else
+	a.mr-3(href='/')
+		span Analyze.js
 
 	if (user)
 		a(href='/logout') Log out

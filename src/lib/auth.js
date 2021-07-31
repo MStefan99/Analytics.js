@@ -29,7 +29,7 @@ module.exports = {
 
 	getUserMiddleware: function (req, res, next) {
 		if (req.session) {
-			req.user = users[req.session?.username];
+			req.user = users[req.session?.userID];
 			res.locals.user = {
 				username: req.user.username
 			};
@@ -41,26 +41,47 @@ module.exports = {
 
 
 	createUser: function (username, options) {
-		users[username] = {
+		const user = {
 			username: username,
 			id: crypto.randomUUID()
 		};
+
+		users[user.id] = user;
+		return user;
 	},
 
 
-	getUser: function (userID, options) {
-		return users.find(u => u.id === userID);
+	getUser: function (userID) {
+		return users[userID];
+	},
+
+
+	findUserByUsername: function (username) {
+		return users[Object.keys(users).find(id => users[id].username === username)];
 	},
 
 
 	createSession: function (userID, options) {
-		if (this.getUser(userID)) {
+		if (users[userID]) {
 			const session = {
 				userID: userID,
 				id: crypto.randomUUID()
 			};
 
 			sessions[session.id] = session;
+			return session;
+		} else {
+			return null;
 		}
+	},
+
+
+	getSession: function (sessionID) {
+		return sessions[sessionID];
+	},
+
+
+	deleteSession: function (sessionID) {
+		delete sessions[sessionID];
 	}
 };
