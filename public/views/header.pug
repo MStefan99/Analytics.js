@@ -5,7 +5,7 @@ else
 	a.mr-3(href='/')
 		span Analyze.js
 
-	if (user)
-		a(href='/logout') Log out
-	else
-		a(href='/login') Log in
+if (user)
+	a(href='/logout') Log out
+else
+	a(href='/login') Log in

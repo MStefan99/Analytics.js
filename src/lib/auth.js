@@ -45,6 +45,12 @@ module.exports = {
 			username: username,
 			id: crypto.randomUUID()
 		};
+		if (options.password) {
+			user.passwordHash = crypto
+				.createHmac('sha256', username)
+				.update(options.password)
+				.digest('base64');
+		}
 
 		users[user.id] = user;
 		return user;
@@ -58,6 +64,24 @@ module.exports = {
 
 	findUserByUsername: function (username) {
 		return users[Object.keys(users).find(id => users[id].username === username)];
+	},
+
+
+	setUserPassword(userID, password) {
+		const user = users[userID];
+		user.passwordHash = crypto
+			.createHmac('sha256', user.username)
+			.update(password)
+			.digest('base64');
+	},
+
+
+	verifyUserPassword(userID, password) {
+		const user = users[userID];
+		return user.passwordHash === crypto
+			.createHmac('sha256', user.username)
+			.update(password)
+			.digest('base64');
 	},
 
 

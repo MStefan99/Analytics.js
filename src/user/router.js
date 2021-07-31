@@ -31,15 +31,16 @@ router.get('/login', (req, res) => {
 
 router.post('/signup', (req, res) => {
 	if (!req.body.username) {
-		res.status(422).send('No username');
+		res.status(400).send('No username');
 		return;
 	} else if (!req.body.password) {
-		res.status(422).send('No password');
+		res.status(400).send('No password');
 		return;
 	}
-	// TODO: check password
 
-	const user = auth.createUser(req.body.username, req.body.password);
+	const user = auth.createUser(req.body.username, {
+		password: req.body.password
+	});
 	const session = auth.createSession(user.id);
 
 	res
@@ -54,17 +55,19 @@ router.post('/signup', (req, res) => {
 
 router.post('/login', (req, res) => {
 	if (!req.body.username) {
-		res.status(422).send('No username');
+		res.status(400).send('No username');
 		return;
 	} else if (!req.body.password) {
-		res.status(422).send('No password');
+		res.status(400).send('No password');
 		return;
 	}
-	// TODO: check password
-
 	const user = auth.findUserByUsername(req.body.username);
+
 	if (!user) {
-		res.status(400).send('No user');
+		res.status(422).send('No user');
+		return;
+	} else if (!auth.verifyUserPassword(user.id, req.body.password)) {
+		res.status(422).send('Wrong password');
 		return;
 	}
 

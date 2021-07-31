@@ -24,7 +24,7 @@ router.get('/A.js', (req, res) => {
 
 router.post('/hit', (req, res) => {
 	if (!req.body.id) {
-		res.status(422).send('No ID provided');
+		res.status(400).send('No ID provided');
 		return;
 	}
 
@@ -54,7 +54,7 @@ router.post('/hit', (req, res) => {
 
 router.post('/tag', (req, res) => {
 	if (!req.body.id) {
-		res.status(422).send('No ID provided');
+		res.status(400).send('No ID provided');
 		return;
 	}
 
