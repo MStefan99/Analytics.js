@@ -19,7 +19,7 @@ app.set('views', path.resolve('./public/views'));
 
 
 app.get('*', (req, res) => {
-	res.render('404');
+	res.status(404).render('404');
 });
 
 

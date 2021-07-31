@@ -8,12 +8,10 @@ const smartConfig = require('@mstefan99/smart-config');
 
 let users;
 let sessions;
-smartConfig(path.resolve(path.dirname(require.main.filename), 'data/users')).then(u => {
-	users = u;
-});
-smartConfig(path.resolve(path.dirname(require.main.filename), 'data/sessions')).then(s => {
-	sessions = s;
-});
+smartConfig(path.resolve(path.dirname(require.main.filename),
+	'data/users.json')).then(u => users = u);
+smartConfig(path.resolve(path.dirname(require.main.filename),
+	'data/sessions.json')).then(s => sessions = s);
 
 
 module.exports = {

@@ -6,6 +6,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const auth = require('../lib/auth');
+const analyzer = require('../lib/analyzer');
 
 const router = express.Router();
 
@@ -86,7 +87,9 @@ router.use(auth.getSessionMiddleware);
 router.use(auth.getUserMiddleware);
 
 
-router.get('/dashboard', (req, res) => {
+router.get('/dashboard', async (req, res) => {
+	res.locals.audience = await analyzer.getAudience('Analytics');
+	console.log(res.locals.audience);
 	res.render('dashboard');
 });
 

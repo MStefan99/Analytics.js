@@ -17,6 +17,30 @@ router.use(cookieParser());
 router.use(cors());
 
 
+function saveRequest(req, fileName, session, extras) {
+	configurer(path.resolve('./data', fileName)).load().then(data => {
+		if (!data[session]) {
+			data[session] = {
+				ip: req.ip,
+				ua: req.get('user-agent'),
+				lang: req.get('accept-language'),
+				requests: []
+			};
+		}
+
+		const requestInfo = {
+			time: Date.now(),
+			referrer: req.body.referrer,
+			url: req.body.url ?? req.get('referer')
+		};
+		Object.assign(requestInfo, extras);
+
+		data[session].requests.push(requestInfo);
+		data.save();
+	});
+}
+
+
 router.get('/A.js', (req, res) => {
 	res.sendFile(path.resolve('./public/js/A.js'));
 });
@@ -29,24 +53,7 @@ router.post('/hit', (req, res) => {
 	}
 
 	const session = req.body.ajsSession ?? crypto.randomUUID();
-	configurer(path.resolve('./data/hits/',
-		req.body.id + '.txt')).load().then(data => {
-		if (!data[session]) {
-			data[session] = {
-				ip: req.ip,
-				ua: req.get('user-agent'),
-				lang: req.get('accept-language'),
-				requests: []
-			};
-		}
-		const requestInfo = {
-			time: Date.now(),
-			url: req.body.url ?? req.get('referer'),
-			referrer: req.body.referrer
-		};
-		data[session].requests.push(requestInfo);
-		data.save();
-	});
+	saveRequest(req, 'hits/' + req.body.id, session);
 
 	res.json({session: session});
 });
@@ -59,25 +66,9 @@ router.post('/tag', (req, res) => {
 	}
 
 	const session = req.body.ajsSession ?? crypto.randomUUID();
-	configurer(path.resolve('./data/tags',
-		req.body.id + '.txt')).load().then(data => {
-		if (!data[session]) {
-			data[session] = {
-				ip: req.ip,
-				ua: req.get('user-agent'),
-				lang: req.get('accept-language'),
-				requests: []
-			};
-		}
-		const requestInfo = {
-			time: Date.now(),
-			url: req.body.url ?? req.get('referer'),
-			referrer: req.body.referrer,
-			tag: req.body.tag,
-			data: req.body.data
-		};
-		data[session].requests.push(requestInfo);
-		data.save();
+	saveRequest(req, 'tags/' + req.body.id, session, {
+		tag: req.body.tag,
+		data: req.body.data
 	});
 
 	res.json({session: session});
