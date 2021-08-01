@@ -29,7 +29,9 @@ module.exports = {
 						session.duration += requests[i].time - requests[i - 1].time;
 						session.pages.push(requests[i].url);
 					} else {
-						sessions.push(session);
+						sessions.push(Object.assign({}, session));
+						session.duration = 0;
+						session.pages = [];
 					}
 				}
 				sessions.push(session);

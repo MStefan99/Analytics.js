@@ -89,7 +89,6 @@ router.use(auth.getUserMiddleware);
 
 router.get('/dashboard', async (req, res) => {
 	res.locals.audience = await analyzer.getAudience('Analytics');
-	console.log(res.locals.audience);
 	res.render('dashboard');
 });
 
