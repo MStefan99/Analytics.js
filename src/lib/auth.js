@@ -18,10 +18,8 @@ module.exports = {
 	getSessionMiddleware: function (req, res, next) {
 		if (req.cookies.ajsSession) {
 			req.session = sessions[req.cookies.ajsSession];
-			next();
-		} else {
-			res.redirect(303, '/login');
 		}
+		next();
 	},
 
 
@@ -31,9 +29,16 @@ module.exports = {
 			res.locals.user = {
 				username: req.user.username
 			};
-			next();
-		} else {
+		}
+		next();
+	},
+
+
+	redirectIfNotLoggedInMiddleware: function (req, res, next) {
+		if (!req.session) {
 			res.redirect(303, '/login');
+		} else {
+			next();
 		}
 	},
 

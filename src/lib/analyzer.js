@@ -21,9 +21,11 @@ module.exports = {
 				});
 				const session = {
 					duration: 0,
+					time: 0,
 					pages: []
 				};
 				const requests = data[userID].requests;
+				session.time = requests[0].time;
 				for (let i = 1; i < requests.length; ++i) {
 					if (requests[i].time - requests[i - 1].time < sessionDuration) {
 						session.duration += requests[i].time - requests[i - 1].time;

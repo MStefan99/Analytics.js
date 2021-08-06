@@ -4,4 +4,9 @@ extends layout
 block content
 	div.jumbotron
 		h1 Analyze.js
-		span Collect information about your website, #[b own] the data!
+		p Collect information about your website, #[b own] the data!
+		if (user)
+			a.btn.btn-primary(href='/dashboard') Your dashboard
+		else
+			a.btn.btn-success(href='/login') Log in
+			a.btn.btn-primary(href='/signup') Sign up

@@ -15,11 +15,6 @@ router.use('/js', express.static(path.resolve(path.dirname(require.main.filename
 router.use(bodyParser.urlencoded({extended: true}));
 
 
-router.get('/', (req, res) => {
-	res.render('home');
-});
-
-
 router.get('/signup', (req, res) => {
 	res.render('signup');
 });
@@ -85,6 +80,14 @@ router.post('/login', (req, res) => {
 
 router.use(auth.getSessionMiddleware);
 router.use(auth.getUserMiddleware);
+
+
+router.get('/', (req, res) => {
+	res.render('home');
+});
+
+
+router.use(auth.redirectIfNotLoggedInMiddleware);
 
 
 router.get('/dashboard', async (req, res) => {
