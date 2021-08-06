@@ -90,8 +90,7 @@ router.get('/', (req, res) => {
 router.use(auth.redirectIfNotLoggedInMiddleware);
 
 
-router.get('/dashboard', async (req, res) => {
-	res.locals.audience = await analyzer.getAudience('Analytics');
+router.get('/dashboard', (req, res) => {
 	res.render('dashboard');
 });
 

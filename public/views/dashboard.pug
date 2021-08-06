@@ -3,17 +3,10 @@ extends layout
 
 block main
 	h1 Dashboard
-	div#audience-overview
-		div.tab
-			p Users
-			each user in audience.users
-				div.user
-					p= user.lang
-					p= user.ua
-		div.tab
-			p Sessions
-			each session in audience.sessions
-				div.session
-					p= session.duration
-					each page in session.pages
-						p= page
+	h2 Realtime
+	pre#audience-realtime
+	h2 Today
+	pre#audience-today
+	h2 History
+	pre#audience-history
+	script(src='/js/dashboard.js')

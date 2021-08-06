@@ -6,8 +6,8 @@ const fs = require('fs');
 const configurer = require('@mstefan99/configurer');
 
 
-const sessionDuration = 3600000;
-const dayLength = 86400000;
+const sessionDuration = 60 * 60 * 1000;
+const dayLength = 24 * 60 * 60 * 1000;
 
 
 fs.readdir(path.resolve('../../data/hits'), (err, files) => {

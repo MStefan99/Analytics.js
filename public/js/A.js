@@ -30,7 +30,7 @@
 	}
 
 
-	Object.defineProperty(ajs, 'tag', {
+	Object.defineProperty(ajs, 'push', {
 		writable: false,
 		value: (tag, data) => sendData('/tag', tag, data)
 	});
