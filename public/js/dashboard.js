@@ -43,15 +43,31 @@ import Jui from '/js/jui.js';
 
 			for (let i = 0; i < 30; ++i) {
 				if (json.sessions[startTime + sessionLength * i]) {
-					const users = json.sessions[startTime + sessionLength * i];
+					const sessionCount = json.sessions[startTime + sessionLength * i];
+					const height = map(sessionCount, 0, max, 0, 100);
 
-					const height = map(users, 0, max, 0, 100);
 					new Jui(svgElement('rect'))
 						.addClass('sessions-bar')
 						.attr('x', i * 7)
 						.attr('y', svgRect.height - height)
 						.attr('width', 6)
 						.attr('height', height - 2)
+						.on('mouseover', e => {
+							new Jui(document.createElement('div'))
+								.addClass('popup')
+								.css('left', e.clientX + 'px')
+								.css('top', e.clientY + 'px')
+								.append(new Jui(`
+									<span>${30 - i} minutes ago</span>
+									<br>
+									<span>${sessionCount} sessions</span>
+								`))
+								.appendTo(new Jui('main'));
+						})
+						.on('mouseout', e => {
+							new Jui('.popup')
+								.remove();
+						})
 						.appendTo(realtimeSvg);
 				}
 

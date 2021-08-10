@@ -2,6 +2,13 @@ html
 	font-family sans-serif
 	scroll-behavior smooth
 
+	.popup
+		position fixed
+		box-shadow 0 0 1em #0005
+		border-radius 8px
+		padding 1em
+		background-color white
+
 	body
 		margin 0
 		display flex
@@ -37,8 +44,18 @@ html
 					#active-users-timeline-svg
 						width 30ch
 
+						&:hover
+							.sessions-bar
+								fill darken(#69ce39, 20%)
+
+							.sessions-bar-underline, #top-line
+								fill darken(#509d25, 10%)
+
 						.sessions-bar
 							fill #69ce39
+
+							&:hover
+								fill lighten(#69ce39, 20%)
 
 						.sessions-bar-underline, #top-line
 							fill #509d25
