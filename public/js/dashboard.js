@@ -28,34 +28,39 @@ import Jui from '/js/jui.js';
 	const scriptLocation = new URL(import.meta.url);
 	const analyticsLocation = scriptLocation.host;
 
+
 	fetch('//' + analyticsLocation + '/api/stats/realtime/' + websiteID, {})
 		.then(res => res.json())
 		.then(json => {
-			console.log(json);
-
 			const activeUsersElement = document.getElementById('active-users');
 			activeUsersElement.innerText = json.currentUsers;
 
 			const realtimeSvg = new Jui('#active-users-timeline-svg');
 			const svgRect = realtimeSvg.nodes[0].viewBox.baseVal;
 
-			const max = maxUsers(json.sessions);
+			const max = maxUsers(json.sessions) || 1;
 			const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 30;
 
 			for (let i = 0; i < 30; ++i) {
-				let users = 0;
 				if (json.sessions[startTime + sessionLength * i]) {
-					users = json.sessions[startTime + sessionLength * i];
-				}
-				console.log(svgRect);
+					const users = json.sessions[startTime + sessionLength * i];
 
-				const height = map(users, 0, max, 0, 100);
+					const height = map(users, 0, max, 0, 100);
+					new Jui(svgElement('rect'))
+						.addClass('sessions-bar')
+						.attr('x', i * 7)
+						.attr('y', svgRect.height - height)
+						.attr('width', 6)
+						.attr('height', height - 2)
+						.appendTo(realtimeSvg);
+				}
+
 				new Jui(svgElement('rect'))
-					.addClass('sessions-bar')
+					.addClass('sessions-bar-underline')
 					.attr('x', i * 7)
-					.attr('y', svgRect.height - height)
+					.attr('y', svgRect.height - 1)
 					.attr('width', 6)
-					.attr('height', height)
+					.attr('height', 1)
 					.appendTo(realtimeSvg);
 			}
 		});
