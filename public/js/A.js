@@ -32,7 +32,7 @@
 
 	Object.defineProperty(ajs, 'push', {
 		writable: false,
-		value: (tag, data) => sendData('/tag', tag, data)
+		value: (options) => sendData('/tag', options.tag, options.data)
 	});
 	window.ajs = ajs;
 

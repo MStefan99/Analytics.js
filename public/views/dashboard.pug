@@ -3,10 +3,11 @@ extends layout
 
 block main
 	h1 Dashboard
-	h2 Realtime
-	pre#audience-realtime
-	h2 Today
-	pre#audience-today
-	h2 History
-	pre#audience-history
-	script(src='/js/dashboard.js')
+	div#dashboard
+		div#realtime-audience
+			h2 Realtime
+			div Active users
+			p#active-users
+			svg#active-users-timeline-svg(viewBox='0 0 200 100')
+
+	script(type='module' src='/js/dashboard.js')

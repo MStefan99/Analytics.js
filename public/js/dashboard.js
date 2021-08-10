@@ -1,29 +1,32 @@
 'use strict';
 
+
+import Jui from '/js/jui.js';
+
 (() => {
+	function svgElement(tag) {
+		return document.createElementNS('http://www.w3.org/2000/svg', tag);
+	}
+
+
 	const websiteID = 'Analytics';
 
-	const scriptLocation = new URL(document.currentScript.src);
+	const scriptLocation = new URL(import.meta.url);
 	const analyticsLocation = scriptLocation.host;
 
 	fetch('//' + analyticsLocation + '/api/stats/realtime/' + websiteID, {})
 		.then(res => res.json())
 		.then(json => {
-			const element = document.getElementById('audience-realtime');
-			element.innerText = JSON.stringify(json, null, 2);
-		});
+			const activeUsersElement = document.getElementById('active-users');
+			activeUsersElement.innerText = json.currentUsers;
 
-	fetch('//' + analyticsLocation + '/api/stats/today/' + websiteID, {})
-		.then(res => res.json())
-		.then(json => {
-			const element = document.getElementById('audience-today');
-			element.innerText = JSON.stringify(json, null, 2);
-		});
+			const realtimeSvg = new Jui('#active-users-timeline-svg');
 
-	fetch('//' + analyticsLocation + '/api/stats/history/' + websiteID, {})
-		.then(res => res.json())
-		.then(json => {
-			const element = document.getElementById('audience-history');
-			element.innerText = JSON.stringify(json, null, 2);
+			new Jui(svgElement('rect'))
+				.attr('x', 0)
+				.attr('y', 0)
+				.attr('width', 20)
+				.attr('height', 20)
+				.appendTo(realtimeSvg);
 		});
 })();
