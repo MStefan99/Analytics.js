@@ -37,6 +37,7 @@ import Jui from '/js/jui.js';
 
 			const realtimeSvg = new Jui('#active-users-timeline-svg');
 			const svgRect = realtimeSvg.nodes[0].viewBox.baseVal;
+			const pagesTable = new Jui('#pages-table');
 
 			const max = maxUsers(json.sessions) || 1;
 			const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 29;
@@ -57,6 +58,7 @@ import Jui from '/js/jui.js';
 								.addClass('popup')
 								.css('left', e.clientX + 'px')
 								.css('top', e.clientY + 'px')
+								.css('pointer-events', 'none')
 								.append(new Jui(`
 									<span>${29 - i} minutes ago</span>
 									<br>
@@ -78,6 +80,20 @@ import Jui from '/js/jui.js';
 					.attr('width', 6)
 					.attr('height', 1)
 					.appendTo(realtimeSvg);
+			}
+
+			for (const page of Object.keys(json.pages)) {
+				new Jui(document.createElement('tr'))
+					.append(new Jui(`
+						<td>
+							<a href='${page}'>
+								${page.replace(/https?:\/\/.*?\//, '/')}
+							</a>
+						</td>
+					`))
+					.append(new Jui(document.createElement('td'))
+						.text(json.pages[page]))
+					.appendTo(pagesTable);
 			}
 		});
 })();

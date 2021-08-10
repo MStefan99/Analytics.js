@@ -2,6 +2,9 @@ html
 	font-family sans-serif
 	scroll-behavior smooth
 
+	a
+		color inherit
+
 	.popup
 		position fixed
 		box-shadow 0 0 1em #0005
@@ -24,9 +27,6 @@ html
 			background-color #258600
 			color white
 
-			a
-				color inherit
-
 		main
 			margin 2em auto
 			flex-grow 1
@@ -43,6 +43,8 @@ html
 						margin 1rem 0
 
 					#active-users-timeline-svg
+						display block
+						margin 1em 0
 						width 30ch
 
 						&:hover
@@ -61,9 +63,18 @@ html
 						.sessions-bar-underline, #top-line
 							fill #509d25
 
+					table
+						width 100%
+
+						td:nth-child(2)
+							text-align end
+
+						thead
+							font-weight bold
+
 		footer
 			display flex
 			flex-flow row wrap
 			justify-content space-between
 			padding 1em 2em
-			background-color darken(white, 15%)
+			background-color darken(white, 5%)

@@ -52,7 +52,7 @@ export default class Jui {
 			element = new Jui(element);
 		}
 		if (!this.nodes.length) {
-			throw new Error('Trying to append to an empty object')
+			throw new Error('Trying to append to an empty object');
 		}
 		element.nodes.forEach(node => {
 			this.nodes[0].appendChild(node);
@@ -66,7 +66,7 @@ export default class Jui {
 			target = new Jui(target);
 		}
 		if (!target.nodes.length) {
-			throw new Error('Trying to append to an empty object')
+			throw new Error('Trying to append to an empty object');
 		}
 		this.nodes.forEach(node => {
 			target.nodes[0].appendChild(node);
@@ -80,7 +80,7 @@ export default class Jui {
 			newContent = new Jui(newContent);
 		}
 		if (!this.nodes.length) {
-			throw new Error('Trying to append to an empty object')
+			throw new Error('Trying to append to an empty object');
 		}
 		this.nodes[0].replaceWith(newContent.nodes[0]);
 		for (let i = 1; i < newContent.nodes.length; ++i) {
