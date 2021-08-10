@@ -39,7 +39,7 @@ import Jui from '/js/jui.js';
 			const svgRect = realtimeSvg.nodes[0].viewBox.baseVal;
 
 			const max = maxUsers(json.sessions) || 1;
-			const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 30;
+			const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 29;
 
 			for (let i = 0; i < 30; ++i) {
 				if (json.sessions[startTime + sessionLength * i]) {
@@ -58,7 +58,7 @@ import Jui from '/js/jui.js';
 								.css('left', e.clientX + 'px')
 								.css('top', e.clientY + 'px')
 								.append(new Jui(`
-									<span>${30 - i} minutes ago</span>
+									<span>${29 - i} minutes ago</span>
 									<br>
 									<span>${sessionCount} sessions</span>
 								`))
