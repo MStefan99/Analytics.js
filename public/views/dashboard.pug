@@ -1,6 +1,10 @@
 extends layout
 
 
+block head
+	title Dashboard | Analyze.js
+
+
 block main
 	h1 Dashboard
 	div#dashboard
@@ -17,5 +21,6 @@ block main
 						td Page
 						td Views
 				tbody#pages-table
+			a(href='/realtime/' + websiteID).bold Full report
 
 	script(type='module' src='/js/dashboard.js')

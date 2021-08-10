@@ -6,12 +6,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const auth = require('../lib/auth');
-const analyzer = require('../lib/analyzer');
+
 
 const router = express.Router();
 
 router.use('/style', express.static(path.resolve(path.dirname(require.main.filename), 'public/style')));
 router.use('/js', express.static(path.resolve(path.dirname(require.main.filename), 'public/js')));
+router.use('/img', express.static(path.resolve(path.dirname(require.main.filename), 'public/img')));
 router.use(bodyParser.urlencoded({extended: true}));
 
 
