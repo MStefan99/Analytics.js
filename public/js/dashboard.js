@@ -46,7 +46,7 @@ import Jui from '/js/jui.js';
 							})
 								.then(res => res.json())
 								.then(json => {
-									console.log(json);
+									// TODO: add new link to the list
 								});
 						})
 					)

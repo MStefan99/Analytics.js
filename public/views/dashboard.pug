@@ -14,7 +14,7 @@ block main
 
 	div#website-container
 		if websites
-			each website in websites
+			for website in websites
 				a.website(href='/overview/' + website.id)
 					h3= website.name
 		else

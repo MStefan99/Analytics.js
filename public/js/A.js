@@ -43,5 +43,8 @@
 			if (json.session) {
 				localStorage.setItem('ajsSession', json.session);
 			}
+		})
+		.catch(err => {
+			console.warn('Failed to send a hit to Analyze.js! More details:', err);
 		});
 })();

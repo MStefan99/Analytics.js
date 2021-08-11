@@ -112,7 +112,6 @@ import Jui from '/js/jui.js';
 			const bounceRateElement = new Jui('#bounce-rate');
 			const sessionDurationElement = new Jui('#session-duration');
 			const avgDuration = json.sessions.reduce((a, s) => a + s.duration, 0) / json.sessions.length;
-			console.log(avgDuration);
 
 			userCountElement.text(json.users.length);
 			sessionCountElement.text(json.sessions.length);

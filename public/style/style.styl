@@ -31,9 +31,7 @@ html
 
 	.popup
 		position fixed
-		box-shadow 0 0 1em transparentify(--color-theme, 50%)
-		border-radius 8px
-		padding 1em
+		card()
 		background-color --color-white
 
 		&.green
@@ -69,6 +67,7 @@ html
 				display flex
 				flex-flow row wrap
 				justify-content center
+				align-items stretch
 
 				#realtime-audience
 					card()
@@ -109,8 +108,8 @@ html
 						td:nth-child(2)
 							text-align end
 
-						thead
-							font-weight bold
+						thead td
+							padding-bottom .5em
 
 				#today-audience
 					card()
