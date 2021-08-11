@@ -9,12 +9,12 @@ block head
 
 block main
 	h1= website.name + ' Dashboard'
-	div#dashboard
+	div#overview
 		div#realtime-audience
 			h2 Realtime
-			div Active users
-			p#active-users
-			svg#active-users-timeline-svg(viewBox='0 0 210 100')
+			p Active users
+			p#active-users.accent
+			svg#active-users-timeline-svg(viewBox='0 0 210 100' preserveAspectRatio='none')
 				rect#top-line(width='210' height='1')
 				- for (let i = 0; i < 30; ++i)
 					rect.sessions-bar-underline(x=i * 7, y=99, width=6, height=1)
@@ -26,5 +26,15 @@ block main
 						td Views
 				tbody#pages-table
 			a(href='/realtime/' + website.name).bold Full report
+		div#today-audience
+			h2 Audience today
+			b Users
+			p#today-users.accent
+			b Sessions
+			p#today-sessions.accent
+			b Bounce rate
+			p#bounce-rate.accent
+			b Session duration
+			p#session-duration.accent
 
 	script(async type='module' src='/js/overview.js')

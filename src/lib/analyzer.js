@@ -14,6 +14,7 @@ module.exports = {
 	todayAudience: function (websiteID) {
 		return new Promise(resolve => configurer(path.resolve(path.dirname(require.main.filename),
 			'data/hits', websiteID)).load().then(data => {
+			let bounced = 0;
 			const sessions = [];
 			const users = [];
 			for (const userID of Object.keys(data)) {
@@ -21,28 +22,29 @@ module.exports = {
 					ua: data[userID].ua,
 					lang: data[userID].lang
 				});
-				const session = {
-					duration: 0,
-					time: 0,
-					pages: []
-				};
+
 				const requests = data[userID].requests.filter(r => Date.now() - r.time < this.dayLength);
-				if (requests.length) {
-					session.time = requests[0].time;
-					for (let i = 1; i < requests.length; ++i) {
-						if (requests[i].time - requests[i - 1].time < this.historyLength) {
-							session.duration += requests[i].time - requests[i - 1].time;
-							session.pages.push(requests[i].url);
-						} else {
-							sessions.push(Object.assign({}, session));
-							session.duration = 0;
-							session.pages = [];
-						}
+				for (let i = 0; i < requests.length; ++i) {
+					const session = {
+						duration: 0,
+						time: requests[i].time,
+						pages: [requests[i].url]
+					};
+
+					for (let j = i + 1; j < requests.length
+					&& requests[j].time - requests[j - 1].time < this.historyLength; ++j) {
+						session.duration += requests[j].time - requests[j - 1].time;
+						session.pages.push(requests[j].url);
+						i = j;
 					}
 					sessions.push(session);
+					if (session.pages.length === 1) {
+						++bounced;
+					}
 				}
 			}
 			resolve({
+				bounceRate: bounced / sessions.length,
 				sessions: sessions,
 				users: users
 			});

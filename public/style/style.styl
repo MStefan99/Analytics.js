@@ -1,5 +1,13 @@
 --color-theme = #258600
 --color-white = white
+--color-black = black
+
+
+card()
+	border-radius 8px
+	padding 1em 2ch
+	margin 0 2ch
+	box-shadow 0 0 .5em transparentify(--color-black, 20%)
 
 
 html
@@ -8,6 +16,10 @@ html
 
 	a
 		color inherit
+
+	.accent
+		font-size 3em
+		margin 1rem 0
 
 	.popup-backdrop
 		position fixed
@@ -53,21 +65,21 @@ html
 			margin 2em auto
 			flex-grow 1
 
-			#dashboard
+			#overview
+				display flex
+				flex-flow row wrap
+				justify-content center
+
 				#realtime-audience
-					border-radius 8px
+					card()
 					background-color --color-theme
 					color --color-white
-					padding 1em 2ch
-
-					#active-users
-						font-size 3em
-						margin 1rem 0
 
 					#active-users-timeline-svg
 						display block
 						margin 1em 0
-						width 30ch
+						height 100px
+						width 100%
 
 						&:hover
 							.sessions-bar
@@ -99,6 +111,11 @@ html
 
 						thead
 							font-weight bold
+
+				#today-audience
+					card()
+					background-color --color-white
+
 
 		footer
 			display flex
