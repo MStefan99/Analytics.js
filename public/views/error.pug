@@ -6,11 +6,10 @@ block head
 
 
 block content
-	h1 Oops, something went really wrong in here!
-
-	if (errorMessage)
-		p Here is a bit more information about the error:
-		p Error message:
-		pre= errorMessage
-		p Error stack:
-		pre= errorStack
+	if error
+		h2= error.title || 'An error occurred in the application'
+		h3 Error details:
+		p= error.message || 'No details have been provided, please check server logs'
+		if error.stack
+			h3 Error stack:
+			p= error.stack

@@ -1,0 +1,26 @@
+extends layout
+
+
+block head
+	title= websiteID + ' overview | Analyze.js'
+
+
+block main
+	h1= websiteID + ' Dashboard'
+	div#dashboard
+		div#realtime-audience
+			h2 Realtime
+			div Active users
+			p#active-users
+			svg#active-users-timeline-svg(viewBox='0 0 210 100')
+				rect#top-line(width='210' height='1')
+			p Most popular pages
+			table
+				thead
+					tr
+						td Page
+						td Views
+				tbody#pages-table
+			a(href='/realtime/' + websiteID).bold Full report
+
+	script(type='module' src='/js/overview.js')

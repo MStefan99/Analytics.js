@@ -24,9 +24,11 @@ app.get('*', (req, res) => {
 
 
 app.use((err, req, res, next) => {
-	res.locals.errorMessage = err.message;
-	res.locals.errorStack = req.app.get('env') === 'development' ? err.stack : {};
-	console.log(err);
+	res.locals.error = {
+		message: err.message,
+		stack: req.app.get('env') === 'development' ? err.stack : {}
+	};
+	console.error(err);
 
 	res.status(err.status ?? 500);
 	res.render('error');

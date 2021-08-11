@@ -46,7 +46,8 @@ module.exports = {
 	createUser: function (username, options) {
 		const user = {
 			username: username,
-			id: crypto.randomUUID()
+			id: crypto.randomUUID(),
+			websites: []
 		};
 		if (options.password) {
 			user.passwordHash = crypto

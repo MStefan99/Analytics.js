@@ -27,13 +27,19 @@ import Jui from '/js/jui.js';
 	const websiteID = 'Analytics';
 	const scriptLocation = new URL(import.meta.url);
 	const analyticsLocation = scriptLocation.host;
+	const activeUsersElement = new Jui('#active-users');
 
 
 	fetch('//' + analyticsLocation + '/api/stats/realtime/' + websiteID, {})
-		.then(res => res.json())
+		.then(res => {
+			if (~~(res.status / 100) === 2) {
+				return res.json();
+			} else {
+				return Promise.reject('Request failed');
+			}
+		})
 		.then(json => {
-			const activeUsersElement = document.getElementById('active-users');
-			activeUsersElement.innerText = json.currentUsers;
+			activeUsersElement.text(json.currentUsers);
 
 			const realtimeSvg = new Jui('#active-users-timeline-svg');
 			const svgRect = realtimeSvg.nodes[0].viewBox.baseVal;
@@ -95,5 +101,12 @@ import Jui from '/js/jui.js';
 						.text(json.pages[page]))
 					.appendTo(pagesTable);
 			}
+		})
+		.catch(err => {
+			activeUsersElement.text('Unavailable');
 		});
+
+	fetch('//' + analyticsLocation + '/api/stats/today/' + websiteID, {})
+		.then(res => res.json())
+		.then(json => console.log(json));
 })();

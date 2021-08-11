@@ -6,21 +6,14 @@ block head
 
 
 block main
-	h1 Dashboard
-	div#dashboard
-		div#realtime-audience
-			h2 Realtime
-			div Active users
-			p#active-users
-			svg#active-users-timeline-svg(viewBox='0 0 210 100')
-				rect#top-line(width='210' height='1')
-			p Most popular pages
-			table
-				thead
-					tr
-						td Page
-						td Views
-				tbody#pages-table
-			a(href='/realtime/' + websiteID).bold Full report
-
-	script(type='module' src='/js/dashboard.js')
+	h1 Your websites
+	div#website-container
+		if websites
+			each website in websites
+				div.website
+					h3= website.websiteID
+		else
+			div.jumbotron
+				h2 Seems like here are no websites yet!
+				p Add a website to start
+				a(href='/websites/new').btn.btn-success Add website

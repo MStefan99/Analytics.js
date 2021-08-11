@@ -96,6 +96,12 @@ router.get('/dashboard', (req, res) => {
 });
 
 
+router.get('/overview/:websiteID', (req, res) => {
+	res.locals.websiteID = req.params.websiteID;
+	res.render('overview');
+});
+
+
 router.get('/logout', (req, res) => {
 	auth.deleteSession(req.session.id);
 	res.redirect(303, '/');
