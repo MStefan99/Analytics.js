@@ -6,14 +6,14 @@ const configurer = require('@mstefan99/configurer');
 
 
 module.exports = {
-	sessionLength: 60 * 1000,
-	historyLength: 30 * 60 * 1000,
+	realtimeLength: 60 * 1000,
+	sessionLength: 30 * 60 * 1000,
 	dayLength: 24 * 60 * 60 * 1000,
 
 
 	todayAudience: function (websiteID) {
 		return new Promise(resolve => configurer(path.resolve(path.dirname(require.main.filename),
-			'data/hits', websiteID)).load().then(data => {
+				'data/hits', websiteID)).load().then(data => {
 			let bounced = 0;
 			const sessions = [];
 			const users = [];
@@ -32,7 +32,7 @@ module.exports = {
 					};
 
 					for (let j = i + 1; j < requests.length
-					&& requests[j].time - requests[j - 1].time < this.historyLength; ++j) {
+					&& requests[j].time - requests[j - 1].time < this.sessionLength; ++j) {
 						session.duration += requests[j].time - requests[j - 1].time;
 						session.pages.push(requests[j].url);
 						i = j;
@@ -45,6 +45,7 @@ module.exports = {
 			}
 			resolve({
 				bounceRate: bounced / sessions.length,
+				avgDuration: sessions.reduce((a, s) => a + s.duration, 0) / sessions.length,
 				sessions: sessions,
 				users: users
 			});
@@ -60,14 +61,14 @@ module.exports = {
 		};
 
 		return new Promise(resolve => configurer(path.resolve(path.dirname(require.main.filename),
-			'data/hits', websiteID)).load().then(data => {
+				'data/hits', websiteID)).load().then(data => {
 			for (const userID of Object.keys(data)) {
 				const lastRequest = data[userID].requests.length?
-					data[userID].requests[data[userID].requests.length - 1] :
-					undefined;
-				const requests = data[userID].requests.filter(r => Date.now() - r.time < this.historyLength);
+						data[userID].requests[data[userID].requests.length - 1] :
+						undefined;
+				const requests = data[userID].requests.filter(r => Date.now() - r.time < this.sessionLength);
 
-				if (Date.now() - lastRequest.time < this.sessionLength) {
+				if (Date.now() - lastRequest.time < this.realtimeLength) {
 					++audience.currentUsers;
 				}
 
@@ -80,7 +81,7 @@ module.exports = {
 				}
 
 				for (const request of requests) {
-					const sessionTime = request.time - (request.time % this.sessionLength);
+					const sessionTime = request.time - (request.time % this.realtimeLength);
 
 					if (!audience.sessions[sessionTime]) {
 						audience.sessions[sessionTime] = 1;
@@ -101,17 +102,18 @@ module.exports = {
 		return new Promise(resolve => configurer(path.resolve('../../data/hits', websiteID)).load().then(data => {
 			for (const userID of Object.keys(data)) {
 				const requests = data[userID].requests;
-				for (let i = 1; i < requests.length; ++i) {
+				for (let i = 0; i < requests.length; ++i) {
 					const session = {
 						duration: 0,
-						time: 0,
-						requests: []
+						time: requests[i].time,
+						requests: [requests[i]]
 					};
-					session.time = requests[0].time;
-					while (i < requests.length && requests[i].time - requests[i - 1].time < this.sessionLength) {
-						session.duration += requests[i].time - requests[i - 1].time;
-						session.requests.push(requests[i]);
-						++i;
+
+					for (let j = i + 1; j < requests.length
+					&& requests[j].time - requests[j - 1].time < this.sessionLength; ++j) {
+						session.duration += requests[j].time - requests[j - 1].time;
+						session.requests.push(requests[j]);
+						i = j;
 					}
 
 					const day = session.time - (session.time % this.dayLength);
@@ -131,10 +133,12 @@ module.exports = {
 							++archive[day].urls[request.url];
 						}
 
-						if (!archive[day].referrers[request.referrer]) {
-							archive[day].referrers[request.referrer] = 1;
-						} else {
-							++archive[day].referrers[request.referrer];
+						if (request.referrer) {
+							if (!archive[day].referrers[request.referrer]) {
+								archive[day].referrers[request.referrer] = 1;
+							} else {
+								++archive[day].referrers[request.referrer];
+							}
 						}
 					}
 				}

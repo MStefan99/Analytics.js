@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const configurer = require('@mstefan99/configurer');
+const analyzer = require('../lib/analyzer');
 
 const router = express.Router();
 
@@ -30,9 +31,12 @@ function saveRequest(req, fileName, session, extras) {
 
 		const requestInfo = {
 			time: Date.now(),
-			referrer: req.body.referrer.replace(/[#?].*$/, ''),
 			url: req.body.url.replace(/[#?].*$/, '') ?? req.get('referer')
 		};
+		if (!data[session].requests.length || Date.now()
+				- data[session].requests[data[session].requests.length - 1] > analyzer.sessionLength) {
+			requestInfo.referrer = req.body.referrer.replace(/[#?].*$/, '');
+		}
 		Object.assign(requestInfo, extras);
 
 		data[session].requests.push(requestInfo);

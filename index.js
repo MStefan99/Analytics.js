@@ -4,7 +4,7 @@ const path = require('path');
 
 const express = require('express');
 
-const collectRouter = require('./src/collect');
+const collectRouter = require('./src/api/collect');
 const apiRouter = require('./src/api/router');
 const userRouter = require('./src/user/router');
 

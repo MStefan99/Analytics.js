@@ -111,12 +111,11 @@ import Jui from '/js/jui.js';
 			const sessionCountElement = new Jui('#today-sessions');
 			const bounceRateElement = new Jui('#bounce-rate');
 			const sessionDurationElement = new Jui('#session-duration');
-			const avgDuration = json.sessions.reduce((a, s) => a + s.duration, 0) / json.sessions.length;
 
 			userCountElement.text(json.users.length);
 			sessionCountElement.text(json.sessions.length);
 			bounceRateElement.text(Math.floor(json.bounceRate * 100) + '%');
-			sessionDurationElement.text(Math.floor(avgDuration / 60 / 1000 % 60) + 'm ' +
-				Math.floor(avgDuration / 1000 % 60) + 's');
+			sessionDurationElement.text(Math.floor(json.avgDuration / 60 / 1000 % 60) + 'm ' +
+				Math.floor(json.avgDuration / 1000 % 60) + 's');
 		});
 })();
