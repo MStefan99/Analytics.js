@@ -92,13 +92,28 @@ router.use(auth.redirectIfNotLoggedInMiddleware);
 
 
 router.get('/dashboard', (req, res) => {
-	res.render('dashboard');
+	res.render('dashboard', {
+		websites: req.user.websites
+	});
 });
 
 
 router.get('/overview/:websiteID', (req, res) => {
-	res.locals.websiteID = req.params.websiteID;
-	res.render('overview');
+	if (!req.user.websites[req.params.websiteID]) {
+		res.status(404)
+			.render('error', {
+				error: {
+					title: 'Website not found',
+					message: 'The website requested could not be found.' +
+						' Please check whether the link is correct and you have access to this website.'
+				}
+			});
+		return;
+	}
+
+	res.render('overview', {
+		website: req.user.websites[req.params.websiteID]
+	});
 });
 
 

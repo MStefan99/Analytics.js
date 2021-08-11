@@ -5,7 +5,6 @@ const crypto = require('crypto');
 const express = require('express');
 
 const configurer = require('@mstefan99/configurer');
-
 const auth = require('../lib/auth');
 const analyzer = require('../lib/analyzer');
 
@@ -27,12 +26,12 @@ router.get('/stats/realtime/:websiteID', (req, res) => {
 		res.status(422).json({error: 'No website ID provided'});
 		return;
 	}
-	// if (!req.user.websites[req.params.websiteID]) {
-	// 	res
-	// 		.status(404)
-	// 		.json({error: 'Website not found'});
-	// 	return;
-	// }
+	if (!req.user.websites[req.params.websiteID]) {
+		res
+			.status(404)
+			.json({error: 'Website not found'});
+		return;
+	}
 
 	analyzer.realtimeAudience(req.params.websiteID)
 		.then(data => res.json(data));
@@ -82,12 +81,11 @@ router.post('/websites/', (req, res) => {
 	};
 
 	if (!req.user.websites) {
-		req.user.websites = [website];
-	} else {
-		req.users.websites.push(website);
+		req.user.websites = {};
 	}
+	req.user.websites[website.id] = website;
 
-	res.json({websiteID: websiteID});
+	res.json({websiteID: website.id});
 });
 
 

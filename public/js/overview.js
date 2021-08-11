@@ -24,7 +24,7 @@ import Jui from '/js/jui.js';
 
 
 	const sessionLength = 60 * 1000;
-	const websiteID = 'Analytics';
+	const websiteID = window.location.href.match(/[0-9a-fA-f\-]+(?:\?.*)?$/);
 	const scriptLocation = new URL(import.meta.url);
 	const analyticsLocation = scriptLocation.host;
 	const activeUsersElement = new Jui('#active-users');
@@ -78,22 +78,20 @@ import Jui from '/js/jui.js';
 						})
 						.appendTo(realtimeSvg);
 				}
-
-				new Jui(svgElement('rect'))
-					.addClass('sessions-bar-underline')
-					.attr('x', i * 7)
-					.attr('y', svgRect.height - 1)
-					.attr('width', 6)
-					.attr('height', 1)
-					.appendTo(realtimeSvg);
 			}
 
 			for (const page of Object.keys(json.pages)) {
+				let pageAddress = page.replace(/https?:\/\/.*?\//, '/');
+				if (pageAddress.length > 40) {
+					pageAddress = pageAddress.substr(0, 15) + '...'
+						+ pageAddress.substr(pageAddress.length - 5, 5);
+				}
+
 				new Jui(document.createElement('tr'))
 					.append(new Jui(`
 						<td>
 							<a href='${page}'>
-								${page.replace(/https?:\/\/.*?\//, '/')}
+								${pageAddress}
 							</a>
 						</td>
 					`))

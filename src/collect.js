@@ -30,8 +30,8 @@ function saveRequest(req, fileName, session, extras) {
 
 		const requestInfo = {
 			time: Date.now(),
-			referrer: req.body.referrer,
-			url: req.body.url ?? req.get('referer')
+			referrer: req.body.referrer.replace(/[#?].*$/, ''),
+			url: req.body.url.replace(/[#?].*$/, '') ?? req.get('referer')
 		};
 		Object.assign(requestInfo, extras);
 

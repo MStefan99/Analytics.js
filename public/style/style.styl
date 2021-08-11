@@ -1,6 +1,7 @@
 --color-theme = #258600
 --color-white = white
 
+
 html
 	font-family sans-serif
 	scroll-behavior smooth
@@ -8,13 +9,30 @@ html
 	a
 		color inherit
 
+	.popup-backdrop
+		position fixed
+		top 0
+		right 0
+		bottom 0
+		left 0
+		backdrop-filter brightness(.7)
+
 	.popup
 		position fixed
 		box-shadow 0 0 1em transparentify(--color-theme, 50%)
 		border-radius 8px
 		padding 1em
-		background-color darken(--color-theme, 30%)
-		color --color-white
+		background-color --color-white
+
+		&.green
+			background-color darken(--color-theme, 30%)
+			color --color-white
+
+		&.centered
+			top 50vh
+			left 50vw
+			transform translate(-50%, -50%)
+
 
 	body
 		margin 0
@@ -70,6 +88,11 @@ html
 					table
 						width 100%
 						margin 1em 0
+
+						td:nth-child(1) a
+							display inline-block
+							max-width 25ch
+							word-break break-all
 
 						td:nth-child(2)
 							text-align end
