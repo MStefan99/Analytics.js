@@ -80,7 +80,9 @@ import Jui from '/js/jui.js';
 				}
 			}
 
-			for (const page of Object.keys(json.pages)) {
+			for (const page of Object.keys(json.pages)
+					.sort((a, b) => json.pages[b] - json.pages[a])
+					.slice(0, 5)) {
 				let pageAddress = page.replace(/https?:\/\/.*?\//, '/');
 				if (pageAddress.length > 40) {
 					pageAddress = pageAddress.substr(0, 15) + '...'
