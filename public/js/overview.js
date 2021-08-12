@@ -92,7 +92,7 @@ import Jui from '/js/jui.js';
 				new Jui(document.createElement('tr'))
 					.append(new Jui(`
 						<td>
-							<a href='${page}'>
+							<a href='${page}' target="_blank">
 								${pageAddress}
 							</a>
 						</td>

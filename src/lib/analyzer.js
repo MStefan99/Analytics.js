@@ -100,6 +100,7 @@ module.exports = {
 		const archive = {};
 
 		return new Promise(resolve => configurer(path.resolve('../../data/hits', websiteID)).load().then(data => {
+			let totalTime = 0;
 			for (const userID of Object.keys(data)) {
 				const requests = data[userID].requests;
 				for (let i = 0; i < requests.length; ++i) {
@@ -108,6 +109,7 @@ module.exports = {
 						time: requests[i].time,
 						requests: [requests[i]]
 					};
+					let bounced = 0;
 
 					for (let j = i + 1; j < requests.length
 					&& requests[j].time - requests[j - 1].time < this.sessionLength; ++j) {
@@ -115,6 +117,10 @@ module.exports = {
 						session.requests.push(requests[j]);
 						i = j;
 					}
+					if (session.requests.length === 1) {
+						++bounced;
+					}
+					totalTime += session.duration;
 
 					const day = session.time - (session.time % this.dayLength);
 					if (!archive[day]) {
@@ -126,6 +132,8 @@ module.exports = {
 					}
 
 					++archive[day].sessions;
+					archive[day].bounceRate = bounced / archive[day].sessions;
+					archive[day].avgDuration = totalTime / archive[day].sessions;
 					for (const request of session.requests) {
 						if (!archive[day].urls[request.url]) {
 							archive[day].urls[request.url] = 1;
