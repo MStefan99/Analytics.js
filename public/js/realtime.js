@@ -101,10 +101,13 @@ import Jui from '/js/jui.js';
 			for (const referral of Object.keys(json.referrers)
 				.sort((a, b) => json.referrers[b] - json.referrers[a])
 				.slice(0, 15)) {
-				let pageAddress = referral.replace(/(?<!https?:\/?)\/.*/, '');
-
 				new Jui(document.createElement('tr'))
-					.append(new Jui(`<td>${pageAddress}</td>`))
+					.append(new Jui(`
+						<td>
+							<a href="${referral}">
+								${referral}
+							</a>
+						</td>`))
 					.append(new Jui(document.createElement('td'))
 						.text(json.referrers[referral]))
 					.appendTo(topReferralsTable);

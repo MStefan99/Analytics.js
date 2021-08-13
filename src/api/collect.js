@@ -33,8 +33,8 @@ function saveRequest(req, fileName, session, extras) {
 			time: Date.now(),
 			url: req.body.url.replace(/[#?].*$/, '') ?? req.get('referer')
 		};
-		if (!data[session].requests.length || Date.now()
-				- data[session].requests[data[session].requests.length - 1] > analyzer.sessionLength) {
+		if (!req.body.referrer.match(new RegExp('^https?://' +
+			req.body.url.replace(/https?:\/\/|\/.*/g, '')))) {
 			requestInfo.referrer = req.body.referrer.replace(/[#?].*$/, '');
 		}
 		Object.assign(requestInfo, extras);
