@@ -47,7 +47,7 @@ module.exports = {
 		const user = {
 			username: username,
 			id: crypto.randomUUID(),
-			websites: []
+			websites: {}
 		};
 		if (options.password) {
 			user.passwordHash = crypto

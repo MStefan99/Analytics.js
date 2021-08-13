@@ -3,17 +3,17 @@ extends layout
 
 block head
 	title= website.name + ' overview | Analyze.js'
-	link(rel='modulepreload' as='script' href='/js/overview.js')
-	link(rel='modulepreload' as='script' href='/js/jui.js')
+	link(rel='modulepreload' href='/js/overview.js')
+	link(rel='modulepreload' href='/js/jui.js')
 
 
 block main
 	h1= website.name + ' audience'
 	div#overview
-		div#realtime-audience
+		div#realtime-audience.audience-card
 			h2 Realtime
 			p Active users
-			p#active-users.accent
+			p#active-users.accent Loading...
 			svg#active-users-timeline-svg(viewBox='0 0 210 100' preserveAspectRatio='none')
 				rect#top-line(width='210' height='1')
 				- for (let i = 0; i < 30; ++i)
@@ -26,16 +26,16 @@ block main
 						td Views
 				tbody#pages-table
 			a(href='/realtime/' + website.id).bold Full report
-		div#today-audience
+		div#today-audience.audience-card
 			h2 Audience today
 			b Users
-			p#today-users.accent
+			p#today-users.accent Loading...
 			b Sessions
-			p#today-sessions.accent
+			p#today-sessions.accent Loading...
 			b Bounce rate
-			p#bounce-rate.accent
+			p#bounce-rate.accent Loading...
 			b Average session
-			p#session-duration.accent
+			p#session-duration.accent Loading...
 			a(href='/today/' + website.id).bold Full report
 
 	script(async type='module' src='/js/overview.js')

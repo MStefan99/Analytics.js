@@ -9,18 +9,7 @@ import Jui from '/js/jui.js';
 	}
 
 
-	function maxUsers(sessions) {
-		const users = [];
-
-		for (const key of Object.keys(sessions)) {
-			users.push(sessions[key]);
-		}
-
-		return Math.max(...users);
-	}
-
-
-	const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+	const map = (originalMax, targetMax, value) => value / originalMax * targetMax;
 
 
 	const sessionLength = 60 * 1000;
@@ -44,14 +33,14 @@ import Jui from '/js/jui.js';
 			const realtimeSvg = new Jui('#active-users-timeline-svg');
 			const svgRect = realtimeSvg.nodes[0].viewBox.baseVal;
 			const pagesTable = new Jui('#pages-table');
-
-			const max = maxUsers(json.sessions) || 1;
 			const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 29;
 
 			for (let i = 0; i < 30; ++i) {
 				if (json.sessions[startTime + sessionLength * i]) {
+					const mapScale = map.bind(this, Object.keys(json.sessions)
+						.reduce((a, k) => Math.max(a, json.sessions[k]), 0), svgRect.height);
 					const sessionCount = json.sessions[startTime + sessionLength * i];
-					const height = map(sessionCount, 0, max, 0, 100);
+					const height = mapScale(sessionCount);
 
 					new Jui(svgElement('rect'))
 						.addClass('sessions-bar')
@@ -73,16 +62,15 @@ import Jui from '/js/jui.js';
 								.appendTo(new Jui('main'));
 						})
 						.on('mouseout', e => {
-							new Jui('.popup')
-								.remove();
+							new Jui('.popup').remove();
 						})
 						.appendTo(realtimeSvg);
 				}
 			}
 
 			for (const page of Object.keys(json.pages)
-					.sort((a, b) => json.pages[b] - json.pages[a])
-					.slice(0, 5)) {
+				.sort((a, b) => json.pages[b] - json.pages[a])
+				.slice(0, 5)) {
 				let pageAddress = page.replace(/https?:\/\/.*?\//, '/');
 				if (pageAddress.length > 40) {
 					pageAddress = pageAddress.substr(0, 15) + '...'

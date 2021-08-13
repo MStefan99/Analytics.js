@@ -117,6 +117,25 @@ router.get('/overview/:websiteID', (req, res) => {
 });
 
 
+router.get('/realtime/:websiteID', (req, res) => {
+	if (!req.user.websites[req.params.websiteID]) {
+		res.status(404)
+				.render('error', {
+					error: {
+						title: 'Website not found',
+						message: 'The website requested could not be found.' +
+								' Please check whether the link is correct and you have access to this website.'
+					}
+				});
+		return;
+	}
+
+	res.render('realtime', {
+		website: req.user.websites[req.params.websiteID]
+	});
+});
+
+
 router.get('/logout', (req, res) => {
 	auth.deleteSession(req.session.id);
 	res.redirect(303, '/');

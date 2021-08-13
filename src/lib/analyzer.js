@@ -57,6 +57,7 @@ module.exports = {
 		const audience = {
 			currentUsers: 0,
 			pages: {},
+			referrers: {},
 			sessions: {}
 		};
 
@@ -73,15 +74,21 @@ module.exports = {
 				}
 
 				for (const request of requests) {
+					const sessionTime = request.time - (request.time % this.realtimeLength);
+
 					if (!audience.pages[request.url]) {
 						audience.pages[request.url] = 1;
 					} else {
 						++audience.pages[request.url];
 					}
-				}
 
-				for (const request of requests) {
-					const sessionTime = request.time - (request.time % this.realtimeLength);
+					if (request.referrer !== undefined) {
+						if (!audience.referrers[request.referrer]) {
+							audience.referrers[request.referrer] = 1;
+						} else {
+							++audience.referrers[request.referrer];
+						}
+					}
 
 					if (!audience.sessions[sessionTime]) {
 						audience.sessions[sessionTime] = 1;
