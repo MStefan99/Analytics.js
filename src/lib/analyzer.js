@@ -13,7 +13,7 @@ module.exports = {
 
 	todayAudience: function (websiteID) {
 		return new Promise(resolve => configurer(path.resolve(path.dirname(require.main.filename),
-				'data/hits', websiteID)).load().then(data => {
+			'data/hits', websiteID)).load().then(data => {
 			let bounced = 0;
 			const sessions = [];
 			const users = [];
@@ -62,11 +62,11 @@ module.exports = {
 		};
 
 		return new Promise(resolve => configurer(path.resolve(path.dirname(require.main.filename),
-				'data/hits', websiteID)).load().then(data => {
+			'data/hits', websiteID)).load().then(data => {
 			for (const userID of Object.keys(data)) {
 				const lastRequest = data[userID].requests.length?
-						data[userID].requests[data[userID].requests.length - 1] :
-						undefined;
+					data[userID].requests[data[userID].requests.length - 1] :
+					undefined;
 				const requests = data[userID].requests.filter(r => Date.now() - r.time < this.sessionLength);
 
 				if (Date.now() - lastRequest.time < this.realtimeLength) {
@@ -76,24 +76,12 @@ module.exports = {
 				for (const request of requests) {
 					const sessionTime = request.time - (request.time % this.realtimeLength);
 
-					if (!audience.pages[request.url]) {
-						audience.pages[request.url] = 1;
-					} else {
-						++audience.pages[request.url];
-					}
+					audience.pages[request.url] = 1 + (audience.pages[request.url] || 0);
+					audience.sessions[sessionTime] = 1 + (audience.sessions[sessionTime] || 0);
 
 					if (request.referrer !== undefined) {
-						if (!audience.referrers[request.referrer]) {
-							audience.referrers[request.referrer] = 1;
-						} else {
-							++audience.referrers[request.referrer];
-						}
-					}
-
-					if (!audience.sessions[sessionTime]) {
-						audience.sessions[sessionTime] = 1;
-					} else {
-						++audience.sessions[sessionTime];
+						audience.referrers[request.referrer] =
+							1 + (audience.referrers[request.referrer] || 0);
 					}
 				}
 			}
@@ -141,24 +129,17 @@ module.exports = {
 					++archive[day].sessions;
 					archive[day].bounceRate = bounced / archive[day].sessions;
 					archive[day].avgDuration = totalTime / archive[day].sessions;
+
 					for (const request of session.requests) {
-						if (!archive[day].urls[request.url]) {
-							archive[day].urls[request.url] = 1;
-						} else {
-							++archive[day].urls[request.url];
-						}
+						archive[day].urls[request.url] = 1 + (archive[day].urls[request.url] || 0);
 
 						if (request.referrer) {
-							if (!archive[day].referrers[request.referrer]) {
-								archive[day].referrers[request.referrer] = 1;
-							} else {
-								++archive[day].referrers[request.referrer];
-							}
+							archive[day].referrers[request.referrer] =
+								1 + (archive[day].referrers[request.referrer] || 0);
 						}
 					}
 				}
 			}
-
 			resolve(archive);
 		}));
 	}
