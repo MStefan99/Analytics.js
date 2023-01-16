@@ -232,4 +232,5 @@ fabric.properties
 
 data
 package-lock.json
+public/style/*.css
 
