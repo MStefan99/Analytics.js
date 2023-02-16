@@ -1,6 +1,6 @@
 # Analytics.js
 
-![Maintenance](https://img.shields.io/maintenance/no/2021?style=flat-square)
+![Maintenance](https://img.shields.io/maintenance/no/2023?style=flat-square)
 
 Analytics.js is a web app that can collect usage information for other websites. Making this app was a way for me to understand
 how services like Google Analytics work and what capabilities they might offer.

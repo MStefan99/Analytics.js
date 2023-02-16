@@ -1,0 +1,161 @@
+html {
+  font-family: sans-serif;
+  scroll-behavior: smooth;
+  background-color: #fff;
+  color: #000;
+}
+html a {
+  color: inherit;
+}
+html .accent {
+  font-size: 3em;
+  margin: 1rem 0;
+}
+html .popup-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  backdrop-filter: brightness(0.7);
+}
+html .popup {
+  position: fixed;
+  border-radius: 8px;
+  padding: 1em 2ch;
+  margin: 2ch;
+  box-shadow: 0 0 0.5em rgba(0,0,0,0.2);
+  background-color: #fff;
+}
+html .popup.green {
+  background-color: #1a5e00;
+  color: #fff;
+}
+html .popup.centered {
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+}
+html body {
+  margin: 0;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  min-height: 100vh;
+}
+html body header {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  padding: 1em 2em;
+  background-color: #258600;
+  color: #fff;
+}
+html body main {
+  margin: 2em auto;
+  flex-grow: 1;
+  max-width: calc(100vw - 8ch);
+}
+html body main #overview {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-content: stretch;
+}
+@media screen and (max-width: 768px) {
+  html body main #overview {
+    flex-flow: column;
+  }
+}
+html body main #overview .audience-card {
+  border-radius: 8px;
+  padding: 1em 2ch;
+  margin: 2ch;
+  box-shadow: 0 0 0.5em rgba(0,0,0,0.2);
+}
+html body main #overview #realtime-audience {
+  background-color: #258600;
+  color: #fff;
+}
+html body main #overview #realtime-audience #active-users-timeline-svg {
+  display: block;
+  margin: 1em 0;
+  height: 100px;
+  width: 100%;
+}
+html body main #overview #realtime-audience #active-users-timeline-svg:hover .sessions-bar {
+  fill: #2a9900;
+}
+html body main #overview #realtime-audience #active-users-timeline-svg:hover .sessions-bar-underline,
+html body main #overview #realtime-audience #active-users-timeline-svg:hover #top-line {
+  fill: #1f7200;
+}
+html body main #overview #realtime-audience #active-users-timeline-svg .sessions-bar {
+  fill: #35be00;
+}
+html body main #overview #realtime-audience #active-users-timeline-svg .sessions-bar:hover {
+  fill: #3ad100;
+}
+html body main #overview #realtime-audience #active-users-timeline-svg .sessions-bar-underline,
+html body main #overview #realtime-audience #active-users-timeline-svg #top-line {
+  fill: #2a9900;
+}
+html body main #overview #realtime-audience table {
+  width: 100%;
+  margin: 1em 0;
+}
+html body main #overview #realtime-audience table td:nth-child(1) a {
+  display: inline-block;
+  max-width: 25ch;
+  word-break: break-all;
+}
+html body main #overview #realtime-audience table td:nth-child(2) {
+  text-align: end;
+}
+html body main #overview #realtime-audience table thead td {
+  padding-bottom: 0.5em;
+}
+html body main #overview #today-audience {
+  background-color: #fff;
+}
+html body main #realtime-details #realtime-users-details-svg {
+  height: 50vh;
+  display: block;
+  margin: 1em 0;
+  fill: #258600;
+  stroke: #258600;
+}
+html body main #realtime-details #realtime-users-details-svg #border {
+  fill: transparent;
+  stroke: #1e6b00;
+}
+html body main #realtime-details #realtime-users-details-svg .horizontal-line {
+  stroke: rgba(37,134,0,0.2);
+}
+html body main #realtime-details #realtime-metrics {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+html body main #realtime-details #realtime-metrics table {
+  width: 100%;
+  margin: 1em 0;
+}
+html body main #realtime-details #realtime-metrics table td:nth-child(1) a {
+  display: inline-block;
+  max-width: 25ch;
+  word-break: break-all;
+}
+html body main #realtime-details #realtime-metrics table td:nth-child(2) {
+  text-align: end;
+}
+html body main #realtime-details #realtime-metrics table thead td {
+  padding-bottom: 0.5em;
+}
+html body footer {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  padding: 1em 2em;
+  background-color: #f2f2f2;
+}

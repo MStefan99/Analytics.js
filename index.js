@@ -4,9 +4,9 @@ const path = require('path');
 
 const express = require('express');
 
-const collectRouter = require('./src/api/collect');
-const apiRouter = require('./src/api/router');
-const userRouter = require('./src/user/router');
+const collectRouter = require('./backend/src/api/collect');
+const apiRouter = require('./backend/src/api/router');
+const userRouter = require('./backend/src/user/router');
 
 
 const app = express();

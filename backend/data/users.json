@@ -1,0 +1,13 @@
+{
+	"2d44bc5c-a286-4e6e-b9d6-dba7cf94170e": {
+		"username": "admin",
+		"id": "2d44bc5c-a286-4e6e-b9d6-dba7cf94170e",
+		"websites": {
+			"fd9c10fe-d901-4433-a025-22827d3dea65": {
+				"id": "fd9c10fe-d901-4433-a025-22827d3dea65",
+				"name": "test"
+			}
+		},
+		"passwordHash": "9CnsVPNUtyvtd6XAr+3suR80f0eaCfdPQQdZJ2S1bRw="
+	}
+}
