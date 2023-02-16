@@ -1,0 +1,59 @@
+{
+	"compilerOptions": {
+		"lib": [
+			"deno.window"
+		],
+		"alwaysStrict": true,
+		"noImplicitAny": true,
+		"noImplicitOverride": true,
+		"noImplicitThis": true,
+		"strict": true
+	},
+	"lint": {
+		"files": {
+			"include": [
+				".",
+				"lib/",
+				"routes/"
+			],
+			"exclude": [
+				"node_modules/"
+			]
+		},
+		"rules": {
+			"tags": [
+				"recommended"
+			],
+			"include": [],
+			"exclude": [
+				"no-unused-vars"
+			]
+		}
+	},
+	"fmt": {
+		"files": {
+			"include": [
+				".",
+				"lib/",
+				"routes/"
+			],
+			"exclude": [
+				"node_modules/"
+			]
+		},
+		"options": {
+			"useTabs": true,
+			"lineWidth": 80,
+			"indentWidth": 4,
+			"singleQuote": true,
+			"proseWrap": "preserve"
+		}
+	},
+	"tasks": {
+		"dev": "deno run --allow-net --allow-env --allow-read --watch index.ts",
+		"start": "deno run --allow-net --allow-env --allow-read index.ts",
+		"build": "echo 'Nothing to build'",
+		"lint": "deno check index.ts && deno lint && deno fmt --check",
+		"fmt": "deno fmt"
+	}
+}

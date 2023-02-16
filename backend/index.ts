@@ -1,19 +1,17 @@
 import { Application, Router } from './deps.ts';
 import { cors, logger } from './routes/middleware.ts';
 import authRouter from './routes/auth.ts';
-import sessionRouter from './routes/sessions.ts';
-import itemRouter from './routes/items.ts';
-import userRouter from './routes/users.ts';
-import loanRouter from './routes/loans.ts';
-import { init } from './lib/init.ts';
+// import sessionRouter from './routes/sessions.ts';
+// import userRouter from './routes/users.ts';
+// import { init } from './lib/init.ts';
 
-const port = 3007;
+const port = 3000;
 
 const app = new Application();
 const apiRouter = new Router({
 	prefix: '/api',
 });
-const routers = [authRouter, sessionRouter, itemRouter, userRouter, loanRouter];
+const routers = [authRouter /*sessionRouter, userRouter */];
 
 app.use(logger);
 app.use(cors);

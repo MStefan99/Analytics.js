@@ -6,7 +6,7 @@ const express = require('express');
 
 const collectRouter = require('./backend/src/api/collect');
 const apiRouter = require('./backend/src/api/router');
-const userRouter = require('./backend/src/user/router');
+const userRouter = require('./backend/routes/router.js');
 
 
 const app = express();
