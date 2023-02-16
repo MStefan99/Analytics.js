@@ -3,33 +3,30 @@ import { Router } from '../deps.ts';
 import auth from '../lib/auth.ts';
 import User from '../lib/user.ts';
 import Session from '../lib/session.ts';
-import { credentialsPresent } from './middleware.ts';
-import { handleErrors } from '../lib/errors.ts';
+import { hasBody, hasCredentials } from './middleware.ts';
 
 const router = new Router();
 
 // Register
-router.post('/register', credentialsPresent, async (ctx) => {
-	await handleErrors(ctx, async () => {
-		const body = await ctx.request.body({ type: 'json' }).value;
+router.post('/register', hasCredentials(), async (ctx) => {
+	const body = await ctx.request.body({ type: 'json' }).value;
 
-		const user = await User.create(
-			body.username.trim(),
-			body.password,
-		);
-		const session = await Session.create(
-			user,
-			ctx.request.ip,
-			ctx.request.headers.get('user-agent') ?? 'Unknown',
-		);
+	const user = await User.create(
+		body.username.trim(),
+		body.password,
+	);
+	const session = await Session.create(
+		user,
+		ctx.request.ip,
+		ctx.request.headers.get('user-agent') ?? 'Unknown',
+	);
 
-		ctx.response.status = 201;
-		ctx.response.body = { key: session.publicID, user };
-	});
+	ctx.response.status = 201;
+	ctx.response.body = { key: session.publicID, user };
 });
 
 // Log in
-router.post('/login', credentialsPresent, async (ctx) => {
+router.post('/login', hasCredentials(), async (ctx) => {
 	const body = await ctx.request.body({ type: 'json' }).value;
 	const user = await User.getByUsername(body.username.trim());
 
@@ -81,27 +78,25 @@ router.get('/me', auth.authenticated(), async (ctx) => {
 });
 
 // Edit user currently logged in as
-router.patch('/me', auth.authenticated(), async (ctx) => {
-	await handleErrors(ctx, async () => {
-		const body = await ctx.request.body({ type: 'json' }).value;
+router.patch('/me', hasBody(), auth.authenticated(), async (ctx) => {
+	const body = await ctx.request.body({ type: 'json' }).value;
 
-		const user = await auth.methods.getUser(ctx);
-		if (user === null) {
-			ctx.response.status = 500;
-			ctx.response.body = {
-				error: 'USER_NOT_FOUND',
-				message: 'User was not found',
-			};
-			return;
-		}
+	const user = await auth.methods.getUser(ctx);
+	if (user === null) {
+		ctx.response.status = 500;
+		ctx.response.body = {
+			error: 'USER_NOT_FOUND',
+			message: 'User was not found',
+		};
+		return;
+	}
 
-		if (body.password?.length) {
-			await user.setPassword(body.password);
-		}
+	if (body.password?.length) {
+		await user.setPassword(body.password);
+	}
 
-		await user.save();
-		ctx.response.body = user;
-	});
+	await user.save();
+	ctx.response.body = user;
 });
 
 // Log out

@@ -12,8 +12,8 @@ const apiRouter = new Router({
 });
 const routers = [authRouter, sessionRouter];
 
-app.use(logger);
-app.use(cors);
+app.use(logger());
+app.use(cors());
 
 app.use(async (ctx, next) => {
 	ctx.response.headers.set('Who-Am-I', 'Invenfinder');
