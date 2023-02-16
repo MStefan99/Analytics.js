@@ -71,9 +71,9 @@ class User {
 
 	save(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			openDB.then((client) =>
+			openDB().then((client) =>
 				client
-					.execute(
+					.query(
 						`insert or replace into users(id,
 						                               username,
 						                               password_salt,
@@ -102,7 +102,7 @@ class User {
 		const passwordHash = await pbkdf2(password, passwordSalt);
 
 		const client = await openDB();
-		const res = await client.execute(
+		await client.queryEntries(
 			`insert into users(username,
 			                               password_salt,
 			                               password_hash)
@@ -115,7 +115,7 @@ class User {
 		);
 
 		return new User({
-			id: res.lastInsertId ?? 0,
+			id: client.lastInsertRowId ?? 0,
 			username,
 			passwordSalt,
 			passwordHash,
@@ -124,7 +124,7 @@ class User {
 
 	static async getByID(id: number): Promise<User | null> {
 		const client = await openDB();
-		const rows = await client.query(
+		const rows = await client.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
 			 from users
 			 where id=?`,
@@ -140,7 +140,7 @@ class User {
 
 	static async getByUsername(username: string): Promise<User | null> {
 		const client = await openDB();
-		const rows = await client.query(
+		const rows = await client.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
 			 from users
 			 where username=?`,
@@ -158,7 +158,7 @@ class User {
 		const users = [];
 
 		const client = await openDB();
-		const rows = await client.query(
+		const rows = await client.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
 			 from users`,
 		);
@@ -182,7 +182,7 @@ class User {
 
 	async delete(): Promise<void> {
 		const client = await openDB();
-		await client.execute(
+		await client.queryEntries(
 			`delete
 			 from users
 			 where id=?`,

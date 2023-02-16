@@ -1,7 +1,6 @@
 import {reactive} from 'vue';
 
 import type {User} from './types';
-import {PERMISSIONS, hasPermissions} from '../../../common/permissions';
 
 type Store = {
 	backendURL: string | null;
@@ -11,7 +10,6 @@ type Store = {
 	setApiKey: (key: string | null) => void;
 	setConnectionDialogOpen: (open: boolean) => void;
 	setUser: (user: User | null) => void;
-	hasPermissions: (permissions: PERMISSIONS[]) => boolean;
 };
 
 export const appState = reactive({
@@ -36,13 +34,6 @@ export const appState = reactive({
 	},
 	setUser(user: User | null): void {
 		this.user = user;
-	},
-	hasPermissions(permissions: PERMISSIONS[]): boolean {
-		if (this.user === null) {
-			return false;
-		} else {
-			return hasPermissions(permissions, this.user.permissions);
-		}
 	}
 } as Store);
 

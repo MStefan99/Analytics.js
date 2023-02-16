@@ -1,17 +1,17 @@
-import {Router} from '../deps.ts';
+import { Router } from '../deps.ts';
 
 import auth from '../lib/auth.ts';
 import User from '../lib/user.ts';
 import Session from '../lib/session.ts';
-import {credentialsPresent} from './middleware.ts';
-import {handleErrors} from '../lib/errors.ts';
+import { credentialsPresent } from './middleware.ts';
+import { handleErrors } from '../lib/errors.ts';
 
 const router = new Router();
 
 // Register
 router.post('/register', credentialsPresent, async (ctx) => {
 	await handleErrors(ctx, async () => {
-		const body = await ctx.request.body({type: 'json'}).value;
+		const body = await ctx.request.body({ type: 'json' }).value;
 
 		const user = await User.create(
 			body.username.trim(),
@@ -24,14 +24,16 @@ router.post('/register', credentialsPresent, async (ctx) => {
 		);
 
 		ctx.response.status = 201;
-		ctx.response.body = {key: session.publicID, user};
+		ctx.response.body = { key: session.publicID, user };
 	});
 });
 
 // Log in
 router.post('/login', credentialsPresent, async (ctx) => {
-	const body = await ctx.request.body({type: 'json'}).value;
+	const body = await ctx.request.body({ type: 'json' }).value;
 	const user = await User.getByUsername(body.username.trim());
+
+	console.log(user);
 
 	if (user === null) {
 		ctx.response.status = 400;
@@ -56,12 +58,12 @@ router.post('/login', credentialsPresent, async (ctx) => {
 	);
 
 	ctx.response.status = 201;
-	ctx.response.body = {key: session.publicID, user};
+	ctx.response.body = { key: session.publicID, user };
 });
 
 // Check authentication status
 router.get('/auth', auth.authenticated(), (ctx) => {
-	ctx.response.body = {message: 'OK'};
+	ctx.response.body = { message: 'OK' };
 });
 
 // Get user currently logged in as
@@ -83,7 +85,7 @@ router.get('/me', auth.authenticated(), async (ctx) => {
 // Edit user currently logged in as
 router.patch('/me', auth.authenticated(), async (ctx) => {
 	await handleErrors(ctx, async () => {
-		const body = await ctx.request.body({type: 'json'}).value;
+		const body = await ctx.request.body({ type: 'json' }).value;
 
 		const user = await auth.methods.getUser(ctx);
 		if (user === null) {
@@ -106,7 +108,7 @@ router.patch('/me', auth.authenticated(), async (ctx) => {
 
 // Log out
 router.get('/logout', auth.authenticated(), async (ctx) => {
-	ctx.response.body = {message: 'OK'};
+	ctx.response.body = { message: 'OK' };
 
 	const session = await auth.methods.getSession(ctx);
 	session?.delete();

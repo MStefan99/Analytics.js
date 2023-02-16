@@ -23,7 +23,6 @@ const notAuthenticated = {
 	message: 'You must sign in to do this'
 } as ErrorResponse;
 const requestFailed = {error: 'REQ_FAILED', message: 'Request failed'} as ErrorResponse;
-const notImplemented = {error: 'NOT_IMPLEMENTED', message: 'Not implemented'} as ErrorResponse;
 
 enum RequestMethod {
 	GET = 'GET',
@@ -165,5 +164,5 @@ export const SessionAPI = {
 export default {
 	connection: ConnectionAPI,
 	sessions: SessionAPI,
-	auth: AuthAPI,
+	auth: AuthAPI
 };

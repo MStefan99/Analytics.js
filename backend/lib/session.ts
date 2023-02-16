@@ -52,7 +52,7 @@ class Session {
 		const time = new Date().toISOString().replace('T', ' ').slice(0, -1);
 
 		const client = await openDB();
-		const res = await client.execute(
+		await client.queryEntries<SessionProps>(
 			`insert into sessions(public_id,
 			                                  user_id,
 			                                  ip,
@@ -69,7 +69,7 @@ class Session {
 		);
 
 		return new Session({
-			id: res.lastInsertId ?? 0,
+			id: client.lastInsertRowId ?? 0,
 			publicID,
 			userID: user.id,
 			ip,
@@ -80,7 +80,7 @@ class Session {
 
 	static async getByID(id: number): Promise<Session | null> {
 		const client = await openDB();
-		const rows = await client.query(
+		const rows = await client.queryEntries<SessionProps>(
 			`select id,
 			        public_id as publicID,
 			        user_id   as userID,
@@ -102,7 +102,7 @@ class Session {
 
 	static async getByPublicID(id: string): Promise<Session | null> {
 		const client = await openDB();
-		const rows = await client.query(
+		const rows = await client.queryEntries<SessionProps>(
 			`select id,
 			        public_id as publicID,
 			        user_id   as userID,
@@ -126,7 +126,7 @@ class Session {
 		const sessions = [];
 
 		const client = await openDB();
-		const rows = await client.query(
+		const rows = await client.queryEntries<SessionProps>(
 			`select id,
 			        public_id as publicID,
 			        user_id   as userID,
@@ -148,7 +148,7 @@ class Session {
 
 	static async deleteAllUserSessions(user: User): Promise<void> {
 		const client = await openDB();
-		await client.execute(
+		await client.queryEntries(
 			`delete
 			 from sessions
 			 where user_id=?`,
@@ -158,7 +158,7 @@ class Session {
 
 	async delete(): Promise<void> {
 		const client = await openDB();
-		await client.execute(
+		await client.queryEntries(
 			`delete
        from sessions
        where id = ?`,

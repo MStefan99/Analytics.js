@@ -1,20 +1,18 @@
 extends layout
 
-
 block head
-	title= website.name + ' realtime | Analyze.js'
-	link(rel='modulepreload' href='/js/realtime.js')
-
+	title= website.name + " realtime | Analyze.js"
+	link(rel="modulepreload" href="/js/realtime.js")
 
 block main
-	div#realtime-details
-		h1= website.name + ' realtime audience'
-		svg#realtime-users-details-svg(viewBox='0 0 700 300')
-			rect#border(width='700' height='300')
+	#realtime-details
+		h1= website.name + " realtime audience"
+		svg#realtime-users-details-svg(viewBox="0 0 700 300")
+			rect#border(width="700" height="300")
 		div
 			h2 Active users right now
 			p#active-users.accent Loading...
-		div#realtime-metrics
+		#realtime-metrics
 			div
 				h2 Top Active pages
 				table
@@ -40,4 +38,4 @@ block main
 							td Count
 					tbody#top-locations
 
-		script(async type='module' src='/js/realtime.js')
+		script(async type="module" src="/js/realtime.js")

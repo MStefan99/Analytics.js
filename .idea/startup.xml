@@ -3,7 +3,6 @@
   <component name="ProjectStartupSharedConfiguration">
     <configurations>
       <configuration id="Node.js.Archive" name="Archive" />
-      <configuration id="Node.js.Run" name="Run" />
     </configurations>
   </component>
 </project>

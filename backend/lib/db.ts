@@ -1,4 +1,4 @@
-import {DB} from '../deps.ts';
+import { DB } from '../deps.ts';
 
 async function openDB(path = './db/db.sqlite') {
 	const db = new DB(path);

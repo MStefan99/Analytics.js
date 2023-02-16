@@ -1,23 +1,22 @@
 extends layout
 
-
 block head
-	title= website.name + ' overview | Analyze.js'
-	link(rel='modulepreload' href='/js/overview.js')
-	link(rel='modulepreload' href='/js/jui.js')
-
+	title= website.name + " overview | Analyze.js"
+	link(rel="modulepreload" href="/js/overview.js")
+	link(rel="modulepreload" href="/js/jui.js")
 
 block main
-	h1= website.name + ' audience'
-	div#overview
-		div#realtime-audience.audience-card
+	h1= website.name + " audience"
+	#overview
+		#realtime-audience.audience-card
 			h2 Realtime
 			p Active users
 			p#active-users.accent Loading...
-			svg#active-users-timeline-svg(viewBox='0 0 210 100' preserveAspectRatio='none')
-				rect#top-line(width='210' height='1')
-				- for (let i = 0; i < 30; ++i)
-					rect.sessions-bar-underline(x=i * 7, y=99, width=6, height=1)
+			svg#active-users-timeline-svg(viewBox="0 0 210 100" preserveAspectRatio="none")
+				rect#top-line(width="210" height="1")
+				// - for (let i = 0; i < 30; ++i) {
+				// 	rect.sessions-bar-underline(x=i * 7 y=99 width=6 height=1)
+				// - }
 			b Most popular pages
 			table
 				thead
@@ -25,8 +24,8 @@ block main
 						td Page
 						td Views
 				tbody#pages-table
-			a(href='/realtime/' + website.id).bold Full report
-		div#today-audience.audience-card
+			a.bold(href="/realtime/" + website.id) Full report
+		#today-audience.audience-card
 			h2 Audience today
 			b Users
 			p#today-users.accent Loading...
@@ -36,6 +35,6 @@ block main
 			p#bounce-rate.accent Loading...
 			b Average session
 			p#session-duration.accent Loading...
-			a(href='/today/' + website.id).bold Full report
+			a.bold(href="/today/" + website.id) Full report
 
-	script(async type='module' src='/js/overview.js')
+	script(async type="module" src="/js/overview.js")

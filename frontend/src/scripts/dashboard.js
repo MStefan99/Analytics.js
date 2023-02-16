@@ -2,7 +2,6 @@
 
 import Jui from '/frontend/public/js/jui.js';
 
-
 (() => {
 	const scriptLocation = new URL(import.meta.url);
 	const analyticsLocation = scriptLocation.host;
@@ -12,16 +11,16 @@ import Jui from '/frontend/public/js/jui.js';
 	addButton.on('click', () => {
 		new Jui('.popup').remove();
 
-		main
-			.append(new Jui(`<div class="popup-backdrop"></div>`)
-				.on('click', e => {
+		main.append(
+			new Jui(`<div class="popup-backdrop"></div>`)
+				.on('click', (e) => {
 					if (e.target.classList.contains('popup-backdrop')) {
 						new Jui('.popup-backdrop').remove();
 					}
 				})
-				.append(new Jui(`<div class="popup centered"></div>`)
-					.on('click')
-					.append(new Jui(`
+				.append(
+					new Jui(`<div class="popup centered"></div>`).on('click').append(
+						new Jui(`
 						<form>
 							<h3>Add new website</h3>
 							<div class="form-group">
@@ -31,8 +30,7 @@ import Jui from '/frontend/public/js/jui.js';
 							</div>
 							<input class="btn btn-success" type="submit" value="Add">
 						</form>
-					`)
-						.on('submit', e => {
+					`).on('submit', (e) => {
 							e.preventDefault();
 
 							fetch('//' + analyticsLocation + '/api/websites', {
@@ -44,13 +42,13 @@ import Jui from '/frontend/public/js/jui.js';
 									websiteName: e.target.websiteName.value
 								})
 							})
-								.then(res => res.json())
-								.then(json => {
+								.then((res) => res.json())
+								.then((json) => {
 									// TODO: add new link to the list
 								});
 						})
 					)
 				)
-			);
+		);
 	});
 })();
