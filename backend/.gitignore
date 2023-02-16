@@ -254,5 +254,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-deno.lock
 
+deno.lock
+*.sqlite

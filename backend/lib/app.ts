@@ -12,38 +12,38 @@ function getRandomString(byteCount: number): string {
 type AppProps = {
 	id: number;
 	name: string;
-	publicKey: string;
-	privateKey: string;
+	audienceKey: string;
+	telemetryKey: string;
 	ownerID: number;
 };
 
 class App {
 	id: number;
 	name: string;
-	publicKey: string;
-	privateKey: string;
+	audienceKey: string;
+	telemetryKey: string;
 	ownerID: number;
 
 	constructor(props: AppProps) {
 		this.id = props.id;
 		this.name = props.name;
-		this.publicKey = props.publicKey;
-		this.privateKey = props.privateKey;
+		this.audienceKey = props.audienceKey;
+		this.telemetryKey = props.telemetryKey;
 		this.ownerID = props.ownerID;
 	}
 
 	static async create(user: User, name: string): Promise<App> {
-		const publicKey = getRandomString(32);
-		const privateKey = getRandomString(32);
+		const audienceKey = getRandomString(32);
+		const telemetryKey = getRandomString(32);
 
 		const client = await openDB();
 		await client.queryEntries(
-			`insert into apps(name, public_key, private_key, owner_id)
+			`insert into apps(name, audience_key, telemetry_key, owner_id)
 			 values (?, ?, ?, ?)`,
 			[
 				name,
-				publicKey,
-				privateKey,
+				audienceKey,
+				telemetryKey,
 				user.id,
 			],
 		);
@@ -51,8 +51,8 @@ class App {
 		return new App({
 			id: client.lastInsertRowId ?? 0,
 			name,
-			publicKey,
-			privateKey,
+			audienceKey,
+			telemetryKey,
 			ownerID: user.id,
 		});
 	}
@@ -62,8 +62,8 @@ class App {
 		const rows = await client.queryEntries<AppProps>(
 			`select id,
               name,
-              public_key  as publicKey,
-              private_key as privateKey,
+              audience_key  as audienceKey,
+              telemetry_key as telemetryKey,
               owner_id    as ownerID
        from apps
        where id = ?`,
@@ -78,16 +78,16 @@ class App {
 		}
 	}
 
-	static async getByPublicKey(key: string): Promise<App | null> {
+	static async getByaudienceKey(key: string): Promise<App | null> {
 		const client = await openDB();
 		const rows = await client.queryEntries<AppProps>(
 			`select id,
        name,
-              public_key  as publicKey,
-              private_key as privateKey,
+              audience_key  as audienceKey,
+              telemetry_key as telemetryKey,
               owner_id    as ownerID
 			 from apps
-			 where public_key=?`,
+			 where audience_key=?`,
 			[key],
 		);
 
@@ -99,16 +99,16 @@ class App {
 		}
 	}
 
-	static async getByPrivateKey(id: string): Promise<App | null> {
+	static async getBytelemetryKey(id: string): Promise<App | null> {
 		const client = await openDB();
 		const rows = await client.queryEntries<AppProps>(
 			`select id,
               name,
-              public_key  as publicKey,
-              private_key as privateKey,
+              audience_key  as audienceKey,
+              telemetry_key as telemetryKey,
               owner_id    as ownerID
 			 from apps
-			 where private_key=?`,
+			 where telemetry_key=?`,
 			[id],
 		);
 
@@ -127,8 +127,8 @@ class App {
 		const rows = await client.queryEntries<AppProps>(
 			`select id,
               name,
-              public_key  as publicKey,
-              private_key as privateKey,
+              audience_key  as audienceKey,
+              telemetry_key as telemetryKey,
               owner_id    as ownerID
 			 from apps
 			 where owner_id=?`,
