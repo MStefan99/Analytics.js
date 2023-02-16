@@ -1,11 +1,19 @@
-import { Middleware } from '../deps.ts';
+import { Context, Middleware } from '../deps.ts';
+
+async function getBodyLength(ctx: Context) {
+	try {
+		return (await ctx.request.body({ type: 'text' }).value).length;
+	} catch {
+		return 0;
+	}
+}
 
 export function hasBody(): Middleware {
 	return async (ctx, next) => {
-		try {
+		if (await getBodyLength(ctx)) {
 			await ctx.request.body().value;
 			await next();
-		} catch {
+		} else {
 			ctx.response.status = 400;
 			ctx.response.body = {
 				error: 'NO_BODY',
@@ -18,7 +26,7 @@ export function hasBody(): Middleware {
 
 export function hasCredentials(): Middleware {
 	return async (ctx, next) => {
-		if (!ctx.request.hasBody) {
+		if (await getBodyLength(ctx)) {
 			const body = await ctx.request.body({ type: 'json' }).value;
 
 			if (!body.username?.length) {
@@ -28,7 +36,7 @@ export function hasCredentials(): Middleware {
 					message: 'Username must be provided',
 				};
 				return;
-			} else if (!body.password.length) {
+			} else if (!body.password?.length) {
 				ctx.response.status = 400;
 				ctx.response.body = {
 					error: 'NO_PASSWORD',
