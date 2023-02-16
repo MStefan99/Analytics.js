@@ -1,9 +1,10 @@
-import { DBClient } from '../deps.ts';
+import {DB} from '../deps.ts';
 
-const dbClientPromise = new DBClient().connect({
-	hostname: Deno.env.get('DB_URL'),
-	username: Deno.env.get('DB_USERNAME'),
-	password: Deno.env.get('DB_PASSWORD'),
-});
+async function openDB(path = './db/db.sqlite') {
+	const db = new DB(path);
+	await db.execute('pragma foreign_keys = on');
 
-export default dbClientPromise;
+	return db;
+}
+
+export default openDB;

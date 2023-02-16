@@ -1,6 +1,6 @@
 import { decode as hexDecode, encode as hexEncode } from '../deps.ts';
 
-import dbClientPromise from './db.ts';
+import openDB from './db.ts';
 
 const PBKDF2ITERATIONS = 100000;
 
@@ -71,7 +71,7 @@ class User {
 
 	save(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			dbClientPromise.then((client) =>
+			openDB.then((client) =>
 				client
 					.execute(
 						`insert or replace into users(id,
@@ -101,7 +101,7 @@ class User {
 		);
 		const passwordHash = await pbkdf2(password, passwordSalt);
 
-		const client = await dbClientPromise;
+		const client = await openDB();
 		const res = await client.execute(
 			`insert into users(username,
 			                               password_salt,
@@ -123,7 +123,7 @@ class User {
 	}
 
 	static async getByID(id: number): Promise<User | null> {
-		const client = await dbClientPromise;
+		const client = await openDB();
 		const rows = await client.query(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
 			 from users
@@ -139,7 +139,7 @@ class User {
 	}
 
 	static async getByUsername(username: string): Promise<User | null> {
-		const client = await dbClientPromise;
+		const client = await openDB();
 		const rows = await client.query(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
 			 from users
@@ -157,7 +157,7 @@ class User {
 	static async getAll(): Promise<User[]> {
 		const users = [];
 
-		const client = await dbClientPromise;
+		const client = await openDB();
 		const rows = await client.query(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
 			 from users`,
@@ -181,7 +181,7 @@ class User {
 	}
 
 	async delete(): Promise<void> {
-		const client = await dbClientPromise;
+		const client = await openDB();
 		await client.execute(
 			`delete
 			 from users

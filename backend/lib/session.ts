@@ -1,6 +1,6 @@
 import { encode as hexEncode } from '../deps.ts';
 
-import dbClientPromise from './db.ts';
+import openDB from './db.ts';
 import User from './user.ts';
 
 function getRandomString(byteCount: number): string {
@@ -51,7 +51,7 @@ class Session {
 		const publicID = getRandomString(32);
 		const time = new Date().toISOString().replace('T', ' ').slice(0, -1);
 
-		const client = await dbClientPromise;
+		const client = await openDB();
 		const res = await client.execute(
 			`insert into sessions(public_id,
 			                                  user_id,
@@ -79,7 +79,7 @@ class Session {
 	}
 
 	static async getByID(id: number): Promise<Session | null> {
-		const client = await dbClientPromise;
+		const client = await openDB();
 		const rows = await client.query(
 			`select id,
 			        public_id as publicID,
@@ -101,7 +101,7 @@ class Session {
 	}
 
 	static async getByPublicID(id: string): Promise<Session | null> {
-		const client = await dbClientPromise;
+		const client = await openDB();
 		const rows = await client.query(
 			`select id,
 			        public_id as publicID,
@@ -125,7 +125,7 @@ class Session {
 	static async getUserSessions(user: User): Promise<Session[]> {
 		const sessions = [];
 
-		const client = await dbClientPromise;
+		const client = await openDB();
 		const rows = await client.query(
 			`select id,
 			        public_id as publicID,
@@ -147,7 +147,7 @@ class Session {
 	}
 
 	static async deleteAllUserSessions(user: User): Promise<void> {
-		const client = await dbClientPromise;
+		const client = await openDB();
 		await client.execute(
 			`delete
 			 from sessions
@@ -157,7 +157,7 @@ class Session {
 	}
 
 	async delete(): Promise<void> {
-		const client = await dbClientPromise;
+		const client = await openDB();
 		await client.execute(
 			`delete
        from sessions

@@ -114,7 +114,7 @@ router.get('/logout', auth.authenticated(), async (ctx) => {
 
 // Delete account
 router.delete(
-	'/',
+	'/me',
 	auth.authenticated(),
 	async (ctx) => {
 		const user = await auth.methods.getUser(ctx);

@@ -1,4 +1,4 @@
-import dbClientPromise from './db.ts';
+import openDB from './db.ts';
 import User from './user.ts';
 
 export function init() {
@@ -6,8 +6,13 @@ export function init() {
 }
 
 export async function initDB() {
-	const db = await dbClientPromise;
-	const rows = await db.query('show databases like "invenfinder"');
+	const db = await openDB();
+
+	const rows = await db.query(`select name
+                               from sqlite_master
+                               where type = 'table'
+                                 and name = 'users'`);
+
 	if (!rows.length) {
 		console.log('Initializing database');
 
