@@ -9,9 +9,7 @@ main.grow
 	PopupContainer
 
 footer
-	span Invenfinder
-	.print
-		p.text-muted Do not edit, this file was generated automatically by InvenFinder
+	span Crash Course
 </template>
 
 <script setup lang="ts">

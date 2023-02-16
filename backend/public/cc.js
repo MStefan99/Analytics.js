@@ -2,7 +2,7 @@
 
 // A.js - main file for Analytics.js, add this to your website to enable analytics.
 
-(async () => {
+(() => {
 	const scriptLocation = new URL(document.currentScript.src);
 	const params = new URLSearchParams(scriptLocation.search);
 	const ajs = {};
@@ -14,7 +14,7 @@
 		return fetch('//' + analyticsLocation + path, {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
 				id: websiteID,
@@ -22,14 +22,14 @@
 				tag: tag?.toString(),
 				referrer: document.referrer,
 				url: window.location.href,
-				data: data
-			})
+				data: data,
+			}),
 		});
 	}
 
 	Object.defineProperty(ajs, 'push', {
 		writable: false,
-		value: (options) => sendData('/tag', options.tag, options.data)
+		value: (options) => sendData('/tag', options.tag, options.data),
 	});
 	window.ajs = ajs;
 
@@ -41,6 +41,9 @@
 			}
 		})
 		.catch((err) => {
-			console.warn('Failed to send a hit to Analyze.js! More details:', err);
+			console.warn(
+				'Failed to send a hit to Analyze.js! More details:',
+				err,
+			);
 		});
 })();

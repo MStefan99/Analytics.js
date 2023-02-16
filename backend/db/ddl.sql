@@ -23,7 +23,7 @@ create table apps
     private_key char(36)    not null
         constraint apps_pk3
             unique,
-    owner       integer     not null
+    owner_id    integer     not null
         constraint apps_users_id_fk
             references users (id)
             on update cascade on delete cascade

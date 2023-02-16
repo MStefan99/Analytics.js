@@ -54,11 +54,11 @@ class Session {
 		const client = await openDB();
 		await client.queryEntries<SessionProps>(
 			`insert into sessions(public_id,
-			                                  user_id,
-			                                  ip,
-			                                  ua,
-			                                  time)
-			 values (?, ?, ?, ?, ?)`,
+                            user_id,
+                            ip,
+                            ua,
+                            time)
+       values (?, ?, ?, ?, ?)`,
 			[
 				publicID,
 				user.id,
@@ -82,13 +82,13 @@ class Session {
 		const client = await openDB();
 		const rows = await client.queryEntries<SessionProps>(
 			`select id,
-			        public_id as publicID,
-			        user_id   as userID,
-			        ip,
-			        ua,
-			        time
-			 from sessions
-			 where id=?`,
+              public_id as publicID,
+              user_id   as userID,
+              ip,
+              ua,
+              time
+       from sessions
+       where id = ?`,
 			[id],
 		);
 
@@ -104,13 +104,13 @@ class Session {
 		const client = await openDB();
 		const rows = await client.queryEntries<SessionProps>(
 			`select id,
-			        public_id as publicID,
-			        user_id   as userID,
-			        ip,
-			        ua,
-			        time
-			 from sessions
-			 where public_id=?`,
+              public_id as publicID,
+              user_id   as userID,
+              ip,
+              ua,
+              time
+       from sessions
+       where public_id = ?`,
 			[id],
 		);
 
@@ -128,13 +128,13 @@ class Session {
 		const client = await openDB();
 		const rows = await client.queryEntries<SessionProps>(
 			`select id,
-			        public_id as publicID,
-			        user_id   as userID,
-			        ip,
-			        ua,
-			        time
-			 from sessions
-			 where user_id=?`,
+              public_id as publicID,
+              user_id   as userID,
+              ip,
+              ua,
+              time
+       from sessions
+       where user_id = ?`,
 			[user.id],
 		);
 
@@ -150,8 +150,8 @@ class Session {
 		const client = await openDB();
 		await client.queryEntries(
 			`delete
-			 from sessions
-			 where user_id=?`,
+       from sessions
+       where user_id = ?`,
 			[user.id],
 		);
 	}

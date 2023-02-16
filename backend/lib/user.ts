@@ -74,11 +74,12 @@ class User {
 			openDB().then((client) =>
 				client
 					.query(
-						`insert or replace into users(id,
-						                               username,
-						                               password_salt,
-						                               password_hash)
-						 values (?, ?, ?, ?)`,
+						`insert or
+             replace into users(id,
+                                username,
+                                password_salt,
+                                password_hash)
+             values (?, ?, ?, ?)`,
 						[
 							this.id,
 							this.username,
@@ -104,9 +105,9 @@ class User {
 		const client = await openDB();
 		await client.queryEntries(
 			`insert into users(username,
-			                               password_salt,
-			                               password_hash)
-			 values (?, ?, ?)`,
+                         password_salt,
+                         password_hash)
+       values (?, ?, ?)`,
 			[
 				username,
 				passwordSalt,
@@ -126,8 +127,8 @@ class User {
 		const client = await openDB();
 		const rows = await client.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
-			 from users
-			 where id=?`,
+       from users
+       where id = ?`,
 			[id],
 		);
 
@@ -142,8 +143,8 @@ class User {
 		const client = await openDB();
 		const rows = await client.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
-			 from users
-			 where username=?`,
+       from users
+       where username = ?`,
 			[username],
 		);
 
@@ -160,7 +161,7 @@ class User {
 		const client = await openDB();
 		const rows = await client.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
-			 from users`,
+       from users`,
 		);
 
 		for (const row of rows) {
@@ -184,8 +185,8 @@ class User {
 		const client = await openDB();
 		await client.queryEntries(
 			`delete
-			 from users
-			 where id=?`,
+       from users
+       where id = ?`,
 			[this.id],
 		);
 	}

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectStartupSharedConfiguration">
     <configurations>
-      <configuration id="Node.js.Archive" name="Archive" />
+      <configuration id="npm.Develop" name="Develop" />
     </configurations>
   </component>
 </project>

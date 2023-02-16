@@ -2,7 +2,7 @@
 div
 	nav.text-accent.font-semibold
 		span(v-if="appState.user")
-			RouterLink.clickable(:to="{name: 'inventory'}") Apps
+			RouterLink.clickable(:to="{name: 'apps'}") Apps
 			RouterLink.clickable(:to="{name: 'settings'}") Settings
 		span
 			span.clickable(v-if="!appState.user" @click="connectionDialogOpen = true") Sign in

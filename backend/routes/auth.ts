@@ -33,8 +33,6 @@ router.post('/login', credentialsPresent, async (ctx) => {
 	const body = await ctx.request.body({ type: 'json' }).value;
 	const user = await User.getByUsername(body.username.trim());
 
-	console.log(user);
-
 	if (user === null) {
 		ctx.response.status = 400;
 		ctx.response.body = {
