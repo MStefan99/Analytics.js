@@ -11,7 +11,7 @@ const analyzer = require('../../lib/analyzer.js');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-	res.json({ message: 'Welcome to Analyze.js API!' });
+	res.json({ message: 'Welcome to Crash Course API!' });
 });
 
 router.use(auth.getSessionMiddleware);

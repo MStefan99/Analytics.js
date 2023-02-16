@@ -5,7 +5,7 @@ import sessionRouter from './routes/sessions.ts';
 import appRouter from './routes/apps.ts';
 import { init } from './lib/init.ts';
 
-const port = 3000;
+const port = 3001;
 
 const app = new Application();
 const apiRouter = new Router({

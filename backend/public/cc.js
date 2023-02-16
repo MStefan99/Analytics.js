@@ -1,14 +1,12 @@
 'use strict';
 
-// A.js - main file for Analytics.js, add this to your website to enable analytics.
-
 (() => {
 	const scriptLocation = new URL(document.currentScript.src);
 	const params = new URLSearchParams(scriptLocation.search);
-	const ajs = {};
+	const cc = {};
 
 	const analyticsLocation = scriptLocation.host;
-	const websiteID = params.get('ajsID');
+	const websiteID = params.get('c');
 
 	function sendData(path, tag, data) {
 		return fetch('//' + analyticsLocation + path, {
@@ -27,11 +25,11 @@
 		});
 	}
 
-	Object.defineProperty(ajs, 'push', {
+	Object.defineProperty(cc, 'push', {
 		writable: false,
 		value: (options) => sendData('/tag', options.tag, options.data),
 	});
-	window.ajs = ajs;
+	window.cc = cc;
 
 	sendData('/hit')
 		.then((res) => res.json())
@@ -42,7 +40,7 @@
 		})
 		.catch((err) => {
 			console.warn(
-				'Failed to send a hit to Analyze.js! More details:',
+				'Failed to send a hit to Crash Course! More details:',
 				err,
 			);
 		});

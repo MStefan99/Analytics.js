@@ -3,6 +3,7 @@ import { Router } from '../deps.ts';
 import auth from '../lib/auth.ts';
 import App from '../lib/app.ts';
 import { hasBody } from './middleware.ts';
+import { initApp } from '../lib/init.ts';
 
 const router = new Router({
 	prefix: '/apps',
@@ -44,8 +45,11 @@ router.post('/', hasBody(), auth.authenticated(), async (ctx) => {
 		};
 	}
 
+	const app = await App.create(user, body.name.trim());
+	await initApp(app.id);
+
 	ctx.response.status = 201;
-	ctx.response.body = await App.create(user, body.name.trim());
+	ctx.response.body = app;
 });
 
 export default router;

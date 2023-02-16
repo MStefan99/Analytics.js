@@ -26,5 +26,5 @@ mkdir data/hits
 mkdir data/archive
 echo "Data directories created!"
 
-echo "Installed successfully! Run \"node index.js\" to start Analytics.js"
+echo "Installed successfully! Run \"node index.js\" to start Crash Course"
 
