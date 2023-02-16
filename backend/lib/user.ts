@@ -138,22 +138,21 @@ class User {
 		}
 	}
 
-	// TODO: remove or add username key
-	// static async getByUsername(username: string): Promise<User | null> {
-	// 	const client = await dbClientPromise;
-	// 	const rows = await client.query(
-	// 		`select id, username, password_salt as passwordSalt, password_hash as passwordHash
-	// 		 from users
-	// 		 where username=?`,
-	// 		[username],
-	// 	);
-	//
-	// 	if (!rows.length) {
-	// 		return null;
-	// 	}
-	//
-	// 	return new User(rows[0]);
-	// }
+	static async getByUsername(username: string): Promise<User | null> {
+		const client = await dbClientPromise;
+		const rows = await client.query(
+			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
+			 from users
+			 where username=?`,
+			[username],
+		);
+
+		if (!rows.length) {
+			return null;
+		}
+
+		return new User(rows[0]);
+	}
 
 	static async getAll(): Promise<User[]> {
 		const users = [];

@@ -3,7 +3,9 @@ create table users
     id            integer     not null
         constraint users_pk
             primary key autoincrement,
-    username      varchar(80) not null,
+    username      varchar(80) not null
+        constraint users_username
+            unique,
     password_salt varchar(50) not null,
     password_hash varchar(50)
 );

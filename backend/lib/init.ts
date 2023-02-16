@@ -11,11 +11,11 @@ export async function initDB() {
 	if (!rows.length) {
 		console.log('Initializing database');
 
-		const sql = await Deno.readTextFile('./ddl.sql');
+		const sql = await Deno.readTextFile('./db/ddl.sql');
 		for (const stmt of sql.split(';')) {
 			stmt.trim().length && await db.execute(stmt);
 		}
 
-		await User.create('admin', 'admin', ~0);
+		await User.create('admin', 'admin');
 	}
 }

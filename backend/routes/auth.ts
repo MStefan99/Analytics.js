@@ -1,121 +1,136 @@
-'use strict';
+import {Router} from '../deps.ts';
 
-import { Router } from '../deps.ts';
+import auth from '../lib/auth.ts';
+import User from '../lib/user.ts';
+import Session from '../lib/session.ts';
+import {credentialsPresent} from './middleware.ts';
+import {handleErrors} from '../lib/errors.ts';
 
-import auth from '../lib/auth.js';
+const router = new Router();
 
-const router = new Router({
-	prefix: '/auth',
-});
+// Register
+router.post('/register', credentialsPresent, async (ctx) => {
+	await handleErrors(ctx, async () => {
+		const body = await ctx.request.body({type: 'json'}).value;
 
-router.post('/signup', async (ctx) => {
-	if (!ctx.request.hasBody) {
-	}
+		const user = await User.create(
+			body.username.trim(),
+			body.password,
+		);
+		const session = await Session.create(
+			user,
+			ctx.request.ip,
+			ctx.request.headers.get('user-agent') ?? 'Unknown',
+		);
 
-	if (!req.body.username) {
-		res.status(400).send('No username');
-		return;
-	} else if (!req.body.password) {
-		res.status(400).send('No password');
-		return;
-	}
-
-	const user = auth.createUser(req.body.username, {
-		password: req.body.password,
+		ctx.response.status = 201;
+		ctx.response.body = {key: session.publicID, user};
 	});
-	const session = auth.createSession(user.id);
-
-	res
-		.cookie('ajsSession', session.id, {
-			httpOnly: true,
-			maxAge: 7 * 24 * 60 * 60 * 1000,
-			sameSite: 'strict',
-		})
-		.redirect(303, '/dashboard');
 });
 
-router.post('/login', (req, res) => {
-	if (!req.body.username) {
-		res.status(400).send('No username');
+// Log in
+router.post('/login', credentialsPresent, async (ctx) => {
+	const body = await ctx.request.body({type: 'json'}).value;
+	const user = await User.getByUsername(body.username.trim());
+
+	if (user === null) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'USER_NOT_FOUND',
+			message: 'User was not found',
+		};
 		return;
-	} else if (!req.body.password) {
-		res.status(400).send('No password');
+	} else if (!(await user.verifyPassword(body.password))) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'WRONG_PASSWORD',
+			message: 'Wrong password',
+		};
 		return;
 	}
-	const user = auth.findUserByUsername(req.body.username);
+
+	const session = await Session.create(
+		user,
+		ctx.request.ip,
+		ctx.request.headers.get('user-agent') ?? 'Unknown',
+	);
+
+	ctx.response.status = 201;
+	ctx.response.body = {key: session.publicID, user};
+});
+
+// Check authentication status
+router.get('/auth', auth.authenticated(), (ctx) => {
+	ctx.response.body = {message: 'OK'};
+});
+
+// Get user currently logged in as
+router.get('/me', auth.authenticated(), async (ctx) => {
+	const user = await auth.methods.getUser(ctx);
 
 	if (!user) {
-		res.status(422).send('No user');
-		return;
-	} else if (!auth.verifyUserPassword(user.id, req.body.password)) {
-		res.status(422).send('Wrong password');
-		return;
+		// Should in theory never get here
+		ctx.response.status = 500;
+		ctx.response.body = {
+			error: 'USER_NOT_FOUND',
+			message: 'User was not found',
+		};
+	} else {
+		ctx.response.body = user;
 	}
-
-	const session = auth.createSession(user.id);
-	res
-		.cookie('ajsSession', session.id, {
-			httpOnly: true,
-			maxAge: 7 * 24 * 60 * 60 * 1000,
-			sameSite: 'strict',
-		})
-		.redirect(303, '/dashboard');
 });
 
-router.use(auth.getSessionMiddleware);
-router.use(auth.getUserMiddleware);
+// Edit user currently logged in as
+router.patch('/me', auth.authenticated(), async (ctx) => {
+	await handleErrors(ctx, async () => {
+		const body = await ctx.request.body({type: 'json'}).value;
 
-router.get('/', (req, res) => {
-	res.render('home');
-});
+		const user = await auth.methods.getUser(ctx);
+		if (user === null) {
+			ctx.response.status = 500;
+			ctx.response.body = {
+				error: 'USER_NOT_FOUND',
+				message: 'User was not found',
+			};
+			return;
+		}
 
-router.use(auth.redirectIfNotLoggedInMiddleware);
+		if (body.password?.length) {
+			await user.setPassword(body.password);
+		}
 
-router.get('/dashboard', (req, res) => {
-	res.render('dashboard', {
-		websites: req.user.websites,
+		await user.save();
+		ctx.response.body = user;
 	});
 });
 
-router.get('/overview/:websiteID', (req, res) => {
-	if (!req.user.websites[req.params.websiteID]) {
-		res.status(404)
-			.render('error', {
-				error: {
-					title: 'Website not found',
-					message: 'The website requested could not be found.' +
-						' Please check whether the link is correct and you have access to this website.',
-				},
-			});
-		return;
-	}
+// Log out
+router.get('/logout', auth.authenticated(), async (ctx) => {
+	ctx.response.body = {message: 'OK'};
 
-	res.render('overview', {
-		website: req.user.websites[req.params.websiteID],
-	});
+	const session = await auth.methods.getSession(ctx);
+	session?.delete();
 });
 
-router.get('/realtime/:websiteID', (req, res) => {
-	if (!req.user.websites[req.params.websiteID]) {
-		res.status(404)
-			.render('error', {
-				error: {
-					title: 'Website not found',
-					message: 'The website requested could not be found.' +
-						' Please check whether the link is correct and you have access to this website.',
-				},
-			});
-		return;
-	}
+// Delete account
+router.delete(
+	'/',
+	auth.authenticated(),
+	async (ctx) => {
+		const user = await auth.methods.getUser(ctx);
 
-	res.render('realtime', {
-		website: req.user.websites[req.params.websiteID],
-	});
-});
+		if (user === null) {
+			ctx.response.status = 400;
+			ctx.response.body = {
+				error: 'USER_NOT_FOUND',
+				message: 'User was not found',
+			};
+			return;
+		}
 
-router.get('/logout', (req, res) => {
-	auth.deleteSession(req.session.id);
-	res.redirect(303, '/');
-});
+		user.delete();
+		ctx.response.body = user;
+	},
+);
 
 export default router;

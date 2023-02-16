@@ -1,9 +1,5 @@
 'use strict';
 
-const path = require('path');
-
-const configurer = require('@mstefan99/configurer');
-
 module.exports = {
 	realtimeLength: 60 * 1000,
 	sessionLength: 30 * 60 * 1000,
