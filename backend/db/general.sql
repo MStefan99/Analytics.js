@@ -17,10 +17,10 @@ create table apps
         constraint apps_pk
             primary key autoincrement,
     name          varchar(80) not null,
-    audience_key  char(36)    not null
+    audience_key  char(64)    not null
         constraint apps_audience_key
             unique,
-    telemetry_key char(36)    not null
+    telemetry_key char(64)    not null
         constraint apps_telemetry_key
             unique,
     owner_id      integer     not null

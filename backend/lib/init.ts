@@ -23,7 +23,7 @@ export async function initDB() {
 }
 
 export async function initApp(id: number) {
-	const db = await openDB(id.toString());
+	const db = await openDB(id);
 	const sql = await Deno.readTextFile('./db/app.sql');
 
 	db.execute(sql);

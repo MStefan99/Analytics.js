@@ -35,7 +35,7 @@
 		.then((res) => res.json())
 		.then((json) => {
 			if (json.session) {
-				localStorage.setItem('ajsSession', json.session);
+				localStorage.setItem('crash-course-session', json.session);
 			}
 		})
 		.catch((err) => {

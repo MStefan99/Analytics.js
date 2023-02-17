@@ -1,8 +1,8 @@
 import { DB } from '../deps.ts';
 
-export async function openDB(name?: string) {
+export async function openDB(name?: string | number) {
 	const db = new DB(
-		name?.length ? `./db/apps/${name}.sqlite` : './db/db.sqlite',
+		name?.toString().length ? `./db/apps/${name}.sqlite` : './db/db.sqlite',
 	);
 	await db.execute('pragma foreign_keys = on');
 
