@@ -44,6 +44,10 @@ apiRouter.get('/', (ctx) => {
 	ctx.response.body = { message: 'Welcome!' };
 });
 
+apiRouter.get('/options', (ctx) => {
+	ctx.response.body = {};
+});
+
 app.use(apiRouter.routes());
 app.use(apiRouter.allowedMethods()); // Responds to OPTIONS and 405/501
 

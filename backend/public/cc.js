@@ -5,11 +5,11 @@
 	const params = new URLSearchParams(scriptLocation.search);
 	const cc = {};
 
-	const analyticsLocation = scriptLocation.host;
+	const serverURL = scriptLocation.host;
 	const websiteID = params.get('c');
 
 	function sendData(path, tag, data) {
-		return fetch('//' + analyticsLocation + path, {
+		return fetch('//' + serverURL + path, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

@@ -71,8 +71,8 @@ class User {
 
 	save(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			openDB().then((client) =>
-				client
+			openDB().then((db) =>
+				db
 					.query(
 						`insert or
              replace into users(id,
@@ -102,8 +102,8 @@ class User {
 		);
 		const passwordHash = await pbkdf2(password, passwordSalt);
 
-		const client = await openDB();
-		await client.queryEntries(
+		const db = await openDB();
+		await db.queryEntries(
 			`insert into users(username,
                          password_salt,
                          password_hash)
@@ -116,7 +116,7 @@ class User {
 		);
 
 		return new User({
-			id: client.lastInsertRowId ?? 0,
+			id: db.lastInsertRowId ?? 0,
 			username,
 			passwordSalt,
 			passwordHash,
@@ -124,8 +124,8 @@ class User {
 	}
 
 	static async getByID(id: number): Promise<User | null> {
-		const client = await openDB();
-		const rows = await client.queryEntries<Props>(
+		const db = await openDB();
+		const rows = await db.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
        from users
        where id = ?`,
@@ -140,8 +140,8 @@ class User {
 	}
 
 	static async getByUsername(username: string): Promise<User | null> {
-		const client = await openDB();
-		const rows = await client.queryEntries<Props>(
+		const db = await openDB();
+		const rows = await db.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
        from users
        where username = ?`,
@@ -158,8 +158,8 @@ class User {
 	static async getAll(): Promise<User[]> {
 		const users = [];
 
-		const client = await openDB();
-		const rows = await client.queryEntries<Props>(
+		const db = await openDB();
+		const rows = await db.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
        from users`,
 		);
@@ -182,8 +182,8 @@ class User {
 	}
 
 	async delete(): Promise<void> {
-		const client = await openDB();
-		await client.queryEntries(
+		const db = await openDB();
+		await db.queryEntries(
 			`delete
        from users
        where id = ?`,

@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 const configurer = require('@mstefan99/configurer');
-const analyzer = require('../../lib/analyzer.js');
+const analyzer = require('./analyzer.js');
 
 fs.readdir(path.resolve('../../data/hits'), (err, files) => {
 	for (const websiteID of files) {

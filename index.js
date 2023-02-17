@@ -4,8 +4,8 @@ const path = require('path');
 
 const express = require('express');
 
-const collectRouter = require('./backend/src/api/collect');
-const apiRouter = require('./backend/src/api/router');
+const collectRouter = require('./backend/routes/collect.js');
+const apiRouter = require('./backend/routes/router.js');
 const userRouter = require('./backend/routes/router.js');
 
 

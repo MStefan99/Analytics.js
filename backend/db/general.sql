@@ -6,24 +6,24 @@ create table users
     username      varchar(80) not null
         constraint users_username
             unique,
-    password_salt varchar(50) not null,
-    password_hash varchar(50)
+    password_salt char(64)    not null,
+    password_hash char(64)    not null
 );
 
 
 create table apps
 (
-    id          integer     not null
+    id            integer     not null
         constraint apps_pk
             primary key autoincrement,
-    name        varchar(80) not null,
+    name          varchar(80) not null,
     audience_key  char(36)    not null
         constraint apps_audience_key
             unique,
     telemetry_key char(36)    not null
         constraint apps_telemetry_key
             unique,
-    owner_id    integer     not null
+    owner_id      integer     not null
         constraint apps_users_id_fk
             references users (id)
             on update cascade on delete cascade

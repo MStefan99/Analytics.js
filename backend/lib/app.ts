@@ -36,8 +36,8 @@ class App {
 		const audienceKey = getRandomString(32);
 		const telemetryKey = getRandomString(32);
 
-		const client = await openDB();
-		await client.queryEntries(
+		const db = await openDB();
+		await db.queryEntries(
 			`insert into apps(name, audience_key, telemetry_key, owner_id)
 			 values (?, ?, ?, ?)`,
 			[
@@ -49,7 +49,7 @@ class App {
 		);
 
 		return new App({
-			id: client.lastInsertRowId ?? 0,
+			id: db.lastInsertRowId ?? 0,
 			name,
 			audienceKey,
 			telemetryKey,
@@ -58,8 +58,8 @@ class App {
 	}
 
 	static async getByID(id: number): Promise<App | null> {
-		const client = await openDB();
-		const rows = await client.queryEntries<AppProps>(
+		const db = await openDB();
+		const rows = await db.queryEntries<AppProps>(
 			`select id,
               name,
               audience_key  as audienceKey,
@@ -78,9 +78,9 @@ class App {
 		}
 	}
 
-	static async getByaudienceKey(key: string): Promise<App | null> {
-		const client = await openDB();
-		const rows = await client.queryEntries<AppProps>(
+	static async getByAudienceKey(key: string): Promise<App | null> {
+		const db = await openDB();
+		const rows = await db.queryEntries<AppProps>(
 			`select id,
        name,
               audience_key  as audienceKey,
@@ -99,9 +99,9 @@ class App {
 		}
 	}
 
-	static async getBytelemetryKey(id: string): Promise<App | null> {
-		const client = await openDB();
-		const rows = await client.queryEntries<AppProps>(
+	static async getByTelemetryKey(id: string): Promise<App | null> {
+		const db = await openDB();
+		const rows = await db.queryEntries<AppProps>(
 			`select id,
               name,
               audience_key  as audienceKey,
@@ -123,8 +123,8 @@ class App {
 	static async getByUser(user: User): Promise<App[]> {
 		const sessions = [];
 
-		const client = await openDB();
-		const rows = await client.queryEntries<AppProps>(
+		const db = await openDB();
+		const rows = await db.queryEntries<AppProps>(
 			`select id,
               name,
               audience_key  as audienceKey,
@@ -144,8 +144,8 @@ class App {
 	}
 
 	async delete(): Promise<void> {
-		const client = await openDB();
-		await client.queryEntries(
+		const db = await openDB();
+		await db.queryEntries(
 			`delete
        from apps
        where id = ?`,

@@ -5,8 +5,8 @@ const crypto = require('crypto');
 const express = require('express');
 
 const configurer = require('@mstefan99/configurer');
-const auth = require('../../lib/auth.js');
-const analyzer = require('../../lib/analyzer.js');
+const auth = require('../lib/auth.ts');
+const analyzer = require('../lib/analyzer.js');
 
 const router = express.Router();
 

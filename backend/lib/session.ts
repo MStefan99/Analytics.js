@@ -51,8 +51,8 @@ class Session {
 		const publicID = getRandomString(32);
 		const time = new Date().toISOString().replace('T', ' ').slice(0, -1);
 
-		const client = await openDB();
-		await client.queryEntries<SessionProps>(
+		const db = await openDB();
+		await db.queryEntries<SessionProps>(
 			`insert into sessions(public_id,
                             user_id,
                             ip,
@@ -69,7 +69,7 @@ class Session {
 		);
 
 		return new Session({
-			id: client.lastInsertRowId ?? 0,
+			id: db.lastInsertRowId ?? 0,
 			publicID,
 			userID: user.id,
 			ip,
@@ -79,8 +79,8 @@ class Session {
 	}
 
 	static async getByID(id: number): Promise<Session | null> {
-		const client = await openDB();
-		const rows = await client.queryEntries<SessionProps>(
+		const db = await openDB();
+		const rows = await db.queryEntries<SessionProps>(
 			`select id,
               public_id as publicID,
               user_id   as userID,
@@ -101,8 +101,8 @@ class Session {
 	}
 
 	static async getByPublicID(id: string): Promise<Session | null> {
-		const client = await openDB();
-		const rows = await client.queryEntries<SessionProps>(
+		const db = await openDB();
+		const rows = await db.queryEntries<SessionProps>(
 			`select id,
               public_id as publicID,
               user_id   as userID,
@@ -125,8 +125,8 @@ class Session {
 	static async getUserSessions(user: User): Promise<Session[]> {
 		const sessions = [];
 
-		const client = await openDB();
-		const rows = await client.queryEntries<SessionProps>(
+		const db = await openDB();
+		const rows = await db.queryEntries<SessionProps>(
 			`select id,
               public_id as publicID,
               user_id   as userID,
@@ -147,8 +147,8 @@ class Session {
 	}
 
 	static async deleteAllUserSessions(user: User): Promise<void> {
-		const client = await openDB();
-		await client.queryEntries(
+		const db = await openDB();
+		await db.queryEntries(
 			`delete
        from sessions
        where user_id = ?`,
@@ -157,8 +157,8 @@ class Session {
 	}
 
 	async delete(): Promise<void> {
-		const client = await openDB();
-		await client.queryEntries(
+		const db = await openDB();
+		await db.queryEntries(
 			`delete
        from sessions
        where id = ?`,

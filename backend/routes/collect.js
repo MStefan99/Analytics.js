@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const configurer = require('@mstefan99/configurer');
-const analyzer = require('../../lib/analyzer.js');
+const analyzer = require('../lib/analyzer.js');
 
 const router = express.Router();
 

@@ -10,17 +10,18 @@ create table sessions
 
 create table hits
 (
-    session_id char(36)     not null
+    session_id char(36)                          not null
         constraint hits_sessions_id_fk
             references sessions
             on update cascade on delete cascade,
-    url        varchar(150) not null,
-    time       integer      not null
+    url        varchar(150)                      not null,
+    time       integer default current_timestamp not null
 );
 
 create table metrics
 (
     time       integer default current_timestamp not null,
+    device     varchar(200),
     cpu        integer,
     mem_free   integer,
     mem_total  integer,

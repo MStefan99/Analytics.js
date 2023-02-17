@@ -2,6 +2,7 @@ import { Context, Middleware } from '../deps.ts';
 
 import Session from './session.ts';
 import User from './user.ts';
+import App from './app.ts';
 
 async function getSession(ctx: Context): Promise<Session | null> {
 	if (ctx.state.session) {
@@ -30,18 +31,54 @@ async function getUser(ctx: Context): Promise<User | null> {
 	return (ctx.state.user = await User.getByID(ctx.state.session.userID));
 }
 
+async function getAppByAudienceKey(ctx: Context): Promise<App | null> {
+	if (ctx.state.app) {
+		return ctx.state.app;
+	}
+
+	const key = ctx.request.headers.get('audience-key');
+
+	if (key === null || key === undefined) {
+		return null;
+	}
+
+	return (ctx.state.app = await App.getByAudienceKey(key));
+}
+
+async function getAppByTelemetryKey(ctx: Context): Promise<App | null> {
+	if (ctx.state.app) {
+		return ctx.state.app;
+	}
+
+	const key = ctx.request.headers.get('telemetry-key');
+
+	if (key === null || key === undefined) {
+		return null;
+	}
+
+	return (ctx.state.app = await App.getByTelemetryKey(key));
+}
+
 export default {
 	test: {
 		async authenticated(ctx: Context): Promise<boolean> {
-			const session = await getSession(ctx);
+			return !!await getSession(ctx);
+		},
 
-			return !!session;
+		async hasAudienceKey(ctx: Context): Promise<boolean> {
+			return !!await getAppByAudienceKey(ctx);
+		},
+
+		async hasTelemetryKey(ctx: Context): Promise<boolean> {
+			return !!await getAppByTelemetryKey(ctx);
 		},
 	},
 
 	methods: {
 		getSession,
 		getUser,
+		getAppByAudienceKey,
+		getAppByTelemetryKey,
 	},
 
 	authenticated(): Middleware {
@@ -51,6 +88,34 @@ export default {
 				ctx.response.body = {
 					error: 'NOT_AUTHENTICATED',
 					message: 'You must sign in to do this',
+				};
+			} else {
+				await next();
+			}
+		};
+	},
+
+	hasAudienceKey(): Middleware {
+		return async (ctx, next) => {
+			if (!await this.test.hasAudienceKey(ctx)) {
+				ctx.response.status = 401;
+				ctx.response.body = {
+					error: 'NOT_AUTHENTICATED',
+					message: 'You must provide an audience key to do this',
+				};
+			} else {
+				await next();
+			}
+		};
+	},
+
+	hasTelemetryKey(): Middleware {
+		return async (ctx, next) => {
+			if (!await this.test.hasTelemetryKey(ctx)) {
+				ctx.response.status = 401;
+				ctx.response.body = {
+					error: 'NOT_AUTHENTICATED',
+					message: 'You must provide a telemetry key to do this',
 				};
 			} else {
 				await next();
