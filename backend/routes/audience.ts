@@ -30,6 +30,20 @@ router.post('/hit', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	const db = await openDB(app.id);
 
 	const sessionID = body.ccs ? body.ccs : getRandomString(16);
+
+	if (body.ccs) {
+		if (
+			!(await db.query(
+				`select id as sessionID
+                          from sessions
+                          where id = ?`,
+				[sessionID],
+			)).length
+		) {
+			body.ccs = null;
+		}
+	}
+
 	if (!body.ccs) {
 		await db.query(
 			`insert into sessions(id, ip, ua, lang)
