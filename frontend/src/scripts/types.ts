@@ -41,6 +41,7 @@ export type RealtimeAudience = {
 export type DayAudience = {
 	bounceRate: number;
 	avgDuration: number;
+	users: number;
 	sessions: [
 		{
 			duration: number;

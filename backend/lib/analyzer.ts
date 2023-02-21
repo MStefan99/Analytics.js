@@ -2,8 +2,11 @@
 
 import openDB from './db.ts';
 
-const realtimeLength = 60 * 1000;
-const sessionLength = 30 * 60 * 1000;
+const realtimeLength = 1000 * 60;
+const sessionLength = 1000 * 60 * 30;
+
+type Page = { url: string; referrer?: string; time: number };
+type Session = { duration: number; ua: string; ip: string; pages: Page[] };
 
 export default {
 	dayAudience: async function (appID: number) {
@@ -15,10 +18,10 @@ export default {
 
 		const db = await openDB(appID);
 
+		const sessionSets = new Map<string, Session[]>();
+		const users = new Set<string>();
+		let sessionCount = 0;
 		let bounced = 0;
-		const sessions = new Array<
-			{ duration: number; pages: { url: string; time: number }[] }
-		>();
 
 		const hits = await db.queryEntries<
 			{
@@ -38,37 +41,67 @@ export default {
 			[today.getTime()],
 		);
 
-		for (let i = 0; i < hits.length; ++i) {
-			const session = {
-				duration: 0,
-				ua: hits[i].ua,
-				ip: hits[i].ip,
-				pages: [{ url: hits[i].url, time: hits[i].time }],
-			};
-
-			for (
-				let j = i + 1;
-				j < hits.length &&
-				hits[j - 1].id === hits[j].id &&
-				hits[j].time - hits[j - 1].time <
-					sessionLength;
-				++j
-			) {
-				session.duration += hits[j].time -
-					hits[j - 1].time;
-				session.pages.push({ url: hits[j].url, time: hits[j].time });
-				i = j;
+		for (const hit of hits) {
+			if (!users.has(hit.id)) {
+				users.add(hit.id);
 			}
-			sessions.push(session);
-			if (session.pages.length === 1) {
+
+			if (!sessionSets.has(hit.id)) {
+				sessionSets.set(hit.id, [
+					{
+						duration: 0,
+						ua: hit.ua,
+						ip: hit.ip,
+						pages: [{
+							url: hit.url,
+							referrer: hit.referrer,
+							time: hit.time,
+						}],
+					},
+				]);
+				++sessionCount;
 				++bounced;
+			} else {
+				const set = sessionSets.get(hit.id) as Session[]; // Safe because of the check above
+				const session = set[set.length - 1];
+				const lastHit = session.pages[session.pages.length - 1].time;
+
+				if (hit.time - lastHit > sessionLength) {
+					set.push({
+						duration: 0,
+						ua: hit.ua,
+						ip: hit.ip,
+						pages: [{
+							url: hit.url,
+							referrer: hit.referrer,
+							time: hit.time,
+						}],
+					});
+					++sessionCount;
+					++bounced;
+				} else {
+					if (session.pages.length === 1) {
+						--bounced;
+					}
+					session.duration = hit.time - session.pages[0].time;
+					session.pages.push({
+						url: hit.url,
+						referrer: hit.referrer,
+						time: hit.time,
+					});
+				}
 			}
 		}
 
+		const sessions = Array.from(sessionSets.values()).flat();
+
 		return {
-			bounceRate: bounced / sessions.length,
-			avgDuration: sessions.reduce((a, s) => a + s.duration, 0) /
-				sessions.length,
+			bounceRate: sessionCount ? bounced / sessionCount : 0,
+			avgDuration: sessions.reduce(
+				(avg, curr, i) => (avg + curr.duration) / (i + 1),
+				0,
+			),
+			users: users.size,
 			sessions,
 		};
 	},
