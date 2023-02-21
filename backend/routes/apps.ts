@@ -1,4 +1,4 @@
-import { Router } from '../deps.ts';
+import { Context, Router } from '../deps.ts';
 
 import auth from '../lib/auth.ts';
 import App from '../lib/app.ts';
@@ -9,6 +9,39 @@ import analyzer from '../lib/analyzer.ts';
 const router = new Router({
 	prefix: '/apps',
 });
+
+async function getApp(ctx: Context, id: number): Promise<App | undefined> {
+	const user = await auth.methods.getUser(ctx);
+	if (user === null) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'USER_NOT_FOUND',
+			message: 'User was not found',
+		};
+		return;
+	}
+
+	if (Number.isNaN(id)) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'ID_NAN',
+			message: 'App ID must be a number',
+		};
+		return;
+	}
+
+	const app = await App.getByID(id);
+	if (!app || app.ownerID !== user.id) {
+		ctx.response.status = 404;
+		ctx.response.body = {
+			error: 'APP_NOT_FOUND',
+			message: 'App was not found',
+		};
+		return;
+	}
+
+	return app;
+}
 
 router.get('/', auth.authenticated(), async (ctx) => {
 	const user = await auth.methods.getUser(ctx);
@@ -26,75 +59,21 @@ router.get('/', auth.authenticated(), async (ctx) => {
 });
 
 router.get('/:id', auth.authenticated(), async (ctx) => {
-	const user = await auth.methods.getUser(ctx);
+	const app = await getApp(ctx, +ctx.params.id);
 
-	if (user === null) {
-		ctx.response.status = 400;
-		ctx.response.body = {
-			error: 'USER_NOT_FOUND',
-			message: 'User was not found',
-		};
-		return;
-	}
-
-	const id = +ctx.params.id;
-	if (Number.isNaN(id)) {
-		ctx.response.status = 400;
-		ctx.response.body = {
-			error: 'ID_NAN',
-			message: 'App ID must be a number',
-		};
-		return;
-	}
-
-	const app = await App.getByID(id);
-
-	if (!app || app.ownerID !== user.id) {
-		ctx.response.status = 404;
-		ctx.response.body = {
-			error: 'APP_NOT_FOUND',
-			message: 'App was not found',
-		};
-		return;
-	}
-
-	ctx.response.body = app;
+	app && (ctx.response.body = app);
 });
 
 router.get('/:id/now', auth.authenticated(), async (ctx) => {
-	const user = await auth.methods.getUser(ctx);
+	const app = await getApp(ctx, +ctx.params.id);
 
-	if (user === null) {
-		ctx.response.status = 400;
-		ctx.response.body = {
-			error: 'USER_NOT_FOUND',
-			message: 'User was not found',
-		};
-		return;
-	}
+	app && (ctx.response.body = await analyzer.realtimeAudience(app.id));
+});
 
-	const id = +ctx.params.id;
-	if (Number.isNaN(id)) {
-		ctx.response.status = 400;
-		ctx.response.body = {
-			error: 'ID_NAN',
-			message: 'App ID must be a number',
-		};
-		return;
-	}
+router.get('/:id/today', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
 
-	const app = await App.getByID(id);
-
-	if (!app || app.ownerID !== user.id) {
-		ctx.response.status = 404;
-		ctx.response.body = {
-			error: 'APP_NOT_FOUND',
-			message: 'App was not found',
-		};
-		return;
-	}
-
-	ctx.response.body = await analyzer.realtimeAudience(id);
+	app && (ctx.response.body = await analyzer.todayAudience(app.id));
 });
 
 router.post('/', hasBody(), auth.authenticated(), async (ctx) => {

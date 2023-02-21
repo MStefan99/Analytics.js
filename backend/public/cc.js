@@ -1,6 +1,6 @@
 'use strict';
 
-const scriptLocation = new URL(import.meta.url);
+const scriptLocation = new URL(import.meta.url ?? document.currentScript.href);
 const serverURL = scriptLocation.host;
 const audienceKey = new URLSearchParams(scriptLocation.search).get('k');
 
