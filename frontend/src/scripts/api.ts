@@ -1,5 +1,5 @@
 import appState from './store';
-import type {User, NewUser, UpdateUser, Session, App} from './types';
+import type {User, NewUser, UpdateUser, Session, App, RealtimeAudience, DayAudience} from './types';
 
 type MessageResponse = {
 	code: string;
@@ -39,14 +39,14 @@ type RequestParams = {
 	query?: Record<string, string>;
 };
 
-function request<T>(path: string, params: RequestParams): Promise<T> {
+function request<T>(path: string, params?: RequestParams): Promise<T> {
 	return new Promise((resolve, reject) => {
 		if (!appState.backendURL) {
 			reject(notConfigured);
 			return;
 		}
 
-		if (params.auth && !appState.apiKey) {
+		if (params?.auth && !appState.apiKey) {
 			reject(notAuthenticated);
 			return;
 		}
@@ -61,16 +61,16 @@ function request<T>(path: string, params: RequestParams): Promise<T> {
 			query && Object.keys(query).length ? '?' + new URLSearchParams(query).toString() : '';
 
 		fetch(appState.backendURL + apiPrefix + path + queryString, {
-			method: params.method ?? 'GET',
+			method: params?.method ?? 'GET',
 			headers: {
-				...(!!params.auth && {
+				...(!!params?.auth && {
 					'API-Key': appState.apiKey
 				}),
-				...(params.method !== RequestMethod.GET && {
+				...(params?.method !== RequestMethod.GET && {
 					'Content-Type': 'application/json'
 				})
 			},
-			...(!!params.body && {body: JSON.stringify(params.body)})
+			...(!!params?.body && {body: JSON.stringify(params.body)})
 		})
 			.then((res) => {
 				if (res.ok) {
@@ -165,7 +165,10 @@ export const AppAPI = {
 	add: (name: string) =>
 		request<App>('/apps', {auth: true, method: RequestMethod.POST, body: {name}}),
 	getAll: () => request<App[]>('/apps', {auth: true}),
-	getByID: (id: number) => request<App>('/apps/' + id, {auth: true}),
+	getByID: (id: App['id']) => request<App>('/apps/' + id, {auth: true}),
+	getRealtimeAudience: (id: App['id']) =>
+		request<RealtimeAudience>('/apps/' + id + '/now', {auth: true}),
+	getTodayAudience: (id: App['id']) => request<DayAudience>('/apps/' + id + '/today', {auth: true}),
 	edit: (): null => null,
 	delete: (): null => null
 };
