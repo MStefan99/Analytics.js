@@ -19,6 +19,14 @@ create table hits
 	time       integer      not null
 );
 
+create table client_logs
+(
+	time    integer not null,
+	tag     text,
+	message text    not null,
+	level   integer not null
+);
+
 create table metrics
 (
 	time       integer not null,
@@ -32,9 +40,10 @@ create table metrics
 	disk_total integer
 );
 
-create table logs
+create table server_logs
 (
 	time    integer not null,
+	tag     text,
 	message text    not null,
 	level   integer not null
 );

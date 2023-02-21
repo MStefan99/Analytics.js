@@ -4,13 +4,20 @@ import authRouter from './routes/auth.ts';
 import sessionRouter from './routes/sessions.ts';
 import appRouter from './routes/apps.ts';
 import telemetryRouter from './routes/telemetry.ts';
+import audienceRouter from './routes/audience.ts';
 import { init } from './lib/init.ts';
 
 const port = 3001;
 
 const app = new Application();
 const apiRouter = new Router();
-const routers = [authRouter, sessionRouter, appRouter, telemetryRouter];
+const routers = [
+	authRouter,
+	sessionRouter,
+	appRouter,
+	telemetryRouter,
+	audienceRouter,
+];
 
 app.use(logger());
 app.use(cors());

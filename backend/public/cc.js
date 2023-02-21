@@ -4,8 +4,12 @@ const scriptLocation = new URL(import.meta.url);
 const serverURL = scriptLocation.host;
 const audienceKey = new URLSearchParams(scriptLocation.search).get('k');
 
-export function sendData(tag = null, data = null) {
-	return fetch('//' + serverURL + '/telemetry' + (tag ? '/tag' : '/hit'), {
+export function sendData(data = null, level = null, tag = null) {
+	if (!!data && !level) {
+		throw new Error('Level is required for logs');
+	}
+
+	return fetch('//' + serverURL + '/audience' + (data ? '/log' : '/hit'), {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -15,7 +19,7 @@ export function sendData(tag = null, data = null) {
 			ccs: localStorage.getItem('crash-course-session'),
 			referrer: document.referrer,
 			url: window.location.href,
-			...(tag && { tag, data }),
+			...(data && { data, level, tag }),
 		}),
 	})
 		.then((res) => res.json())
@@ -35,7 +39,7 @@ export function sendData(tag = null, data = null) {
 const cc = {};
 Object.defineProperty(cc, 'push', {
 	writable: false,
-	value: (options) => sendData(options.tag, options.data),
+	value: (options) => sendData(options.data),
 });
 window.cc = cc;
 sendData();
