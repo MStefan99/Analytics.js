@@ -33,7 +33,7 @@ router.post('/hit', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	if (!body.ccs) {
 		await db.query(
 			`insert into sessions(id, ip, ua, lang)
-                    values (?, ?, ?, ?)`,
+       values (?, ?, ?, ?)`,
 			[
 				sessionID,
 				ctx.request.ip,
@@ -54,7 +54,7 @@ router.post('/hit', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 
 	await db.query(
 		`insert into hits(session_id, url, referrer, time)
-                  values (?, ?, ?, ?)`,
+     values (?, ?, ?, ?)`,
 		[
 			sessionID,
 			body.url,
@@ -66,6 +66,72 @@ router.post('/hit', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	ctx.response.status = 201;
 	ctx.response.body = {
 		session: sessionID,
+	};
+});
+
+router.post('/metrics', auth.hasTelemetryKey(), async (ctx) => {
+	const app = await auth.methods.getAppByTelemetryKey(ctx);
+
+	if (!app) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'APP_NOT_FOUND',
+			message: 'App was not found',
+		};
+		return;
+	}
+
+	const body = await ctx.request.body({ type: 'json' }).value;
+	const db = await openDB(app.id);
+
+	db.query(
+		`insert into metrics(time, device, cpu, mem_free, mem_total, net_up, net_down, disk_free, disk_total)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		[
+			Date.now(),
+			body.device,
+			body.cpu,
+			body.memFree,
+			body.memTotal,
+			body.netUp,
+			body.netDown,
+			body.diskFree,
+			body.diskTotal,
+		],
+	);
+
+	ctx.response.status = 201;
+	ctx.response.body = {
+		message: body.message,
+		level: body.level,
+	};
+});
+
+router.post('/log', auth.hasTelemetryKey(), async (ctx) => {
+	const app = await auth.methods.getAppByTelemetryKey(ctx);
+
+	if (!app) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'APP_NOT_FOUND',
+			message: 'App was not found',
+		};
+		return;
+	}
+
+	const body = await ctx.request.body({ type: 'json' }).value;
+	const db = await openDB(app.id);
+
+	db.query(
+		`insert into logs(time, message, level)
+            VALUES (?, ?, ?)`,
+		[Date.now(), body.message, body.level],
+	);
+
+	ctx.response.status = 201;
+	ctx.response.body = {
+		message: body.message,
+		level: body.level,
 	};
 });
 

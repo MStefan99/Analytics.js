@@ -16,7 +16,7 @@ type AuthResult = {
 	key: string;
 };
 
-const apiPrefix = '/api';
+const apiPrefix = '';
 const notConfigured = {error: 'NOT_CONFIGURED', message: 'Not configured'} as ErrorResponse;
 const notAuthenticated = {
 	error: 'NOT_AUTHENTICATED',

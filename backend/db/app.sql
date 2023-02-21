@@ -34,9 +34,7 @@ create table metrics
 
 create table logs
 (
-	id      integer not null
-		constraint logs_pk
-			primary key autoincrement,
+	time    integer not null,
 	message text    not null,
 	level   integer not null
 );

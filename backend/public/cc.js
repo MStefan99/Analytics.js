@@ -1,41 +1,27 @@
 'use strict';
 
-(() => {
-	const scriptLocation = new URL(document.currentScript.src);
-	const params = new URLSearchParams(scriptLocation.search);
-	const cc = {};
+const scriptLocation = new URL(import.meta.url);
+const serverURL = scriptLocation.host;
+const audienceKey = new URLSearchParams(scriptLocation.search).get('k');
 
-	const serverURL = scriptLocation.host;
-	const websiteID = params.get('c');
-
-	function sendData(path, tag, data) {
-		return fetch('//' + serverURL + path, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				id: websiteID,
-				ajsSession: localStorage.getItem('ajsSession'),
-				tag: tag?.toString(),
-				referrer: document.referrer,
-				url: window.location.href,
-				data: data,
-			}),
-		});
-	}
-
-	Object.defineProperty(cc, 'push', {
-		writable: false,
-		value: (options) => sendData('/tag', options.tag, options.data),
-	});
-	window.cc = cc;
-
-	sendData('/hit')
+export function sendData(tag = null, data = null) {
+	return fetch('//' + serverURL + '/telemetry' + (tag ? '/tag' : '/hit'), {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Audience-Key': audienceKey,
+		},
+		body: JSON.stringify({
+			ccs: localStorage.getItem('crash-course-session'),
+			referrer: document.referrer,
+			url: window.location.href,
+			...(tag && { tag, data }),
+		}),
+	})
 		.then((res) => res.json())
-		.then((json) => {
-			if (json.session) {
-				localStorage.setItem('crash-course-session', json.session);
+		.then((data) => {
+			if (data.session) {
+				localStorage.setItem('crash-course-session', data.session);
 			}
 		})
 		.catch((err) => {
@@ -44,4 +30,12 @@
 				err,
 			);
 		});
-})();
+}
+
+const cc = {};
+Object.defineProperty(cc, 'push', {
+	writable: false,
+	value: (options) => sendData(options.tag, options.data),
+});
+window.cc = cc;
+sendData();

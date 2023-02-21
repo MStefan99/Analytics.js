@@ -9,9 +9,7 @@ import { init } from './lib/init.ts';
 const port = 3001;
 
 const app = new Application();
-const apiRouter = new Router({
-	prefix: '/api',
-});
+const apiRouter = new Router();
 const routers = [authRouter, sessionRouter, appRouter, telemetryRouter];
 
 app.use(logger());
@@ -47,6 +45,10 @@ apiRouter.get('/', (ctx) => {
 
 apiRouter.get('/options', (ctx) => {
 	ctx.response.body = {};
+});
+
+apiRouter.get('/cc', async (ctx) => {
+	await ctx.send({ root: './public', path: 'cc.js' });
 });
 
 app.use(apiRouter.routes());
