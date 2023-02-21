@@ -46,7 +46,7 @@ router.get('/stats/today/:websiteID', (req, res) => {
 		return;
 	}
 
-	analyzer.todayAudience(req.params.websiteID)
+	analyzer.dayAudience(req.params.websiteID)
 		.then((data) => res.json(data));
 });
 

@@ -30,3 +30,23 @@ export type App = {
 	telemetryKey: string;
 	ownerID: number;
 };
+
+export type RealtimeAudience = {
+	currentUsers: number;
+	pages: {[key: string]: number};
+	sessions: {[key: string]: number};
+	referrers: {[key: string]: number};
+};
+
+export type DayAudience = {
+	bounceRate: number;
+	avgDuration: number;
+	sessions: [
+		{
+			duration: number;
+			ua: string;
+			ip: string;
+			pages: {url: string; time: number}[];
+		}
+	];
+};

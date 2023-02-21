@@ -6,7 +6,7 @@ const realtimeLength = 60 * 1000;
 const sessionLength = 30 * 60 * 1000;
 
 export default {
-	todayAudience: async function (appID: number) {
+	dayAudience: async function (appID: number) {
 		const today = new Date();
 		today.setHours(0);
 		today.setMinutes(0);
@@ -17,7 +17,7 @@ export default {
 
 		let bounced = 0;
 		const sessions = new Array<
-			{ duration: number; time: number; pages: string[] }
+			{ duration: number; pages: { url: string; time: number }[] }
 		>();
 
 		const hits = await db.queryEntries<
@@ -43,8 +43,7 @@ export default {
 				duration: 0,
 				ua: hits[i].ua,
 				ip: hits[i].ip,
-				time: hits[i].time,
-				pages: [hits[i].url],
+				pages: [{ url: hits[i].url, time: hits[i].time }],
 			};
 
 			for (
@@ -57,7 +56,7 @@ export default {
 			) {
 				session.duration += hits[j].time -
 					hits[j - 1].time;
-				session.pages.push(hits[j].url);
+				session.pages.push({ url: hits[j].url, time: hits[j].time });
 				i = j;
 			}
 			sessions.push(session);
