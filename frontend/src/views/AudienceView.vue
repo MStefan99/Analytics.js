@@ -1,12 +1,6 @@
-extends layout
-
-block head
-	title= website.name + " overview | Crash Course"
-	link(rel="modulepreload" href="/js/overview.js")
-	link(rel="modulepreload" href="/js/jui.js")
-
-block main
-	h1= website.name + " audience"
+<template lang="pug">
+div(v-if="!!app")
+	h1 {{app.name}} audience
 	#overview
 		#realtime-audience.audience-card
 			h2 Realtime
@@ -14,9 +8,7 @@ block main
 			p#active-users.accent Loading...
 			svg#active-users-timeline-svg(viewBox="0 0 210 100" preserveAspectRatio="none")
 				rect#top-line(width="210" height="1")
-				// - for (let i = 0; i < 30; ++i) {
-				// 	rect.sessions-bar-underline(x=i * 7 y=99 width=6 height=1)
-				// - }
+				rect.sessions-bar-underline(v-for="i in 30" :key="i" :x="i * 7" y=99 width=6 height=1)
 			b Most popular pages
 			table
 				thead
@@ -24,7 +16,7 @@ block main
 						td Page
 						td Views
 				tbody#pages-table
-			a.bold(href="/realtime/" + website.id) Full report
+			//a.bold(href="/realtime/" + website.id) Full report
 		#today-audience.audience-card
 			h2 Audience today
 			b Users
@@ -35,6 +27,19 @@ block main
 			p#bounce-rate.accent Loading...
 			b Average session
 			p#session-duration.accent Loading...
-			a.bold(href="/today/" + website.id) Full report
+			//a.bold(href="/today/" + website.id) Full report
+</template>
 
-	script(async type="module" src="/js/overview.js")
+<script setup lang="ts">
+import {ref} from 'vue';
+import type {App} from '../scripts/types';
+import Api from '../scripts/api';
+import {useRoute} from 'vue-router';
+
+const app = ref<App | null>(null);
+const route = useRoute();
+
+Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
+</script>
+
+<style></style>

@@ -22,3 +22,11 @@ export type Session = {
 	ua: string;
 	time: number;
 };
+
+export type App = {
+	id: number;
+	name: string;
+	audienceKey: string;
+	telemetryKey: string;
+	ownerID: number;
+};

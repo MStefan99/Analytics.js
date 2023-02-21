@@ -1,5 +1,5 @@
 import appState from './store';
-import type {User, NewUser, UpdateUser, Session} from './types';
+import type {User, NewUser, UpdateUser, Session, App} from './types';
 
 type MessageResponse = {
 	code: string;
@@ -161,8 +161,18 @@ export const SessionAPI = {
 		booleanify(request<MessageResponse>('/sessions', {auth: true, method: RequestMethod.DELETE}))
 };
 
+export const AppAPI = {
+	add: (name: string) =>
+		request<App>('/apps', {auth: true, method: RequestMethod.POST, body: {name}}),
+	getAll: () => request<App[]>('/apps', {auth: true}),
+	getByID: (id: number) => request<App>('/apps/' + id, {auth: true}),
+	edit: (): null => null,
+	delete: (): null => null
+};
+
 export default {
 	connection: ConnectionAPI,
 	sessions: SessionAPI,
-	auth: AuthAPI
+	auth: AuthAPI,
+	apps: AppAPI
 };

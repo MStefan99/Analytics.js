@@ -1,0 +1,38 @@
+<template lang="pug">
+#realtime-details
+//	h1= website.name + " realtime audience"
+	svg#realtime-users-details-svg(viewBox="0 0 700 300")
+		rect#border(width="700" height="300")
+	div
+		h2 Active users right now
+		p#active-users.accent Loading...
+	#realtime-metrics
+		div
+			h2 Top Active pages
+			table
+				thead
+					tr
+						td Page
+						td Views
+				tbody#top-pages
+		div
+			h2 Top referrals
+			table
+				thead
+					tr
+						td Source
+						td Count
+				tbody#top-referrals
+		div
+			h2 Top Locations
+			table
+				thead
+					tr
+						td Location
+						td Count
+				tbody#top-locations
+</template>
+
+<script setup lang="ts"></script>
+
+<style scoped></style>

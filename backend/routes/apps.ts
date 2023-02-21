@@ -24,6 +24,42 @@ router.get('/', auth.authenticated(), async (ctx) => {
 	ctx.response.body = await App.getByUser(user);
 });
 
+router.get('/:id', auth.authenticated(), async (ctx) => {
+	const user = await auth.methods.getUser(ctx);
+
+	if (user === null) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'USER_NOT_FOUND',
+			message: 'User was not found',
+		};
+		return;
+	}
+
+	const id = +ctx.params.id;
+	if (Number.isNaN(id)) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'ID_NAN',
+			message: 'App ID must be a number',
+		};
+		return;
+	}
+
+	const app = await App.getByID(id);
+
+	if (!app || app.ownerID !== user.id) {
+		ctx.response.status = 404;
+		ctx.response.body = {
+			error: 'APP_NOT_FOUND',
+			message: 'App was not found',
+		};
+		return;
+	}
+
+	ctx.response.body = app;
+});
+
 router.post('/', hasBody(), auth.authenticated(), async (ctx) => {
 	const user = await auth.methods.getUser(ctx);
 
