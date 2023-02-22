@@ -22,13 +22,13 @@ import {computed, ref} from 'vue';
 
 const props = defineProps<{data: {[key: string]: number}}>();
 const sessionLength = 60 * 1000;
-const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 29;
+const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 30;
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 ChartJS.defaults.color = '#ffffff';
 
 const labels = [];
-for (let i = 0; i < 29; ++i) {
+for (let i = 0; i <= 30; ++i) {
 	labels.push(30 - i + ' min');
 }
 
@@ -41,8 +41,9 @@ const chartData = ref({
 			data: computed(() => {
 				const data = new Array(30);
 
-				for (let i = 0; i < 30; ++i) {
+				for (let i = 0; i <= 30; ++i) {
 					data[i] = props.data[startTime + sessionLength * i] ?? 0;
+					console.log(i, data[i]);
 				}
 
 				return data;
