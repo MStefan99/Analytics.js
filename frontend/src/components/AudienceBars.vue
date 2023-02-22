@@ -43,7 +43,6 @@ const chartData = ref({
 
 				for (let i = 0; i <= 30; ++i) {
 					data[i] = props.data[startTime + sessionLength * i] ?? 0;
-					console.log(i, data[i]);
 				}
 
 				return data;

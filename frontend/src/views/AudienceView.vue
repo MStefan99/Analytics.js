@@ -7,12 +7,17 @@ div(v-if="!!app")
 			p Active users
 			p#active-users.accent {{realtimeAudience.currentUsers}}
 			AudienceBars(:data="realtimeAudience.sessions")
-			b Most popular pages
+			p Most popular pages
 			table
 				thead
 					tr
 						td Page
 						td Views
+				tbody
+					tr(v-for="page of pages" :key="page.url")
+						td
+							a(:href="page.url") {{page.url}}
+						td {{page.hits}}
 				tbody#pages-table
 			//a.bold(href="/realtime/" + website.id) Full report
 		#today-audience.audience-card(v-if="todayAudience")
@@ -24,12 +29,12 @@ div(v-if="!!app")
 			b Bounce rate
 			p#bounce-rate.accent {{Math.round(todayAudience.bounceRate * 100)}}%
 			b Average session
-			p#session-duration.accent {{Math.round(todayAudience.avgDuration / 1000)}}s
+			p#session-duration.accent {{avgSession(todayAudience.avgDuration)}}
 			//a.bold(href="/today/" + website.id) Full report
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {computed, ref} from 'vue';
 import type {App, RealtimeAudience, DayAudience} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRoute} from 'vue-router';
@@ -43,6 +48,21 @@ const route = useRoute();
 Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
 Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
 Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
+
+const pages = computed<{url: string; hits: number}[]>(() =>
+	Object.keys(realtimeAudience.value.pages)
+		.sort((k1, k2) => realtimeAudience.value.pages[k2] - realtimeAudience.value.pages[k1])
+		.slice(0, 5)
+		.map((k) => {
+			return {url: k, hits: realtimeAudience.value.pages[k]};
+		})
+);
+
+setTimeout(() => console.log(pages.value), 100);
+
+function avgSession(seconds: number): string {
+	return Math.floor((seconds / 60 / 1000) % 60) + 'm ' + Math.floor((seconds / 1000) % 60) + 's';
+}
 </script>
 
 <style></style>
