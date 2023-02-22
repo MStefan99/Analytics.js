@@ -9,7 +9,7 @@ export function sendData(data = null, level = null, tag = null) {
 		throw new Error('Level is required for logs');
 	}
 
-	return fetch('//' + serverURL + '/audience' + (data ? '/log' : '/hit'), {
+	return fetch('//' + serverURL + '/audience' + (data ? '/logs' : '/hits'), {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

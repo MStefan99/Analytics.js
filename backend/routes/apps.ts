@@ -76,6 +76,12 @@ router.get('/:id/today', auth.authenticated(), async (ctx) => {
 	app && (ctx.response.body = await analyzer.dayAudience(app.id));
 });
 
+router.get('/:id/overview', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	app && (ctx.response.body = await analyzer.metricsOverview(app.id));
+});
+
 router.post('/', hasBody(), auth.authenticated(), async (ctx) => {
 	const user = await auth.methods.getUser(ctx);
 

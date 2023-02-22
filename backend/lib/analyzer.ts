@@ -2,13 +2,147 @@
 
 import openDB from './db.ts';
 
-const realtimeLength = 1000 * 60;
+const divisionLength = 1000 * 60;
 const sessionLength = 1000 * 60 * 30;
 
 type Page = { url: string; referrer?: string; time: number };
 type Session = { duration: number; ua: string; ip: string; pages: Page[] };
 
 export default {
+	metricsOverview: async function (appID: number) {
+		const sessions: { [key: number]: number } = {};
+		const clientLogs: { [key: number]: { [key: number]: number } } = {};
+		const serverLogs: { [key: number]: { [key: number]: number } } = {};
+
+		const startTime = Date.now() - sessionLength;
+
+		const db = await openDB(appID);
+		const hits = await db.queryEntries<
+			{
+				url: string;
+				referrer: string;
+				time: number;
+			}
+		>(
+			`select url, referrer, time
+       from hits
+       where hits.time > ?`,
+			[startTime],
+		);
+
+		const serverRows = await db.queryEntries<
+			{ time: number; level: number }
+		>(
+			`
+        select time, level
+        from server_logs
+        where time > ?`,
+			[startTime],
+		);
+		const clientRows = await db.queryEntries<
+			{ time: number; level: number }
+		>(
+			`
+        select time, level
+        from client_logs
+        where time > ?`,
+			[startTime],
+		);
+
+		for (const hit of hits) {
+			const timeSlot = hit.time -
+				(hit.time % divisionLength);
+
+			sessions[timeSlot] = 1 +
+				(sessions[timeSlot] || 0);
+		}
+
+		for (const row of serverRows) {
+			const timeSlot = row.time -
+				(row.time % divisionLength);
+
+			if (serverLogs[row.level]) {
+				serverLogs[row.level][timeSlot] = 1 +
+					(serverLogs[row.level][timeSlot] ?? 0);
+			} else {
+				serverLogs[row.level] = { [timeSlot]: 1 };
+			}
+		}
+
+		for (const row of clientRows) {
+			const timeSlot = row.time -
+				(row.time % divisionLength);
+
+			if (clientLogs[row.level]) {
+				clientLogs[row.level][timeSlot] = 1 +
+					(clientLogs[row.level][timeSlot] ?? 0);
+			} else {
+				clientLogs[row.level] = { [timeSlot]: 1 };
+			}
+		}
+
+		return {
+			sessions,
+			clientLogs,
+			serverLogs,
+		};
+	},
+
+	realtimeAudience: async function (appID: number) {
+		const currentUsers = new Set<string>();
+		const pages: { [key: string]: number } = {};
+		const sessions: { [key: number]: number } = {};
+		const referrers: { [key: string]: number } = {};
+
+		const db = await openDB(appID);
+		const hits = await db.queryEntries<
+			{
+				id: string;
+				url: string;
+				referrer: string;
+				time: number;
+				ip: string;
+				ua: string;
+				lang: string;
+			}
+		>(
+			`select id, url, referrer, time, ip, ua, lang
+       from hits
+                join sessions on session_id = sessions.id
+       where hits.time > ?`,
+			[Date.now() - sessionLength],
+		);
+
+		for (const hit of hits) {
+			if (
+				Date.now() - hit.time < divisionLength &&
+				!currentUsers.has(hit.id)
+			) {
+				currentUsers.add(hit.id);
+			}
+
+			const sessionTime = hit.time -
+				(hit.time % divisionLength);
+
+			pages[hit.url] = 1 +
+				(pages[hit.url] || 0);
+			sessions[sessionTime] = 1 +
+				(sessions[sessionTime] || 0);
+
+			if (hit.referrer !== undefined) {
+				referrers[hit.referrer] = 1 +
+					(referrers[hit.referrer] || 0);
+			}
+		}
+
+		return {
+			currentUsers: currentUsers.size,
+			pages,
+			sessions,
+			referrers,
+		};
+	},
+
 	dayAudience: async function (appID: number) {
 		const today = new Date();
 		today.setHours(0);
@@ -103,61 +237,6 @@ export default {
 			),
 			users: users.size,
 			sessions,
-		};
-	},
-
-	realtimeAudience: async function (appID: number) {
-		const currentUsers = new Set<string>();
-		const pages: { [key: string]: number } = {};
-		const sessions: { [key: number]: number } = {};
-		const referrers: { [key: string]: number } = {};
-
-		const db = await openDB(appID);
-		const hits = await db.queryEntries<
-			{
-				id: string;
-				url: string;
-				referrer: string;
-				time: number;
-				ip: string;
-				ua: string;
-				lang: string;
-			}
-		>(
-			`select id, url, referrer, time, ip, ua, lang
-       from hits
-                join sessions on session_id = sessions.id
-       where hits.time > ?`,
-			[Date.now() - sessionLength],
-		);
-
-		for (const hit of hits) {
-			if (
-				Date.now() - hit.time < realtimeLength &&
-				!currentUsers.has(hit.id)
-			) {
-				currentUsers.add(hit.id);
-			}
-
-			const sessionTime = hit.time -
-				(hit.time % realtimeLength);
-
-			pages[hit.url] = 1 +
-				(pages[hit.url] || 0);
-			sessions[sessionTime] = 1 +
-				(sessions[sessionTime] || 0);
-
-			if (hit.referrer !== undefined) {
-				referrers[hit.referrer] = 1 +
-					(referrers[hit.referrer] || 0);
-			}
-		}
-
-		return {
-			currentUsers: currentUsers.size,
-			pages,
-			sessions,
-			referrers,
 		};
 	},
 };

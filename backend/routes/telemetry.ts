@@ -45,7 +45,7 @@ router.post('/metrics', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 	};
 });
 
-router.post('/log', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
+router.post('/logs', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 	const app = await auth.methods.getAppByTelemetryKey(ctx);
 
 	if (!app) {

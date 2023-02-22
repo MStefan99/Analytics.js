@@ -14,7 +14,7 @@ const router = new Router({
 	prefix: '/audience',
 });
 
-router.post('/hit', hasBody(), auth.hasAudienceKey(), async (ctx) => {
+router.post('/hits', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	const app = await auth.methods.getAppByAudienceKey(ctx);
 
 	if (!app) {
@@ -83,7 +83,7 @@ router.post('/hit', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	};
 });
 
-router.post('/log', hasBody(), auth.hasAudienceKey(), async (ctx) => {
+router.post('/logs', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	const app = await auth.methods.getAppByAudienceKey(ctx);
 
 	if (!app) {

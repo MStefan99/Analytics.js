@@ -19,7 +19,7 @@ div(v-if="!!app")
 							a(:href="page.url") {{page.url}}
 						td {{page.hits}}
 				tbody#pages-table
-			//a.bold(href="/realtime/" + website.id) Full report
+			router-link.bold(:to="{name: 'realtime', params: {id: $route.params.id}}") Full report
 		#today-audience.audience-card(v-if="todayAudience")
 			h2 Audience today
 			b Users
@@ -57,8 +57,6 @@ const pages = computed<{url: string; hits: number}[]>(() =>
 			return {url: k, hits: realtimeAudience.value.pages[k]};
 		})
 );
-
-setTimeout(() => console.log(pages.value), 100);
 
 function avgSession(seconds: number): string {
 	return Math.floor((seconds / 60 / 1000) % 60) + 'm ' + Math.floor((seconds / 1000) % 60) + 's';

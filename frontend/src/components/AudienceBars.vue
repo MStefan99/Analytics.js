@@ -3,7 +3,6 @@ Bar(:data="chartData")
 </template>
 
 <script setup lang="ts">
-//eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import {Bar} from 'vue-chartjs';
 
@@ -15,7 +14,6 @@ import {
 	BarElement,
 	CategoryScale,
 	LinearScale
-	//eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	//@ts-ignore
 } from 'chart.js';
 import {computed, ref} from 'vue';
