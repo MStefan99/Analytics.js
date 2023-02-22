@@ -17,8 +17,8 @@ export async function openDB(name?: string | number): Promise<DB> {
 		await db.execute('pragma foreign_keys = on');
 
 		setTimeout(() => {
-			db.close();
 			dbs.delete(nameString);
+			db.close();
 		}, dbTimeout);
 
 		dbs.set(nameString, db);

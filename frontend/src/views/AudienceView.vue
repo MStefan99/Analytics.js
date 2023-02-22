@@ -6,9 +6,7 @@ div(v-if="!!app")
 			h2 Audience now
 			p Active users
 			p#active-users.accent {{realtimeAudience.currentUsers}}
-			svg#active-users-timeline-svg(viewBox="0 0 210 100" preserveAspectRatio="none")
-				rect#top-line(width="210" height="1")
-				rect.sessions-bar-underline(v-for="i in 30" :key="i" :x="i * 7" y=99 width=6 height=1)
+			AudienceBars(:data="realtimeAudience.sessions")
 			b Most popular pages
 			table
 				thead
@@ -35,6 +33,7 @@ import {ref} from 'vue';
 import type {App, RealtimeAudience, DayAudience} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRoute} from 'vue-router';
+import AudienceBars from '../components/AudienceBars.vue';
 
 const app = ref<App | null>(null);
 const realtimeAudience = ref<RealtimeAudience | null>(null);
