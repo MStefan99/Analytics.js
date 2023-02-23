@@ -44,14 +44,10 @@ const chartData = computed(() => {
 	const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 30;
 
 	for (const series of props.data) {
-		if (!series.data) {
-			continue;
-		}
-
 		const dataset = {label: series.label, backgroundColor: series.color, data: [] as number[]};
 
 		for (let i = 0; i <= 30; ++i) {
-			dataset.data[i] = series.data[startTime + sessionLength * i] ?? 0;
+			dataset.data[i] = series.data?.[startTime + sessionLength * i] ?? 0;
 		}
 
 		datasets.push(dataset);
