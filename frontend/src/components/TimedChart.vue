@@ -20,7 +20,7 @@ import {computed, ref} from 'vue';
 
 const props = defineProps<{
 	data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
-	color: string | undefined;
+	color?: string;
 }>();
 const sessionLength = 60 * 1000;
 

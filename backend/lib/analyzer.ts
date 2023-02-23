@@ -13,18 +13,20 @@ export default {
 		const sessions: { [key: number]: number } = {};
 		const clientLogs: { [key: number]: { [key: number]: number } } = {};
 		const serverLogs: { [key: number]: { [key: number]: number } } = {};
+		const currentUsers = new Set<string>();
 
 		const startTime = Date.now() - sessionLength;
 
 		const db = await openDB(appID);
 		const hits = await db.queryEntries<
 			{
+				id: string;
 				url: string;
 				referrer: string;
 				time: number;
 			}
 		>(
-			`select url, referrer, time
+			`select session_id as id, url, referrer, time
        from hits
        where hits.time > ?`,
 			[startTime],
@@ -34,24 +36,31 @@ export default {
 			{ time: number; level: number }
 		>(
 			`
-        select time, level
-        from server_logs
-        where time > ?`,
+          select time, level
+          from server_logs
+          where time > ?`,
 			[startTime],
 		);
 		const clientRows = await db.queryEntries<
 			{ time: number; level: number }
 		>(
 			`
-        select time, level
-        from client_logs
-        where time > ?`,
+          select time, level
+          from client_logs
+          where time > ?`,
 			[startTime],
 		);
 
 		for (const hit of hits) {
 			const timeSlot = hit.time -
 				(hit.time % divisionLength);
+
+			if (
+				Date.now() - hit.time < divisionLength &&
+				!currentUsers.has(hit.id)
+			) {
+				currentUsers.add(hit.id);
+			}
 
 			sessions[timeSlot] = 1 +
 				(sessions[timeSlot] || 0);
@@ -82,6 +91,7 @@ export default {
 		}
 
 		return {
+			currentUsers: currentUsers.size,
 			sessions,
 			clientLogs,
 			serverLogs,

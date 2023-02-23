@@ -32,6 +32,7 @@ export type App = {
 };
 
 export type AppOverview = {
+	currentUsers: number;
 	sessions: {[key: number]: number};
 	clientLogs: {[key: number]: {[key: number]: number}};
 	serverLogs: {[key: number]: {[key: number]: number}};
