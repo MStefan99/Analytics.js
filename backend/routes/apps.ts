@@ -64,6 +64,12 @@ router.get('/:id', auth.authenticated(), async (ctx) => {
 	app && (ctx.response.body = app);
 });
 
+router.get('/:id/overview', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	app && (ctx.response.body = await analyzer.metricsOverview(app.id));
+});
+
 router.get('/:id/now', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 
@@ -74,12 +80,6 @@ router.get('/:id/today', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 
 	app && (ctx.response.body = await analyzer.dayAudience(app.id));
-});
-
-router.get('/:id/overview', auth.authenticated(), async (ctx) => {
-	const app = await getApp(ctx, +ctx.params.id);
-
-	app && (ctx.response.body = await analyzer.metricsOverview(app.id));
 });
 
 router.post('/', hasBody(), auth.authenticated(), async (ctx) => {

@@ -1,5 +1,14 @@
 import appState from './store';
-import type {User, NewUser, UpdateUser, Session, App, RealtimeAudience, DayAudience} from './types';
+import type {
+	User,
+	NewUser,
+	UpdateUser,
+	Session,
+	App,
+	RealtimeAudience,
+	DayAudience,
+	AppOverview
+} from './types';
 
 type MessageResponse = {
 	code: string;
@@ -166,6 +175,7 @@ export const AppAPI = {
 		request<App>('/apps', {auth: true, method: RequestMethod.POST, body: {name}}),
 	getAll: () => request<App[]>('/apps', {auth: true}),
 	getByID: (id: App['id']) => request<App>('/apps/' + id, {auth: true}),
+	getOverview: (id: App['id']) => request<AppOverview>('/apps/' + id + '/overview', {auth: true}),
 	getRealtimeAudience: (id: App['id']) =>
 		request<RealtimeAudience>('/apps/' + id + '/now', {auth: true}),
 	getTodayAudience: (id: App['id']) => request<DayAudience>('/apps/' + id + '/today', {auth: true}),

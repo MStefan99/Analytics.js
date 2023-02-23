@@ -31,6 +31,12 @@ export type App = {
 	ownerID: number;
 };
 
+export type AppOverview = {
+	sessions: {[key: number]: number};
+	clientLogs: {[key: number]: {[key: number]: number}};
+	serverLogs: {[key: number]: {[key: number]: number}};
+};
+
 export type RealtimeAudience = {
 	currentUsers: number;
 	pages: {[key: string]: number};
