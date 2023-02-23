@@ -6,7 +6,7 @@ div(v-if="!!app")
 			h2 Audience now
 			p Active users
 			p#active-users.accent {{realtimeAudience.currentUsers}}
-			AudienceBars(:data="realtimeAudience.sessions")
+			TimedChart(:data="chartData")
 			p Most popular pages
 			table
 				thead
@@ -38,15 +38,27 @@ import {computed, ref} from 'vue';
 import type {App, RealtimeAudience, DayAudience} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRoute} from 'vue-router';
-import AudienceBars from '../components/AudienceBars.vue';
+import TimedChart from '../components/TimedChart.vue';
 
 const app = ref<App | null>(null);
 const realtimeAudience = ref<RealtimeAudience | null>(null);
 const todayAudience = ref<DayAudience | null>(null);
 const route = useRoute();
 
+const chartData = computed(() => [
+	{
+		label: 'Page views',
+		color: '#44c40c',
+		data: realtimeAudience.value.sessions
+	}
+]);
+
 Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
 Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
+setInterval(
+	() => Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a)),
+	1000 * 30
+);
 Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
 
 const pages = computed<{url: string; hits: number}[]>(() =>
