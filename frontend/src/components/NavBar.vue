@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-	nav.text-accent.font-semibold
+	nav.text-white.font-semibold
 		span(v-if="appState.user")
 			RouterLink.clickable(:to="{name: 'apps'}") Apps
 			RouterLink.clickable(:to="{name: 'settings'}") Settings

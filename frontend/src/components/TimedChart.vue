@@ -1,5 +1,6 @@
 <template lang="pug">
-Bar(:data="chartData" :options="options")
+.chart.relative
+	Bar(:data="chartData" :options="options")
 </template>
 
 <script setup lang="ts">
@@ -28,6 +29,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 const options = ref({
 	responsive: true,
+	maintainAspectRatio: false,
 	scales: {
 		x: {stacked: true, ticks: {color: props.color ?? '#000000'}},
 		y: {stacked: true, ticks: {color: props.color ?? '#000000'}}

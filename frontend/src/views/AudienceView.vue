@@ -1,22 +1,24 @@
 <template lang="pug">
-div(v-if="!!app")
+#overview(v-if="!!app")
 	h1 {{app.name}} audience
-	#overview
-		#overview.audience-card.max-w-sm(v-if="overview")
-			h2 Overview
-			p Active users
-			span {{overview.currentUsers}}
-			p Page views
+	.flex.flex-wrap.justify-center(v-if="overview")
+		.card
+			h2 Active users
+			span.large {{overview.currentUsers}}
+		.card
+			h2 Page views
 			TimedChart(:data="viewsChart")
-			router-link(:to="{name: 'realtime', params: {id: $route.params.id}}") Audience
-			p Server logs
+			RouterLink(:to="{name: 'realtime', params: {id: $route.params.id}}") Audience
+		.card
+			h2 Server logs
 			TimedChart(:data="serverChart")
-			p Client logs
+		.card
+			h2 Client logs
 			TimedChart(:data="clientChart")
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import {computed, onUnmounted, ref} from 'vue';
 import type {App, AppOverview} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRoute} from 'vue-router';
@@ -80,10 +82,12 @@ const viewsChart = computed(() => [
 
 Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
 Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o));
-setInterval(
+const interval = setInterval(
 	() => Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o)),
 	1000 * 30
 );
+
+onUnmounted(() => clearInterval(interval));
 </script>
 
 <style></style>

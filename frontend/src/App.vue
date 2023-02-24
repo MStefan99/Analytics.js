@@ -1,5 +1,5 @@
 <template lang="pug">
-header.no-print
+header.no-print.shadow-md
 	NavBar
 
 main.grow

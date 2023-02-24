@@ -1,15 +1,15 @@
 <template lang="pug">
-h1 Your websites
-.d-flex
-	p.new-website-btn.btn.btn-outline-success Add website
-
-#apps-container(v-if="apps.length")
-	router-link(v-for="app in apps" :key="app.id" :to="{name: 'audience', params: {id: app.id}}") {{app.name}}
-div(v-else)
-	.jumbotron
-		h2 Seems like here are no websites yet!
-		p Add a website to start
-		p.new-website-btn.btn.btn-success Add website
+#apps
+	#apps-container.card(v-if="apps.length")
+		h1.text-2xl.font-bold.mb-4 Your apps
+		RouterLink(v-for="app in apps" :key="app.id" :to="{name: 'audience', params: {id: app.id}}") {{app.name}}
+		.d-flex
+			button.mt-4 Add an app
+	div(v-else)
+		.jumbotron
+			h2 Seems like here are no apps yet!
+			p Add an app to start
+			p.new-website-btn.btn.btn-success Add an app
 </template>
 
 <script setup lang="ts">

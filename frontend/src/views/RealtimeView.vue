@@ -1,33 +1,34 @@
 <template lang="pug">
-#overview
-	#realtime-audience.audience-card(v-if="realtimeAudience")
-		h2 Audience now
-		TimedChart(:data="viewsChart" color="#ffffff")
-		p Active users
-		p#active-users.accent {{realtimeAudience.currentUsers}}
-		p Most popular pages
-		table
-			thead
-				tr
-					td Page
-					td Views
-			tbody
-				tr(v-for="page of pages" :key="page.url")
-					td
-						a(:href="page.url") {{page.url}}
-					td {{page.hits}}
-			tbody#pages-table
-		router-link.bold(:to="{name: 'realtime', params: {id: $route.params.id}}") Full report
-	#today-audience.audience-card(v-if="todayAudience")
-		h2 Audience today
-		b Users
-		p#today-users.accent {{todayAudience.users}}
-		b Sessions
-		p#today-sessions.accent {{todayAudience.sessions?.length}}
-		b Bounce rate
-		p#bounce-rate.accent {{Math.round(todayAudience.bounceRate * 100)}}%
-		b Average session
-		p#session-duration.accent {{avgSession(todayAudience.avgDuration)}}
+#audience(v-if="!!app")
+	h1 {{app.name}} audience
+	.flex.flex-wrap.justify-center
+		.card.accent(v-if="realtimeAudience")
+			h2 Audience now
+			TimedChart(:data="viewsChart" color="#ffffff")
+			h3 Active users
+			p#active-users.accent {{realtimeAudience.currentUsers}}
+			h3 Most popular pages
+			table
+				thead
+					tr
+						td Page
+						td Views
+				tbody
+					tr(v-for="page of pages" :key="page.url")
+						td
+							a(:href="page.url") {{page.url}}
+						td {{page.hits}}
+			RouterLink.bold(:to="{name: 'realtime', params: {id: $route.params.id}}") Full report
+		.card(v-if="todayAudience")
+			h2 Audience today
+			p Users
+			p#today-users.large {{todayAudience.users}}
+			p Sessions
+			p#today-sessions.large {{todayAudience.sessions?.length}}
+			p Bounce rate
+			p#bounce-rate.large {{Math.round(todayAudience.bounceRate * 100)}}%
+			p Average session
+			p#session-duration.large {{avgSession(todayAudience.avgDuration)}}
 		//a.bold(href="/today/" + website.id) Full report
 		//div
 			h2 Top referrals
@@ -48,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import {computed, onUnmounted, ref} from 'vue';
 import {useRoute} from 'vue-router';
 
 import Api from '../scripts/api';
@@ -70,7 +71,7 @@ const viewsChart = computed(() => [
 
 Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
 Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
-setInterval(
+const interval = setInterval(
 	() => Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a)),
 	1000 * 30
 );
@@ -88,6 +89,8 @@ const pages = computed<{url: string; hits: number}[]>(() =>
 function avgSession(seconds: number): string {
 	return Math.floor((seconds / 60 / 1000) % 60) + 'm ' + Math.floor((seconds / 1000) % 60) + 's';
 }
+
+onUnmounted(() => clearInterval(interval));
 </script>
 
 <style scoped></style>
