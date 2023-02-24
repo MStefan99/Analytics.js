@@ -1,93 +1,99 @@
 <template lang="pug">
-#overview(v-if="!!app")
+#audience(v-if="!!app")
 	h1 {{app.name}} audience
-	.flex.flex-wrap.justify-center(v-if="overview")
+	.row
+		.card.accent(v-if="realtimeAudience")
+			h2 Audience now
+			TimedChart(:data="viewsChart" color="#ffffff")
+			h3 Active users
+			p#active-users.large {{realtimeAudience.currentUsers}}
+		.card(v-if="todayAudience")
+			h2 Audience today
+			p Users
+			p#today-users.large {{todayAudience.users}}
+			p Sessions
+			p#today-sessions.large {{todayAudience.sessions?.length}}
+			p Bounce rate
+			p#bounce-rate.large {{Math.round(todayAudience.bounceRate * 100)}}%
+			p Average session
+			p#session-duration.large {{avgSession(todayAudience.avgDuration)}}
 		.card
-			h2 Active users
-			span.large {{overview.currentUsers}}
-		.card
-			h2 Page views
-			TimedChart(:data="viewsChart")
-			RouterLink(:to="{name: 'realtime', params: {id: $route.params.id}}") Audience
-		.card
-			h2 Server logs
-			TimedChart(:data="serverChart")
-		.card
-			h2 Client logs
-			TimedChart(:data="clientChart")
+			h2 Traffic
+			h3 Most popular pages
+			table(v-if="pages")
+				thead
+					tr
+						td Page
+						td Views
+				tbody
+					tr(v-for="page of pages" :key="page.url")
+						td
+							a.underline(:href="page.url") {{page.url}}
+						td {{page.hits}}
+			h3 Top referrals
+			table(v-if="referrers")
+				thead
+					tr
+						td Source
+						td Count
+				tbody
+					tr(v-for="referrer of referrers" :key="referrer.url")
+						td
+							a.underline(:href="referrer.url") {{referrer.url}}
+						td {{referrer.count}}
 </template>
 
 <script setup lang="ts">
 import {computed, onUnmounted, ref} from 'vue';
-import type {App, AppOverview} from '../scripts/types';
-import Api from '../scripts/api';
 import {useRoute} from 'vue-router';
+
+import Api from '../scripts/api';
+import type {App, DayAudience, RealtimeAudience} from '../scripts/types';
 import TimedChart from '../components/TimedChart.vue';
 
-const app = ref<App | null>(null);
-const overview = ref<AppOverview | null>(null);
 const route = useRoute();
+const app = ref<App | null>(null);
+const realtimeAudience = ref<RealtimeAudience | null>(null);
+const todayAudience = ref<DayAudience | null>(null);
 
-const serverChart = computed(() => [
-	{
-		label: 'Debug logs',
-		color: '#0967c5',
-		data: overview.value.serverLogs['0']
-	},
-	{
-		label: 'Info logs',
-		color: '#44c40c',
-		data: overview.value.serverLogs['1']
-	},
-	{
-		label: 'Warnings',
-		color: '#ef8105',
-		data: overview.value.serverLogs['2']
-	},
-	{
-		label: 'Errors',
-		color: '#f10962',
-		data: overview.value.serverLogs['3']
-	}
-]);
-const clientChart = computed(() => [
-	{
-		label: 'Debug logs',
-		color: '#0967c5',
-		data: overview.value.clientLogs['0']
-	},
-	{
-		label: 'Info logs',
-		color: '#44c40c',
-		data: overview.value.clientLogs['1']
-	},
-	{
-		label: 'Warnings',
-		color: '#ef8105',
-		data: overview.value.clientLogs['2']
-	},
-	{
-		label: 'Errors',
-		color: '#f10962',
-		data: overview.value.clientLogs['3']
-	}
-]);
 const viewsChart = computed(() => [
 	{
 		label: 'Page views',
 		color: '#44c40c',
-		data: overview.value.sessions
+		data: realtimeAudience.value.sessions
 	}
 ]);
 
 Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
-Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o));
+Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
 const interval = setInterval(
-	() => Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o)),
+	() => Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a)),
 	1000 * 30
 );
+Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
+
+const pages = computed<{url: string; hits: number}[]>(() =>
+	Object.keys(realtimeAudience.value?.pages ?? {})
+		.sort((k1, k2) => realtimeAudience.value.pages[k2] - realtimeAudience.value.pages[k1])
+		.slice(0, 5)
+		.map((k) => {
+			return {url: k, hits: realtimeAudience.value.pages[k]};
+		})
+);
+const referrers = computed<{url: string; count: number}[]>(() =>
+	Object.keys(realtimeAudience.value?.referrers ?? {})
+		.sort((k1, k2) => realtimeAudience.value.referrers[k2] - realtimeAudience.value.referrers[k1])
+		.slice(0, 5)
+		.map((k) => {
+			return {url: k, count: realtimeAudience.value.referrers[k]};
+		})
+);
+
+function avgSession(seconds: number): string {
+	return Math.floor((seconds / 60 / 1000) % 60) + 'm ' + Math.floor((seconds / 1000) % 60) + 's';
+}
 
 onUnmounted(() => clearInterval(interval));
 </script>
 
-<style></style>
+<style scoped></style>

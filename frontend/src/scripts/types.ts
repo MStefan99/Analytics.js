@@ -26,6 +26,7 @@ export type Session = {
 export type App = {
 	id: number;
 	name: string;
+	description: string;
 	audienceKey: string;
 	telemetryKey: string;
 	ownerID: number;

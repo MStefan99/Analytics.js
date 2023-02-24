@@ -12,6 +12,7 @@ function getRandomString(byteCount: number): string {
 type AppProps = {
 	id: number;
 	name: string;
+	description?: string;
 	audienceKey: string;
 	telemetryKey: string;
 	ownerID: number;
@@ -20,6 +21,7 @@ type AppProps = {
 class App {
 	id: number;
 	name: string;
+	description: string | null;
 	audienceKey: string;
 	telemetryKey: string;
 	ownerID: number;
@@ -27,21 +29,27 @@ class App {
 	constructor(props: AppProps) {
 		this.id = props.id;
 		this.name = props.name;
+		this.description = props.description ?? null;
 		this.audienceKey = props.audienceKey;
 		this.telemetryKey = props.telemetryKey;
 		this.ownerID = props.ownerID;
 	}
 
-	static async create(user: User, name: string): Promise<App> {
+	static async create(
+		user: User,
+		name: string,
+		description?: string,
+	): Promise<App> {
 		const audienceKey = getRandomString(32);
 		const telemetryKey = getRandomString(32);
 
 		const db = await openDB();
 		await db.queryEntries(
-			`insert into apps(name, audience_key, telemetry_key, owner_id)
-			 values (?, ?, ?, ?)`,
+			`insert into apps(name, description, audience_key, telemetry_key, owner_id)
+       values (?, ?, ?, ?, ?)`,
 			[
 				name,
+				description,
 				audienceKey,
 				telemetryKey,
 				user.id,
@@ -51,6 +59,7 @@ class App {
 		return new App({
 			id: db.lastInsertRowId ?? 0,
 			name,
+			description,
 			audienceKey,
 			telemetryKey,
 			ownerID: user.id,
@@ -62,9 +71,10 @@ class App {
 		const rows = await db.queryEntries<AppProps>(
 			`select id,
               name,
+              description,
               audience_key  as audienceKey,
               telemetry_key as telemetryKey,
-              owner_id    as ownerID
+              owner_id      as ownerID
        from apps
        where id = ?`,
 			[id],
@@ -82,12 +92,13 @@ class App {
 		const db = await openDB();
 		const rows = await db.queryEntries<AppProps>(
 			`select id,
-       name,
+              name,
+              description,
               audience_key  as audienceKey,
               telemetry_key as telemetryKey,
-              owner_id    as ownerID
-			 from apps
-			 where audience_key=?`,
+              owner_id      as ownerID
+       from apps
+       where audience_key = ?`,
 			[key],
 		);
 
@@ -104,11 +115,12 @@ class App {
 		const rows = await db.queryEntries<AppProps>(
 			`select id,
               name,
+              description,
               audience_key  as audienceKey,
               telemetry_key as telemetryKey,
-              owner_id    as ownerID
-			 from apps
-			 where telemetry_key=?`,
+              owner_id      as ownerID
+       from apps
+       where telemetry_key = ?`,
 			[id],
 		);
 
@@ -127,11 +139,12 @@ class App {
 		const rows = await db.queryEntries<AppProps>(
 			`select id,
               name,
+              description,
               audience_key  as audienceKey,
               telemetry_key as telemetryKey,
-              owner_id    as ownerID
-			 from apps
-			 where owner_id=?`,
+              owner_id      as ownerID
+       from apps
+       where owner_id = ?`,
 			[user.id],
 		);
 

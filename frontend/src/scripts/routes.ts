@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
-import AppView from '../views/AppView.vue';
+import AppsView from '../views/AppsView.vue';
+import StatusView from '../views/StatusView.vue';
 import AudienceView from '../views/AudienceView.vue';
-import RealtimeView from '../views/RealtimeView.vue';
 import SettingsView from '../views/SettingsView.vue';
 
 const routes: Array<RouteRecordRaw> = [
@@ -15,17 +15,17 @@ const routes: Array<RouteRecordRaw> = [
 	{
 		path: '/apps',
 		name: 'apps',
-		component: AppView
+		component: AppsView
+	},
+	{
+		path: '/apps/:id/overview',
+		name: 'overview',
+		component: StatusView
 	},
 	{
 		path: '/apps/:id/audience',
 		name: 'audience',
 		component: AudienceView
-	},
-	{
-		path: '/apps/:id/realtime',
-		name: 'realtime',
-		component: RealtimeView
 	},
 	{
 		path: '/settings',

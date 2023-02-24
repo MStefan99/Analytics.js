@@ -2,7 +2,7 @@
 header.no-print.shadow-md
 	NavBar
 
-main.grow
+main
 	RouterView(v-if="appState.user")
 	div(v-else)
 		p.text-red.text-xl Please sign in to use the app
