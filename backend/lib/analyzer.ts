@@ -5,7 +5,7 @@ import App from './app.ts';
 const divisionLength = 1000 * 60;
 const sessionLength = 1000 * 60 * 30;
 
-type Page = { url: string; referrer?: string; time: number };
+type Page = { url: string; referrer: string | null; time: number };
 type Session = { duration: number; ua: string; pages: Page[] };
 
 export default {
@@ -32,9 +32,9 @@ export default {
 
 			if (
 				Date.now() - hit.time < divisionLength &&
-				!currentUsers.has(hit.id)
+				!currentUsers.has(hit.clientID)
 			) {
-				currentUsers.add(hit.id);
+				currentUsers.add(hit.clientID);
 			}
 
 			sessions[timeSlot] = 1 +
@@ -91,9 +91,9 @@ export default {
 		for (const hit of hits) {
 			if (
 				Date.now() - hit.time < divisionLength &&
-				!currentUsers.has(hit.id)
+				!currentUsers.has(hit.clientID)
 			) {
-				currentUsers.add(hit.id);
+				currentUsers.add(hit.clientID);
 			}
 
 			const sessionTime = hit.time -
@@ -104,7 +104,7 @@ export default {
 			sessions[sessionTime] = 1 +
 				(sessions[sessionTime] || 0);
 
-			if (hit.referrer !== undefined) {
+			if (hit.referrer !== null) {
 				referrers[hit.referrer] = 1 +
 					(referrers[hit.referrer] || 0);
 			}
@@ -140,12 +140,12 @@ export default {
 		);
 
 		for (const hit of hits) {
-			if (!users.has(hit.id)) {
-				users.add(hit.id);
+			if (!users.has(hit.clientID)) {
+				users.add(hit.clientID);
 			}
 
-			if (!sessionSets.has(hit.id)) {
-				sessionSets.set(hit.id, [
+			if (!sessionSets.has(hit.clientID)) {
+				sessionSets.set(hit.clientID, [
 					{
 						duration: 0,
 						ua: hit.ua,
@@ -159,7 +159,7 @@ export default {
 				++sessionCount;
 				++bounced;
 			} else {
-				const set = sessionSets.get(hit.id) as Session[]; // Safe because of the check above
+				const set = sessionSets.get(hit.clientID) as Session[]; // Safe because of the check above
 				const session = set[set.length - 1];
 				const lastHit = session.pages[session.pages.length - 1].time;
 

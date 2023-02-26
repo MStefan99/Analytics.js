@@ -69,28 +69,24 @@ class User {
 		};
 	}
 
-	save(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			openDB().then((db) =>
-				db
-					.query(
-						`insert or
-             replace into users(id,
-                                username,
-                                password_salt,
-                                password_hash)
-             values (?, ?, ?, ?)`,
-						[
-							this.id,
-							this.username,
-							this.passwordSalt,
-							this.passwordHash,
-						],
-					)
-			)
-				.then(() => resolve())
-				.catch((err) => reject(err));
-		});
+	async save(): Promise<void> {
+		const db = await openDB();
+		await db
+			.query(
+				`insert or
+         replace
+         into users(id,
+                    username,
+                    password_salt,
+                    password_hash)
+         values (?, ?, ?, ?)`,
+				[
+					this.id,
+					this.username,
+					this.passwordSalt,
+					this.passwordHash,
+				],
+			);
 	}
 
 	static async create(
@@ -132,11 +128,7 @@ class User {
 			[id],
 		);
 
-		if (!rows.length) {
-			return null;
-		} else {
-			return new User(rows[0]);
-		}
+		return rows.length ? new User(rows[0]) : null;
 	}
 
 	static async getByUsername(username: string): Promise<User | null> {
@@ -148,27 +140,17 @@ class User {
 			[username],
 		);
 
-		if (!rows.length) {
-			return null;
-		}
-
-		return new User(rows[0]);
+		return rows.length ? new User(rows[0]) : null;
 	}
 
 	static async getAll(): Promise<User[]> {
-		const users = [];
-
 		const db = await openDB();
 		const rows = await db.queryEntries<Props>(
 			`select id, username, password_salt as passwordSalt, password_hash as passwordHash
        from users`,
 		);
 
-		for (const row of rows) {
-			users.push(new User(row));
-		}
-
-		return users;
+		return rows.map<User>((r) => new User(r));
 	}
 
 	async verifyPassword(password: string): Promise<boolean> {

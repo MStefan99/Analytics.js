@@ -47,6 +47,30 @@ class Session {
 		};
 	}
 
+	async save(): Promise<void> {
+		const db = await openDB();
+		await db
+			.query(
+				`insert or
+         replace
+         into sessions(id,
+                       public_id,
+                       user_id,
+                       ip,
+                       ua,
+                       time)
+         values (?, ?, ?, ?, ?, ?)`,
+				[
+					this.id,
+					this.publicID,
+					this.userID,
+					this.ip,
+					this.ua,
+					this.time,
+				],
+			);
+	}
+
 	static async create(user: User, ip: string, ua: string): Promise<Session> {
 		const publicID = getRandomString(32);
 		const time = new Date().toISOString().replace('T', ' ').slice(0, -1);
@@ -92,12 +116,7 @@ class Session {
 			[id],
 		);
 
-		if (!rows.length) {
-			return null;
-		} else {
-			const row = rows[0];
-			return new Session(row);
-		}
+		return rows.length ? new Session(rows[0]) : null;
 	}
 
 	static async getByPublicID(id: string): Promise<Session | null> {
@@ -114,17 +133,10 @@ class Session {
 			[id],
 		);
 
-		if (!rows.length) {
-			return null;
-		} else {
-			const row = rows[0];
-			return new Session(row);
-		}
+		return rows.length ? new Session(rows[0]) : null;
 	}
 
 	static async getUserSessions(user: User): Promise<Session[]> {
-		const sessions = [];
-
 		const db = await openDB();
 		const rows = await db.queryEntries<SessionProps>(
 			`select id,
@@ -138,12 +150,7 @@ class Session {
 			[user.id],
 		);
 
-		for (const row of rows) {
-			sessions.push(
-				new Session(row),
-			);
-		}
-		return sessions;
+		return rows.map<Session>((r) => new Session(r));
 	}
 
 	static async deleteAllUserSessions(user: User): Promise<void> {

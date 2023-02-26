@@ -9,6 +9,95 @@ function getRandomString(byteCount: number): string {
 	return dec.decode(hexEncode(data));
 }
 
+type ClientProps = {
+	id: string;
+	ua?: string;
+	lang?: string;
+};
+
+export class Client {
+	id: string;
+	ua: string | null;
+	lang: string | null;
+
+	constructor(props: ClientProps) {
+		this.id = props.id;
+		this.ua = props.ua ?? null;
+		this.lang = props.lang ?? null;
+	}
+}
+
+type HitProps = {
+	clientID: string;
+	url: string;
+	referrer?: string;
+	time: number;
+};
+
+export class Hit {
+	clientID: string;
+	url: string;
+	referrer: string | null;
+	time: number;
+
+	constructor(props: HitProps) {
+		this.clientID = props.clientID;
+		this.url = props.url;
+		this.referrer = props.referrer ?? null;
+		this.time = props.time;
+	}
+}
+
+type ClientHitProps = HitProps & {
+	ua: string;
+	lang: string;
+};
+
+export class ClientHit extends Hit {
+	ua: string;
+	lang: string;
+
+	constructor(props: ClientHitProps) {
+		super(props);
+		this.ua = props.ua;
+		this.lang = props.lang;
+	}
+}
+
+type LogProps = {
+	time: number;
+	tag?: string;
+	message: string;
+	level: number;
+};
+
+export class Log {
+	time: number;
+	tag: string | null;
+	message: string;
+	level: number;
+
+	constructor(props: LogProps) {
+		this.time = props.time;
+		this.tag = props.tag ?? null;
+		this.message = props.message;
+		this.level = props.level;
+	}
+}
+
+type MetricsBase = {
+	device?: string;
+	cpu?: string;
+	memFree?: string;
+	memTotal?: string;
+	netUp?: string;
+	netDown?: string;
+	diskFree?: string;
+	diskTotal?: string;
+};
+
+export type Metrics = { time: number } & MetricsBase;
+
 type AppProps = {
 	id: number;
 	name: string;
@@ -16,22 +105,6 @@ type AppProps = {
 	audienceKey: string;
 	telemetryKey: string;
 	ownerID: number;
-};
-
-type Log = {
-	time: number;
-	tag?: string;
-	message: string;
-	level: number;
-};
-
-type Hit = {
-	id: string;
-	url: string;
-	referrer: string;
-	time: number;
-	ua: string;
-	lang: string;
 };
 
 class App {
@@ -49,6 +122,30 @@ class App {
 		this.audienceKey = props.audienceKey;
 		this.telemetryKey = props.telemetryKey;
 		this.ownerID = props.ownerID;
+	}
+
+	async save(): Promise<void> {
+		const db = await openDB();
+		await db
+			.query(
+				`insert or
+         replace
+         into apps(id,
+                    name,
+                   description,
+                   audience_key,
+                   telemetry_key,
+                   owner_id)
+         values (?, ?, ?, ?, ?, ?)`,
+				[
+					this.id,
+					this.name,
+					this.description,
+					this.audienceKey,
+					this.telemetryKey,
+					this.ownerID,
+				],
+			);
 	}
 
 	static async create(
@@ -96,12 +193,7 @@ class App {
 			[id],
 		);
 
-		if (!rows.length) {
-			return null;
-		} else {
-			const row = rows[0];
-			return new App(row);
-		}
+		return rows.length ? new App(rows[0]) : null;
 	}
 
 	static async getByAudienceKey(key: string): Promise<App | null> {
@@ -118,12 +210,7 @@ class App {
 			[key],
 		);
 
-		if (!rows.length) {
-			return null;
-		} else {
-			const row = rows[0];
-			return new App(row);
-		}
+		return rows.length ? new App(rows[0]) : null;
 	}
 
 	static async getByTelemetryKey(id: string): Promise<App | null> {
@@ -140,17 +227,10 @@ class App {
 			[id],
 		);
 
-		if (!rows.length) {
-			return null;
-		} else {
-			const row = rows[0];
-			return new App(row);
-		}
+		return rows.length ? new App(rows[0]) : null;
 	}
 
 	static async getByUser(user: User): Promise<App[]> {
-		const sessions = [];
-
 		const db = await openDB();
 		const rows = await db.queryEntries<AppProps>(
 			`select id,
@@ -164,42 +244,170 @@ class App {
 			[user.id],
 		);
 
-		for (const row of rows) {
-			sessions.push(
-				new App(row),
-			);
-		}
-		return sessions;
+		return rows.map<App>((r) => new App(r));
 	}
 
-	async getHits(startTime: number): Promise<Hit[]> {
+	async createClient(ua?: string, lang?: string): Promise<Client> {
+		const id = getRandomString(32);
+
+		const db = await openDB(this.id);
+		await db.queryEntries<ClientProps>(
+			`insert into clients(id,
+                            ua,
+                            lang)
+       values (?, ?, ?)`,
+			[
+				id,
+				ua ?? null,
+				lang ?? null,
+			],
+		);
+
+		return new Client({
+			id,
+			ua,
+			lang,
+		});
+	}
+
+	async getClientByID(id: number): Promise<Client | null> {
+		const db = await openDB(this.id);
+		const rows = await db.queryEntries<ClientProps>(
+			`select *
+       from clients
+       where id = ?`,
+			[id],
+		);
+
+		return rows.length ? new Client(rows[0]) : null;
+	}
+
+	async createHit(client: Client, url: string, referrer?: string) {
+		const db = await openDB(this.id);
+		const time = Date.now();
+
+		await db.query(
+			`insert into hits(client_id, url, referrer, time)
+     values (?, ?, ?, ?)`,
+			[
+				client.id,
+				url,
+				referrer ?? null,
+				time,
+			],
+		);
+
+		return new Hit({
+			clientID: client.id,
+			url,
+			referrer,
+			time,
+		});
+	}
+
+	async getHits(startTime: number): Promise<ClientHit[]> {
 		const db = await openDB(this.id);
 
-		return await db.queryEntries<Hit>(
-			`select id, url, referrer, time, ua, lang
+		const rows = await db.queryEntries<ClientHitProps>(
+			`select id as clientID, url, referrer, time, ua, lang
        from hits
-                join sessions on session_id = sessions.id
+                join clients on client_id = clients.id
        where hits.time > ?`,
 			[startTime],
 		);
+
+		return rows.map<ClientHit>((r) => new ClientHit(r));
+	}
+
+	async createClientLog(message: string, level: number, tag?: string) {
+		const db = await openDB(this.id);
+		const time = Date.now();
+
+		db.query(
+			`insert into client_logs(time, tag, message, level) values(?,?,?,?)`,
+			[
+				time,
+				tag ?? null,
+				message,
+				level,
+			],
+		);
+
+		return new Log({
+			time,
+			tag,
+			message,
+			level,
+		});
 	}
 
 	async getClientLogs(startTime: number, level = 0): Promise<Log[]> {
 		const db = await openDB(this.id);
 
-		return await db.queryEntries<Log>(
-			`select * from client_logs where time > ? and level > ?`,
+		const rows = await db.queryEntries<LogProps>(
+			`select * from client_logs where time >= ? and level >= ?`,
 			[startTime, level],
 		);
+
+		return rows.map<Log>((r) => new Log(r));
+	}
+
+	async createServerLog(message: string, level: number, tag?: string) {
+		const db = await openDB(this.id);
+		const time = Date.now();
+
+		db.query(
+			`insert into server_logs(time, tag, message, level) values(?,?,?,?)`,
+			[
+				time,
+				tag ?? null,
+				message,
+				level,
+			],
+		);
+
+		return new Log({
+			time,
+			tag,
+			message,
+			level,
+		});
 	}
 
 	async getServerLogs(startTime: number, level = 0): Promise<Log[]> {
 		const db = await openDB(this.id);
 
-		return await db.queryEntries<Log>(
-			`select * from server_logs where time > ? and level > ?`,
+		const rows = await db.queryEntries<LogProps>(
+			`select * from server_logs where time >= ? and level >= ?`,
 			[startTime, level],
 		);
+
+		return rows.map<Log>((r) => new Log(r));
+	}
+
+	async createMetrics(metrics: MetricsBase): Promise<Metrics> {
+		const db = await openDB(this.id);
+		const time = Date.now();
+
+		db.query(
+			`insert into metrics(time, device, cpu, mem_free, mem_total, net_up, net_down, disk_free, disk_total)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			[
+				time,
+				metrics.device,
+				metrics.cpu,
+				metrics.memFree,
+				metrics.memTotal,
+				metrics.netUp,
+				metrics.netDown,
+				metrics.diskFree,
+				metrics.diskTotal,
+			],
+		);
+
+		const m = metrics as Metrics;
+		m.time = time;
+		return m;
 	}
 
 	async delete(): Promise<void> {

@@ -1,7 +1,7 @@
-create table sessions
+create table clients
 (
 	id   char(32) not null
-		constraint sessions_pk
+		constraint clients_pk
 			primary key,
 	ua   varchar(200) default null,
 	lang varchar(50)  default null
@@ -9,9 +9,9 @@ create table sessions
 
 create table hits
 (
-	session_id char(32)     not null
-		constraint hits_sessions_id_fk
-			references sessions
+	client_id char(32)     not null
+		constraint hits_clients_id_fk
+			references clients
 			on update cascade on delete cascade,
 	url        varchar(150) not null,
 	referrer   varchar(150) default null,
