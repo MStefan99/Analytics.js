@@ -39,10 +39,6 @@ router.post('/metrics', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 	);
 
 	ctx.response.status = 201;
-	ctx.response.body = {
-		message: body.message,
-		level: body.level,
-	};
 });
 
 router.post('/logs', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
@@ -58,8 +54,16 @@ router.post('/logs', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 	}
 
 	const body = await ctx.request.body({ type: 'json' }).value;
-	const db = await openDB(app.id);
+	if (!body.message || !body.level) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'NO_MESSAGE_OR_LEVEL',
+			message: 'You need to provide both message and level',
+		};
+		return;
+	}
 
+	const db = await openDB(app.id);
 	db.query(
 		`insert into server_logs(time, tag, message, level)
      VALUES (?, ?, ?, ?)`,
@@ -67,11 +71,6 @@ router.post('/logs', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 	);
 
 	ctx.response.status = 201;
-	ctx.response.body = {
-		tag: body.tag,
-		message: body.message,
-		level: body.level,
-	};
 });
 
 export default router;

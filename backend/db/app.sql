@@ -1,9 +1,8 @@
 create table sessions
 (
-	id   char(32)    not null
+	id   char(32) not null
 		constraint sessions_pk
 			primary key,
-	ip   varchar(40) not null,
 	ua   varchar(200) default null,
 	lang varchar(50)  default null
 );
@@ -25,6 +24,12 @@ create table client_logs
 	tag     text,
 	message text    not null,
 	level   integer not null
+);
+
+create table feedback
+(
+	time    integer not null,
+	message text    not null
 );
 
 create table metrics

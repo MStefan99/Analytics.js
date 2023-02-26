@@ -54,7 +54,6 @@ export type DayAudience = {
 		{
 			duration: number;
 			ua: string;
-			ip: string;
 			pages: {url: string; time: number}[];
 		}
 	];

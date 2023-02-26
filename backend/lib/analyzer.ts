@@ -6,7 +6,7 @@ const divisionLength = 1000 * 60;
 const sessionLength = 1000 * 60 * 30;
 
 type Page = { url: string; referrer?: string; time: number };
-type Session = { duration: number; ua: string; ip: string; pages: Page[] };
+type Session = { duration: number; ua: string; pages: Page[] };
 
 export default {
 	metricsOverview: async function (appID: number) {
@@ -111,12 +111,11 @@ export default {
 				url: string;
 				referrer: string;
 				time: number;
-				ip: string;
 				ua: string;
 				lang: string;
 			}
 		>(
-			`select id, url, referrer, time, ip, ua, lang
+			`select id, url, referrer, time, ua, lang
        from hits
                 join sessions on session_id = sessions.id
        where hits.time > ?`,
@@ -173,12 +172,11 @@ export default {
 				url: string;
 				referrer: string;
 				time: number;
-				ip: string;
 				ua: string;
 				lang: string;
 			}
 		>(
-			`select id, url, referrer, time, ip, ua, lang
+			`select id, url, referrer, time, ua, lang
        from hits
                 join sessions on session_id = sessions.id
        where hits.time > ?`,
@@ -195,7 +193,6 @@ export default {
 					{
 						duration: 0,
 						ua: hit.ua,
-						ip: hit.ip,
 						pages: [{
 							url: hit.url,
 							referrer: hit.referrer,
@@ -214,7 +211,6 @@ export default {
 					set.push({
 						duration: 0,
 						ua: hit.ua,
-						ip: hit.ip,
 						pages: [{
 							url: hit.url,
 							referrer: hit.referrer,

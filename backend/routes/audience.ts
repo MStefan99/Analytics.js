@@ -96,8 +96,16 @@ router.post('/logs', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	}
 
 	const body = await ctx.request.body({ type: 'json' }).value;
-	const db = await openDB(app.id);
+	if (!body.message || !body.level) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'NO_MESSAGE_OR_LEVEL',
+			message: 'You need to provide both message and level',
+		};
+		return;
+	}
 
+	const db = await openDB(app.id);
 	db.query(
 		`insert into client_logs(time, tag, message, level)
      VALUES (?, ?, ?, ?)`,
@@ -105,11 +113,37 @@ router.post('/logs', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	);
 
 	ctx.response.status = 201;
-	ctx.response.body = {
-		tag: body.tag,
-		message: body.message,
-		level: body.level,
-	};
+});
+
+router.post('/feedback', hasBody(), auth.hasAudienceKey(), async (ctx) => {
+	const app = await auth.methods.getAppByAudienceKey(ctx);
+
+	if (!app) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'APP_NOT_FOUND',
+			message: 'App was not found',
+		};
+		return;
+	}
+
+	const body = await ctx.request.body({ type: 'json' }).value;
+	if (!body.message) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			error: 'NO_MESSAGE',
+			message: 'You need to provide a message',
+		};
+		return;
+	}
+
+	const db = await openDB(app.id);
+	db.query(`insert into feedback(time, message) values(?, ?)`, [
+		Date.now(),
+		body.message,
+	]);
+
+	ctx.response.status = 201;
 });
 
 export default router;
