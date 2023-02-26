@@ -58,3 +58,10 @@ export type DayAudience = {
 		}
 	];
 };
+
+export type Log = {
+	time: number;
+	tag?: string;
+	message: string;
+	level: number;
+};

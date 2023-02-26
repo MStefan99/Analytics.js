@@ -1,6 +1,6 @@
 'use strict';
 
-import openDB from './db.ts';
+import App from './app.ts';
 
 const divisionLength = 1000 * 60;
 const sessionLength = 1000 * 60 * 30;
@@ -17,39 +17,14 @@ export default {
 
 		const startTime = Date.now() - sessionLength;
 
-		const db = await openDB(appID);
-		const hits = await db.queryEntries<
-			{
-				id: string;
-				url: string;
-				referrer: string;
-				time: number;
-			}
-		>(
-			`select session_id as id, url, referrer, time
-       from hits
-       where hits.time > ?`,
-			[startTime],
-		);
+		const app = await App.getByID(appID);
+		if (!app) {
+			return null;
+		}
 
-		const serverRows = await db.queryEntries<
-			{ time: number; level: number }
-		>(
-			`
-          select time, level
-          from server_logs
-          where time > ?`,
-			[startTime],
-		);
-		const clientRows = await db.queryEntries<
-			{ time: number; level: number }
-		>(
-			`
-          select time, level
-          from client_logs
-          where time > ?`,
-			[startTime],
-		);
+		const hits = await app.getHits(startTime);
+		const serverRows = await app.getServerLogs(startTime);
+		const clientRows = await app.getClientLogs(startTime);
 
 		for (const hit of hits) {
 			const timeSlot = hit.time -
@@ -104,22 +79,13 @@ export default {
 		const sessions: { [key: number]: number } = {};
 		const referrers: { [key: string]: number } = {};
 
-		const db = await openDB(appID);
-		const hits = await db.queryEntries<
-			{
-				id: string;
-				url: string;
-				referrer: string;
-				time: number;
-				ua: string;
-				lang: string;
-			}
-		>(
-			`select id, url, referrer, time, ua, lang
-       from hits
-                join sessions on session_id = sessions.id
-       where hits.time > ?`,
-			[Date.now() - sessionLength],
+		const app = await App.getByID(appID);
+		if (!app) {
+			return null;
+		}
+
+		const hits = await app.getHits(
+			Date.now() - sessionLength,
 		);
 
 		for (const hit of hits) {
@@ -159,28 +125,18 @@ export default {
 		today.setSeconds(0);
 		today.setMilliseconds(0);
 
-		const db = await openDB(appID);
-
 		const sessionSets = new Map<string, Session[]>();
 		const users = new Set<string>();
 		let sessionCount = 0;
 		let bounced = 0;
 
-		const hits = await db.queryEntries<
-			{
-				id: string;
-				url: string;
-				referrer: string;
-				time: number;
-				ua: string;
-				lang: string;
-			}
-		>(
-			`select id, url, referrer, time, ua, lang
-       from hits
-                join sessions on session_id = sessions.id
-       where hits.time > ?`,
-			[today.getTime()],
+		const app = await App.getByID(appID);
+		if (!app) {
+			return null;
+		}
+
+		const hits = await app.getHits(
+			today.getTime(),
 		);
 
 		for (const hit of hits) {

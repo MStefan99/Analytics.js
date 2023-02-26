@@ -18,6 +18,22 @@ type AppProps = {
 	ownerID: number;
 };
 
+type Log = {
+	time: number;
+	tag?: string;
+	message: string;
+	level: number;
+};
+
+type Hit = {
+	id: string;
+	url: string;
+	referrer: string;
+	time: number;
+	ua: string;
+	lang: string;
+};
+
 class App {
 	id: number;
 	name: string;
@@ -154,6 +170,36 @@ class App {
 			);
 		}
 		return sessions;
+	}
+
+	async getHits(startTime: number): Promise<Hit[]> {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<Hit>(
+			`select id, url, referrer, time, ua, lang
+       from hits
+                join sessions on session_id = sessions.id
+       where hits.time > ?`,
+			[startTime],
+		);
+	}
+
+	async getClientLogs(startTime: number, level = 0): Promise<Log[]> {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<Log>(
+			`select * from client_logs where time > ? and level > ?`,
+			[startTime, level],
+		);
+	}
+
+	async getServerLogs(startTime: number, level = 0): Promise<Log[]> {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<Log>(
+			`select * from server_logs where time > ? and level > ?`,
+			[startTime, level],
+		);
 	}
 
 	async delete(): Promise<void> {

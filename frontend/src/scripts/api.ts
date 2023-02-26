@@ -1,13 +1,14 @@
 import appState from './store';
 import type {
-	User,
-	NewUser,
-	UpdateUser,
-	Session,
 	App,
-	RealtimeAudience,
+	AppOverview,
 	DayAudience,
-	AppOverview
+	Log,
+	NewUser,
+	RealtimeAudience,
+	Session,
+	UpdateUser,
+	User
 } from './types';
 
 type MessageResponse = {
@@ -179,6 +180,11 @@ export const AppAPI = {
 	getRealtimeAudience: (id: App['id']) =>
 		request<RealtimeAudience>('/apps/' + id + '/now', {auth: true}),
 	getTodayAudience: (id: App['id']) => request<DayAudience>('/apps/' + id + '/today', {auth: true}),
+	getLogs: (id: App['id'], type: 'server' | 'client', startTime?: number, level?: number) =>
+		request<Log[]>('/apps/' + id + '/logs/' + type, {
+			auth: true,
+			query: {startTime: startTime?.toString() ?? '', level: level?.toString() ?? ''}
+		}),
 	edit: (): null => null,
 	delete: (): null => null
 };

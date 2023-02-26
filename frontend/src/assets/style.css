@@ -101,7 +101,12 @@ h3 {
 
 table {
 	@apply mb-2;
-	width: min(100%, 500px);
+}
+
+table.cells td,
+table.cells th {
+	@apply border;
+	padding: 0.2em 1ch;
 }
 
 th,
@@ -141,4 +146,24 @@ button {
 	color: var(--color-accent);
 	border-radius: 10px;
 	border: 0.1rem solid var(--color-accent);
+}
+
+.log-level {
+	width: 1em;
+	height: 1em;
+	border-radius: 1em;
+	margin: 0 auto;
+}
+
+.log-level.log-0 {
+	background-color: var(--color-blue-bright);
+}
+.log-level.log-1 {
+	background-color: var(--color-green-bright);
+}
+.log-level.log-2 {
+	background-color: var(--color-yellow-bright);
+}
+.log-level.log-3 {
+	background-color: var(--color-red-bright);
 }

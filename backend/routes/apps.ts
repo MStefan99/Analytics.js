@@ -2,9 +2,13 @@ import { Context, Router } from '../deps.ts';
 
 import auth from '../lib/auth.ts';
 import App from '../lib/app.ts';
-import { hasBody } from './middleware.ts';
+import { getBody, hasBody } from './middleware.ts';
 import { initApp } from '../lib/init.ts';
 import analyzer from '../lib/analyzer.ts';
+
+const dayLength = 1000 * 60 * 60 * 24;
+const clamp = (num: number, min: number, max: number) =>
+	Math.min(Math.max(num, min), max);
 
 const router = new Router({
 	prefix: '/apps',
@@ -58,30 +62,6 @@ router.get('/', auth.authenticated(), async (ctx) => {
 	ctx.response.body = await App.getByUser(user);
 });
 
-router.get('/:id', auth.authenticated(), async (ctx) => {
-	const app = await getApp(ctx, +ctx.params.id);
-
-	app && (ctx.response.body = app);
-});
-
-router.get('/:id/overview', auth.authenticated(), async (ctx) => {
-	const app = await getApp(ctx, +ctx.params.id);
-
-	app && (ctx.response.body = await analyzer.metricsOverview(app.id));
-});
-
-router.get('/:id/now', auth.authenticated(), async (ctx) => {
-	const app = await getApp(ctx, +ctx.params.id);
-
-	app && (ctx.response.body = await analyzer.realtimeAudience(app.id));
-});
-
-router.get('/:id/today', auth.authenticated(), async (ctx) => {
-	const app = await getApp(ctx, +ctx.params.id);
-
-	app && (ctx.response.body = await analyzer.dayAudience(app.id));
-});
-
 router.post('/', hasBody(), auth.authenticated(), async (ctx) => {
 	const user = await auth.methods.getUser(ctx);
 
@@ -108,6 +88,72 @@ router.post('/', hasBody(), auth.authenticated(), async (ctx) => {
 
 	ctx.response.status = 201;
 	ctx.response.body = app;
+});
+
+router.get('/:id', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	app && (ctx.response.body = app);
+});
+
+router.get('/:id/overview', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	app && (ctx.response.body = await analyzer.metricsOverview(app.id));
+});
+
+router.get('/:id/now', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	app && (ctx.response.body = await analyzer.realtimeAudience(app.id));
+});
+
+router.get('/:id/today', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	app && (ctx.response.body = await analyzer.dayAudience(app.id));
+});
+
+router.get('/:id/logs/server', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+	if (!app) {
+		return;
+	}
+
+	const now = Date.now();
+	const params = new URLSearchParams(ctx.request.url.search);
+
+	const startTime = params.has('startTime')
+		? clamp(
+			+(params?.get('startTime') as string),
+			now - dayLength * 30,
+			now,
+		)
+		: now - dayLength;
+	const level = params.has('level') ? +(params.get('level') as string) : 0;
+
+	ctx.response.body = await app.getServerLogs(startTime, level);
+});
+
+router.get('/:id/logs/client', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+	if (!app) {
+		return;
+	}
+
+	const now = Date.now();
+	const params = new URLSearchParams(ctx.request.url.search);
+
+	const startTime = params.has('startTime')
+		? clamp(
+			+(params?.get('startTime') as string),
+			now - dayLength * 30,
+			now,
+		)
+		: now - dayLength;
+	const level = params.has('level') ? +(params.get('level') as string) : 0;
+
+	ctx.response.body = await app.getClientLogs(startTime, level);
 });
 
 export default router;

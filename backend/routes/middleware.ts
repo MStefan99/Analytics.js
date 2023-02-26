@@ -1,16 +1,16 @@
 import { Context, Middleware } from '../deps.ts';
 
-async function getBodyLength(ctx: Context) {
+export async function getBody(ctx: Context) {
 	try {
-		return (await ctx.request.body({ type: 'text' }).value).length;
+		return (await ctx.request.body({ type: 'json' }).value);
 	} catch {
-		return 0;
+		return null;
 	}
 }
 
 export function hasBody(): Middleware {
 	return async (ctx, next) => {
-		if (await getBodyLength(ctx)) {
+		if (await getBody(ctx)) {
 			await ctx.request.body().value;
 			await next();
 		} else {
@@ -26,7 +26,7 @@ export function hasBody(): Middleware {
 
 export function hasCredentials(): Middleware {
 	return async (ctx, next) => {
-		if (await getBodyLength(ctx)) {
+		if (await getBody(ctx)) {
 			const body = await ctx.request.body({ type: 'json' }).value;
 
 			if (!body.username?.length) {

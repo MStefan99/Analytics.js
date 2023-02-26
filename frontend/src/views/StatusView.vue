@@ -8,13 +8,15 @@
 		.card
 			h2 Page views
 			TimedChart(:data="viewsChart")
-			RouterLink(:to="{name: 'audience', params: {id: $route.params.id}}") Audience
+			RouterLink(:to="{name: 'audience', params: {id: $route.params.id}}") View audience
 		.card
 			h2 Server logs
 			TimedChart(:data="serverChart")
+			RouterLink(:to="{name: 'logs', params: {id: $route.params.id, type: 'server'}}") View server logs
 		.card
 			h2 Client logs
 			TimedChart(:data="clientChart")
+			RouterLink(:to="{name: 'logs', params: {id: $route.params.id, type: 'client'}}") View client logs
 </template>
 
 <script setup lang="ts">
