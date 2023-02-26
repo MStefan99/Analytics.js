@@ -84,7 +84,7 @@ a {
 }
 
 .row * {
-	@apply basis-1/3 max-w-full flex-grow flex-shrink;
+	@apply max-w-full flex-grow flex-shrink;
 }
 
 h1 {

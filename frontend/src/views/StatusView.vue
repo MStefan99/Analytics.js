@@ -2,9 +2,16 @@
 #overview(v-if="!!app")
 	h1 {{app.name}} status
 	.row(v-if="overview")
-		.card.accent
-			h2 Active users
-			span.large {{overview.currentUsers}}
+		.row.card.accent
+			.mx-4
+				h2 Active users
+				span.large {{overview.currentUsers}}
+			.mx-4
+				h2 Server errors
+				span.large {{overview.serverLogs['3']?.length ?? 0}}
+			.mx-4
+				h2 Client errors
+				span.large {{overview.clientLogs['3']?.length ?? 0}}
 		.card
 			h2 Page views
 			TimedChart(:data="viewsChart")
@@ -92,4 +99,8 @@ const interval = setInterval(
 onUnmounted(() => clearInterval(interval));
 </script>
 
-<style></style>
+<style>
+.row .card {
+	@apply basis-1/3;
+}
+</style>
