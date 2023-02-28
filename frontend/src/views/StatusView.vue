@@ -8,10 +8,10 @@
 				span.large {{overview.currentUsers}}
 			.mx-4
 				h2 Server errors
-				span.large {{overview.serverLogs['3']?.length ?? 0}}
+				span.large {{logCount.server['3'] ?? 0}}
 			.mx-4
 				h2 Client errors
-				span.large {{overview.clientLogs['3']?.length ?? 0}}
+				span.large {{logCount.client['3'] ?? 0}}
 		.card
 			h2 Page views
 			TimedChart(:data="viewsChart")
@@ -88,6 +88,28 @@ const viewsChart = computed(() => [
 		data: overview.value.sessions
 	}
 ]);
+const logCount = computed(() => {
+	return {
+		server: overview.value.serverLogs
+			? Object.keys(overview.value.serverLogs).reduce<{[key: string]: number}>((prev, k) => {
+					prev[k] = Object.keys(overview.value.serverLogs[Number(k)]).reduce<number>(
+						(prev1, k1) => prev1 + overview.value.serverLogs[Number(k)][Number(k1)],
+						0
+					);
+					return prev;
+			  }, {})
+			: null,
+		client: overview.value.clientLogs
+			? Object.keys(overview.value.clientLogs).reduce<{[key: string]: number}>((prev, k) => {
+					prev[k] = Object.keys(overview.value.clientLogs[Number(k)]).reduce<number>(
+						(prev1, k1) => prev1 + overview.value.clientLogs[Number(k)][Number(k1)],
+						0
+					);
+					return prev;
+			  }, {})
+			: null
+	};
+});
 
 Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
 Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o));

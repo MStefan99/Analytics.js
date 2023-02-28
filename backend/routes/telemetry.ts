@@ -46,7 +46,7 @@ router.post('/logs', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 	}
 
 	const body = await ctx.request.body({ type: 'json' }).value;
-	if (!body.message || !body.level) {
+	if (body.message === undefined || body.level === undefined) {
 		ctx.response.status = 400;
 		ctx.response.body = {
 			error: 'NO_MESSAGE_OR_LEVEL',
