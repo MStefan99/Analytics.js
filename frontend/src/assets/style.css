@@ -34,6 +34,7 @@ header {
 	padding: 1em 2em;
 	background-color: var(--color-accent);
 	color: var(--color-background);
+	border-radius: 0 0 1em 1em;
 }
 
 nav {
@@ -83,8 +84,55 @@ a {
 	font-family: monospace;
 }
 
+.clickable {
+	cursor: pointer;
+}
+
 .glass {
 	@apply bg-white/80 backdrop-blur-md;
+}
+
+.popup-wrapper {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background-color: var(--color-overlay);
+}
+
+.popup-wrapper .popup {
+	position: relative;
+	left: 50%;
+	top: 50%;
+	max-width: min(768px, 90vw);
+	transform: translate(-50%, -50%);
+	border-radius: 1rem;
+	color: var(--color-foreground);
+	background-color: var(--color-overlay);
+	box-shadow: 0 1rem 3rem var(--color-shadow);
+	overflow: hidden;
+}
+
+.popup .popup-title,
+.popup .popup-content {
+	padding: 2rem min(4rem, 10%);
+}
+
+.popup .popup-title {
+	color: var(--color-background);
+	background-color: var(--color-accent);
+}
+
+.popup-enter-from,
+.popup-leave-to {
+	opacity: 0;
+	transform: scale(120%);
+}
+
+.popup-enter-active,
+.popup-leave-active {
+	transition: all 0.3s ease;
 }
 
 h1 {

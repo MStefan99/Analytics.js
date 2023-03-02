@@ -1,32 +1,37 @@
 <template lang="pug">
 .popup-wrapper(@click.self="$emit('close')")
 	.popup
-		p.text-2xl.mb-4.font-semibold Sign in
-		form(@submit.prevent="connect()")
-			.mb-3
-				label(for="url-input") URL
-				input#url-input.full(v-model="url" type="text" placeholder="https://example.com")
-			.mb-3
-				button.full(type="submit" :disabled="connectionState === ConnectionState.TESTING") Connect
-		form(v-if="connectionState === ConnectionState.CONNECTED" @submit.prevent="login()")
-			.mb-3
-				label(for="username-input") Username
-				input#username-input.full(
-					v-model="username"
-					type="text"
-					placeholder="user"
-					autocomplete="username")
-			.mb-3
-				label(for="password-input") Password
-				input#password-input.full(
-					v-model="password"
-					type="password"
-					placeholder="password"
-					autocomplete="current-password")
-			.mb-3
-				button.full(type="submit" :disabled="connectionState === ConnectionState.TESTING") Sign in
-			p.text-red(v-if="authError") {{authError}}
-		span.text-muted {{getAuthenticationState()}}
+		p.text-2xl.mb-4.font-semibold.popup-title Sign in
+		.popup-content
+			form(@submit.prevent="connect()")
+				.mb-3
+					label(for="url-input") URL
+					input#url-input.w-full(v-model="url" type="text" placeholder="https://example.com")
+				.mb-3
+					button.w-full(type="submit" :disabled="connectionState === ConnectionState.TESTING") Connect
+			form(v-if="connectionState === ConnectionState.CONNECTED" @submit.prevent="login()")
+				.mb-3
+					label(for="username-input") Username
+					input#username-input.w-full(
+						v-model="username"
+						type="text"
+						placeholder="user"
+						autocomplete="username")
+				.mb-3
+					label(for="password-input") Password
+					input#password-input.w-full(
+						v-model="password"
+						type="password"
+						placeholder="password"
+						autocomplete="current-password")
+				.mb-3.row.w-full
+					button.mr-4(type="submit" :disabled="connectionState === ConnectionState.TESTING") Sign in
+					button(
+						type="button"
+						:disabled="connectionState === ConnectionState.TESTING"
+						@click="register()") Sign up
+				p.text-red(v-if="authError") {{authError}}
+			span.text-muted {{getAuthenticationState()}}
 </template>
 
 <script setup lang="ts">
@@ -114,6 +119,10 @@ function login() {
 			connectionState.value = ConnectionState.CONNECTED;
 			authError.value = err.message;
 		});
+}
+
+function register() {
+	// WIP
 }
 </script>
 

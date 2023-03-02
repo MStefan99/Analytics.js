@@ -132,11 +132,11 @@ const logCount = computed(() => {
 
 Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
 Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o));
+
 const interval = setInterval(
 	() => Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o)),
 	1000 * 30
 );
-
 onUnmounted(() => clearInterval(interval));
 </script>
 

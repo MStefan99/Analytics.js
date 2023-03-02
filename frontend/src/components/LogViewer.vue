@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {ref} from 'vue';
+import {onUnmounted, ref} from 'vue';
 import type {Log} from '../scripts/types';
 import DropdownSelect from './DropdownSelect.vue';
 import DatePicker from './DatePicker.vue';
@@ -52,6 +52,8 @@ function loadLogs() {
 }
 
 loadLogs();
+const interval = setInterval(loadLogs, 1000 * 30);
+onUnmounted(() => clearInterval(interval));
 </script>
 
 <style scoped></style>
