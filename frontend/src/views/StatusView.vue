@@ -37,47 +37,55 @@ const app = ref<App | null>(null);
 const overview = ref<AppOverview | null>(null);
 const route = useRoute();
 
+const colors = {
+	debug: '#4f46e5',
+	info: '#059669',
+	warning: '#ca8a04',
+	error: '#ea580c',
+	critical: '#e11d48'
+};
+
 const serverChart = computed(() => [
 	{
 		label: 'Debug logs',
-		color: '#0967c5',
+		color: colors.debug,
 		data: overview.value.serverLogs['0']
 	},
 	{
 		label: 'Info logs',
-		color: '#44c40c',
+		color: colors.info,
 		data: overview.value.serverLogs['1']
 	},
 	{
 		label: 'Warnings',
-		color: '#ef8105',
+		color: colors.warning,
 		data: overview.value.serverLogs['2']
 	},
 	{
 		label: 'Errors',
-		color: '#f10962',
+		color: colors.error,
 		data: overview.value.serverLogs['3']
 	}
 ]);
 const clientChart = computed(() => [
 	{
 		label: 'Debug logs',
-		color: '#0967c5',
+		color: colors.debug,
 		data: overview.value.clientLogs['0']
 	},
 	{
 		label: 'Info logs',
-		color: '#44c40c',
+		color: colors.info,
 		data: overview.value.clientLogs['1']
 	},
 	{
 		label: 'Warnings',
-		color: '#ef8105',
+		color: colors.warning,
 		data: overview.value.clientLogs['2']
 	},
 	{
 		label: 'Errors',
-		color: '#f10962',
+		color: colors.error,
 		data: overview.value.clientLogs['3']
 	}
 ]);

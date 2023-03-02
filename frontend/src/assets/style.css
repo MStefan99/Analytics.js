@@ -87,6 +87,12 @@ a {
 	@apply max-w-full flex-grow flex-shrink;
 }
 
+.code {
+	white-space: pre-wrap;
+	word-break: break-all;
+	font-family: monospace;
+}
+
 h1 {
 	@apply text-4xl text-accent my-4;
 }
@@ -155,15 +161,18 @@ button {
 	margin: 0 auto;
 }
 
-.log-level.log-0 {
-	background-color: var(--color-blue-bright);
+.log-row.log-0 {
+	@apply bg-indigo-50 text-indigo-700;
 }
-.log-level.log-1 {
-	background-color: var(--color-green-bright);
+.log-row.log-1 {
+	@apply bg-emerald-50 text-emerald-700;
 }
-.log-level.log-2 {
-	background-color: var(--color-yellow-bright);
+.log-row.log-2 {
+	@apply bg-yellow-50 text-yellow-700;
 }
-.log-level.log-3 {
-	background-color: var(--color-red-bright);
+.log-row.log-3 {
+	@apply bg-orange-50 text-orange-700;
+}
+.log-row.log-4 {
+	@apply bg-rose-50 text-rose-700;
 }

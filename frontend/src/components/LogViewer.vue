@@ -4,16 +4,13 @@
 		thead
 			tr
 				th Tag
-				th Level
-				th Message
 				th Time
+				th Message
 		tbody
-			tr(v-for="log in logs" :key="log.time")
+			tr.log-row(:class="'log-' + log.level" v-for="log in logs" :key="log.time")
 				td {{log.tag}}
-				td
-					.log-level(:class="'log-' + log.level")
-				td {{log.message}}
 				td {{new Date(log.time).toLocaleString()}}
+				td.code {{log.message}}
 </template>
 
 <script setup lang="ts">

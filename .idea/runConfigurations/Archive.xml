@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Archive" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/backend/lib/archive.js" working-dir="$PROJECT_DIR$/backend/lib">
+  <configuration default="false" name="Archive" type="NodeJSConfigurationType" path-to-js-file="archive.js" working-dir="$PROJECT_DIR$/backend/lib">
     <method v="2" />
   </configuration>
 </component>
