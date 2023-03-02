@@ -15,16 +15,6 @@ html {
 	--color-light: #ccc;
 	--color-accent: #258600;
 
-	--color-red: #b43114;
-	--color-yellow: #727706;
-	--color-green: #1c7c15;
-	--color-blue: #046898;
-
-	--color-red-bright: #f33910;
-	--color-yellow-bright: #ffd200;
-	--color-green-bright: #1cc212;
-	--color-blue-bright: #13a1de;
-
 	--color-overlay: #fffb;
 	--color-shadow: #0001;
 
@@ -148,37 +138,55 @@ td {
 }
 
 input:not([type='checkbox']),
-select {
+select,
+button {
 	display: block;
-	@apply border p-2 my-2;
+	padding: 0.5em 1ch;
+	border-radius: 10px;
+	border: 0.1rem solid var(--color-accent);
+	@apply my-2;
 }
 
 button {
-	padding: 0.5em 1ch;
 	color: var(--color-accent);
-	border-radius: 10px;
 	border: 0.1rem solid var(--color-accent);
 }
 
 .log-level {
-	width: 1em;
-	height: 1em;
-	border-radius: 1em;
-	margin: 0 auto;
+	padding: 0.5em 0.5ch;
+	text-align: center;
+}
+
+.log-level.log-2 {
+	@apply bg-yellow-200;
+}
+
+.log-level.log-3 {
+	@apply bg-orange-200;
+	font-weight: bold;
+}
+
+.log-level.log-4 {
+	@apply bg-rose-300;
+	font-weight: bold;
 }
 
 .log-row.log-0 {
 	@apply bg-indigo-50 text-indigo-700;
 }
+
 .log-row.log-1 {
 	@apply bg-emerald-50 text-emerald-700;
 }
+
 .log-row.log-2 {
 	@apply bg-yellow-50 text-yellow-700;
 }
+
 .log-row.log-3 {
 	@apply bg-orange-50 text-orange-700;
 }
+
 .log-row.log-4 {
 	@apply bg-rose-50 text-rose-700;
 }

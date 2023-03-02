@@ -1,6 +1,6 @@
 <template lang="pug">
 select(@change="select($el.selectedIndex)")
-	option(v-for="option in options" :key="option") {{option}}
+	option(v-for="(option, i) in options" :key="option" :selected="i === modelValue") {{option}}
 </template>
 
 <script setup lang="ts">

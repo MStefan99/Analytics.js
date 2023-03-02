@@ -1,24 +1,23 @@
 <template lang="pug">
 .log-viewer
-	h1 Logs
+	h1 {{$route.params.type === 'client' ? 'Client' : 'Server'}} logs
 	.row.my-4
 		.input
-			label(for="date-input") Starting time
+			label(for="date-input") Starting from
 			DatePicker#date-input(type="date" v-model="startTime" @change="loadLogs()")
 		.input
 			label(for="level-input") Minimum level
-			DropdownSelect#level-input(
-				:options="['Debug', 'Info', 'Warning', 'Error', 'Critical']"
-				v-model="level"
-				@change="loadLogs()")
+			DropdownSelect#level-input(:options="levels" v-model="level" @change="loadLogs()")
 	table.cells
 		thead
 			tr
+				th Level
 				th Tag
 				th Time
 				th Message
 		tbody
 			tr.log-row(:class="'log-' + log.level" v-for="log in logs" :key="log.time")
+				td.log-level(:class="'log-' + log.level") {{levels[log.level]}}
 				td {{log.tag}}
 				td {{new Date(log.time).toLocaleString()}}
 				td.code {{log.message}}
@@ -36,6 +35,7 @@ const route = useRoute();
 const logs = ref<Log[]>([]);
 const dayLength = 1000 * 60 * 60 * 24;
 const initialDate = new Date(Date.now() - dayLength);
+const levels = ['Debug', 'Information', 'Warning', 'Error', 'Critical'];
 
 const startTime = ref<Date>(initialDate);
 const level = ref<number>(1);

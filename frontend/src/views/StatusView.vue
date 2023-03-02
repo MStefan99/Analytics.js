@@ -65,6 +65,11 @@ const serverChart = computed(() => [
 		label: 'Errors',
 		color: colors.error,
 		data: overview.value.serverLogs['3']
+	},
+	{
+		label: 'Critical',
+		color: colors.critical,
+		data: overview.value.serverLogs['4']
 	}
 ]);
 const clientChart = computed(() => [
@@ -87,6 +92,11 @@ const clientChart = computed(() => [
 		label: 'Errors',
 		color: colors.error,
 		data: overview.value.clientLogs['3']
+	},
+	{
+		label: 'Critical',
+		color: colors.critical,
+		data: overview.value.serverLogs['4']
 	}
 ]);
 const viewsChart = computed(() => [
@@ -96,6 +106,7 @@ const viewsChart = computed(() => [
 		data: overview.value.sessions
 	}
 ]);
+
 const logCount = computed(() => {
 	return {
 		server: overview.value.serverLogs
