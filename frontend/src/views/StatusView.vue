@@ -2,7 +2,7 @@
 #overview(v-if="!!app")
 	h1 {{app.name}} status
 	.row(v-if="overview")
-		.row.card.accent
+		.row.card.accent.m-4
 			.mx-4
 				h2 Active users
 				span.large {{overview.currentUsers}}
@@ -12,15 +12,15 @@
 			.mx-4
 				h2 Client errors
 				span.large {{logCount.client['3'] ?? 0}}
-		.card
+		.card.m-4
 			h2 Page views
 			TimedChart(:data="viewsChart")
 			RouterLink(:to="{name: 'audience', params: {id: $route.params.id}}") View audience
-		.card
+		.card.m-4
 			h2 Server logs
 			TimedChart(:data="serverChart")
 			RouterLink(:to="{name: 'logs', params: {id: $route.params.id, type: 'server'}}") View server logs
-		.card
+		.card.m-4
 			h2 Client logs
 			TimedChart(:data="clientChart")
 			RouterLink(:to="{name: 'logs', params: {id: $route.params.id, type: 'client'}}") View client logs

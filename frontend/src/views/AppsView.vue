@@ -2,7 +2,7 @@
 #apps
 	h1 Your apps
 	#apps-container(v-if="apps.length")
-		RouterLink.block.card.app-card(
+		RouterLink.block.card.m-0(
 			v-for="app in apps"
 			:key="app.id"
 			:to="{name: 'overview', params: {id: app.id}}")

@@ -14,6 +14,7 @@ html {
 	--color-muted: #888;
 	--color-light: #ccc;
 	--color-accent: #258600;
+	--color-secondary: #017375;
 
 	--color-overlay: #fffb;
 	--color-shadow: #0001;
@@ -32,7 +33,7 @@ body {
 
 header {
 	padding: 1em 2em;
-	background-color: var(--color-accent);
+	background-image: linear-gradient(90deg, var(--color-accent), var(--color-secondary));
 	color: var(--color-background);
 	border-radius: 0 0 1em 1em;
 }
@@ -175,18 +176,13 @@ td {
 .card {
 	border-radius: 8px;
 	padding: 1em 2ch;
-	margin: 2ch;
 	border: 1px solid var(--color-shadow);
 	box-shadow: 0 0.25em 0.5em var(--color-shadow);
 }
 
-.app-card {
-	margin-left: 0;
-	margin-right: 0;
-}
-
 .card.accent {
-	@apply bg-accent text-white;
+	@apply text-white;
+	background-image: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
 }
 
 input:not([type='checkbox']),
