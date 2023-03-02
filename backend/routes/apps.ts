@@ -124,11 +124,7 @@ router.get('/:id/logs/server', auth.authenticated(), async (ctx) => {
 	const params = new URLSearchParams(ctx.request.url.search);
 
 	const startTime = params.has('startTime')
-		? clamp(
-			+(params?.get('startTime') as string),
-			now - dayLength * 30,
-			now,
-		)
+		? +(params?.get('startTime') as string)
 		: now - dayLength;
 	const level = params.has('level') ? +(params.get('level') as string) : 0;
 
@@ -145,11 +141,7 @@ router.get('/:id/logs/client', auth.authenticated(), async (ctx) => {
 	const params = new URLSearchParams(ctx.request.url.search);
 
 	const startTime = params.has('startTime')
-		? clamp(
-			+(params?.get('startTime') as string),
-			now - dayLength * 30,
-			now,
-		)
+		? +(params?.get('startTime') as string)
 		: now - dayLength;
 	const level = params.has('level') ? +(params.get('level') as string) : 0;
 

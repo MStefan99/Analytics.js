@@ -1,5 +1,16 @@
 <template lang="pug">
 .log-viewer
+	h1 Logs
+	.row.my-4
+		.input
+			label(for="date-input") Starting time
+			DatePicker#date-input(type="date" v-model="startTime" @change="loadLogs()")
+		.input
+			label(for="level-input") Minimum level
+			DropdownSelect#level-input(
+				:options="['Debug', 'Info', 'Warning', 'Error', 'Critical']"
+				v-model="level"
+				@change="loadLogs()")
 	table.cells
 		thead
 			tr
@@ -17,14 +28,30 @@
 import {useRoute} from 'vue-router';
 import {ref} from 'vue';
 import type {Log} from '../scripts/types';
+import DropdownSelect from './DropdownSelect.vue';
+import DatePicker from './DatePicker.vue';
 import Api from '../scripts/api';
 
 const route = useRoute();
 const logs = ref<Log[]>([]);
+const dayLength = 1000 * 60 * 60 * 24;
+const initialDate = new Date(Date.now() - dayLength);
 
-Api.apps
-	.getLogs(+route.params.id, route.params.type === 'client' ? 'client' : 'server')
-	.then((l) => (logs.value = l));
+const startTime = ref<Date>(initialDate);
+const level = ref<number>(1);
+
+function loadLogs() {
+	Api.apps
+		.getLogs(
+			+route.params.id,
+			route.params.type === 'client' ? 'client' : 'server',
+			startTime.value.getTime(),
+			level.value
+		)
+		.then((l) => (logs.value = l));
+}
+
+loadLogs();
 </script>
 
 <style scoped></style>

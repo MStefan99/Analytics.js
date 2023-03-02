@@ -345,7 +345,7 @@ class App {
 		const db = await openDB(this.id);
 
 		const rows = await db.queryEntries<LogProps>(
-			`select * from client_logs where time >= ? and level >= ?`,
+			`select * from client_logs where time >= ? and level >= ? limit 5000`,
 			[startTime, level],
 		);
 
@@ -378,7 +378,7 @@ class App {
 		const db = await openDB(this.id);
 
 		const rows = await db.queryEntries<LogProps>(
-			`select * from server_logs where time >= ? and level >= ?`,
+			`select * from server_logs where time >= ? and level >= ? limit 5000`,
 			[startTime, level],
 		);
 

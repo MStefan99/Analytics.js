@@ -147,6 +147,12 @@ td {
 	@apply bg-accent text-white;
 }
 
+input:not([type='checkbox']),
+select {
+	display: block;
+	@apply border p-2 my-2;
+}
+
 button {
 	padding: 0.5em 1ch;
 	color: var(--color-accent);
