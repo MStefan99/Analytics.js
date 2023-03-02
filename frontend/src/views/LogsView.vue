@@ -1,5 +1,5 @@
 <template lang="pug">
-.log-viewer
+#logs
 	h1 {{$route.params.type === 'client' ? 'Client' : 'Server'}} logs
 	.row.py-3.sticky.top-0.glass
 		.input

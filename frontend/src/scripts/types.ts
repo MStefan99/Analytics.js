@@ -34,9 +34,9 @@ export type App = {
 
 export type AppOverview = {
 	currentUsers: number;
-	sessions: {[key: number]: number};
-	clientLogs: {[key: number]: {[key: number]: number}};
-	serverLogs: {[key: number]: {[key: number]: number}};
+	sessions: {[key: string]: number};
+	clientLogs: {[key: string]: {[key: string]: number}};
+	serverLogs: {[key: string]: {[key: string]: number}};
 };
 
 export type RealtimeAudience = {

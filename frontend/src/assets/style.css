@@ -85,6 +85,12 @@ a {
 	font-family: monospace;
 }
 
+.script {
+	@apply p-4 rounded;
+	background-color: var(--color-background);
+	color: var(--color-foreground);
+}
+
 .clickable {
 	cursor: pointer;
 }
@@ -187,7 +193,8 @@ td {
 
 input:not([type='checkbox']),
 select,
-button {
+button,
+.btn {
 	display: block;
 	padding: 0.5em 1ch;
 	border-radius: 10px;
@@ -198,7 +205,8 @@ button {
 	@apply my-2;
 }
 
-button {
+button,
+.btn {
 	color: var(--color-accent);
 	border: 0.1rem solid var(--color-accent);
 }

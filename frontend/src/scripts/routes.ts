@@ -3,6 +3,7 @@ import AppsView from '../views/AppsView.vue';
 import StatusView from '../views/StatusView.vue';
 import AudienceView from '../views/AudienceView.vue';
 import LogsView from '../views/LogsView.vue';
+import SetupView from '../views/SetupView.vue';
 import SettingsView from '../views/SettingsView.vue';
 
 const routes: Array<RouteRecordRaw> = [
@@ -32,6 +33,16 @@ const routes: Array<RouteRecordRaw> = [
 		path: '/apps/:id/logs/:type',
 		name: 'logs',
 		component: LogsView
+	},
+	{
+		path: '/apps/:id/setup',
+		name: 'setup',
+		component: SetupView
+	},
+	{
+		path: '/apps/:id/feedback',
+		name: 'feedback',
+		component: SettingsView
 	},
 	{
 		path: '/settings',

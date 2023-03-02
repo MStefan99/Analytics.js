@@ -1,29 +1,34 @@
 <template lang="pug">
-#overview(v-if="!!app")
+#app-status(v-if="!!app")
 	h1 {{app.name}} status
 	.row(v-if="overview")
-		.row.card.accent.m-4
-			.mx-4
-				h2 Active users
-				span.large {{overview.currentUsers}}
-			.mx-4
-				h2 Server errors
-				span.large {{logCount.server['3'] ?? 0}}
-			.mx-4
-				h2 Client errors
-				span.large {{logCount.client['3'] ?? 0}}
+		.card.accent.m-4
+			h2 Overview
+			.row
+				.mx-4
+					h2 Active users
+					span.large {{overview.currentUsers}}
+				.mx-4
+					h2 Server errors
+					span.large {{logCount.server['3'] ?? 0}}
+				.mx-4
+					h2 Client errors
+					span.large {{logCount.client['3'] ?? 0}}
+			.m-4
+				RouterLink.btn(:to="{name: 'setup', params: {id: $route.params.id}}") Set up
+				RouterLink.btn(:to="{name: 'feedback', params: {id: $route.params.id}}") Feedback
 		.card.m-4
 			h2 Page views
 			TimedChart(:data="viewsChart")
-			RouterLink(:to="{name: 'audience', params: {id: $route.params.id}}") View audience
+			RouterLink.btn(:to="{name: 'audience', params: {id: $route.params.id}}") View audience
 		.card.m-4
 			h2 Server logs
 			TimedChart(:data="serverChart")
-			RouterLink(:to="{name: 'logs', params: {id: $route.params.id, type: 'server'}}") View server logs
+			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'server'}}") View server logs
 		.card.m-4
 			h2 Client logs
 			TimedChart(:data="clientChart")
-			RouterLink(:to="{name: 'logs', params: {id: $route.params.id, type: 'client'}}") View client logs
+			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'client'}}") View client logs
 </template>
 
 <script setup lang="ts">
@@ -111,8 +116,8 @@ const logCount = computed(() => {
 	return {
 		server: overview.value.serverLogs
 			? Object.keys(overview.value.serverLogs).reduce<{[key: string]: number}>((prev, k) => {
-					prev[k] = Object.keys(overview.value.serverLogs[Number(k)]).reduce<number>(
-						(prev1, k1) => prev1 + overview.value.serverLogs[Number(k)][Number(k1)],
+					prev[k] = Object.keys(overview.value.serverLogs[k]).reduce<number>(
+						(prev1, k1) => prev1 + overview.value.serverLogs[k][k1],
 						0
 					);
 					return prev;
@@ -120,8 +125,8 @@ const logCount = computed(() => {
 			: null,
 		client: overview.value.clientLogs
 			? Object.keys(overview.value.clientLogs).reduce<{[key: string]: number}>((prev, k) => {
-					prev[k] = Object.keys(overview.value.clientLogs[Number(k)]).reduce<number>(
-						(prev1, k1) => prev1 + overview.value.clientLogs[Number(k)][Number(k1)],
+					prev[k] = Object.keys(overview.value.clientLogs[k]).reduce<number>(
+						(prev1, k1) => prev1 + overview.value.clientLogs[k][k1],
 						0
 					);
 					return prev;
