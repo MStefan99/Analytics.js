@@ -33,7 +33,7 @@ body {
 header {
 	padding: 1em 2em;
 	background-color: var(--color-accent);
-	color: var(--color-white);
+	color: var(--color-background);
 }
 
 nav {
@@ -83,8 +83,12 @@ a {
 	font-family: monospace;
 }
 
+.glass {
+	@apply bg-white/80 backdrop-blur-md;
+}
+
 h1 {
-	@apply text-4xl text-accent my-4;
+	@apply text-4xl text-accent my-4 pb-2 border-b;
 }
 
 h2 {
@@ -143,6 +147,9 @@ button {
 	display: block;
 	padding: 0.5em 1ch;
 	border-radius: 10px;
+	appearance: none;
+	color: var(--color-foreground);
+	background-color: var(--color-background);
 	border: 0.1rem solid var(--color-accent);
 	@apply my-2;
 }

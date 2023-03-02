@@ -1,8 +1,8 @@
 <template lang="pug">
 .log-viewer
 	h1 {{$route.params.type === 'client' ? 'Client' : 'Server'}} logs
-	.row.my-4
-		.input
+	.row.py-3.sticky.top-0.glass
+		.inputl
 			label(for="date-input") Starting from
 			DatePicker#date-input(type="date" v-model="startTime" @change="loadLogs()")
 		.input
