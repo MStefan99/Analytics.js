@@ -6,7 +6,7 @@
 			h2 Audience
 			p.mb-4 To start collecting audience data, please add the following script to every page of your website:
 			pre.code.snippet.
-				&lt;script async src="{{appState.backendURL + '/cc?k=' + app.audienceKey}}"&gt;
+				&lt;script async type="module" src="{{appState.backendURL + '/cc?k=' + app.audienceKey}}"&gt;
 				&lt;script&gt;
 					window.cc = window.cc || [];
 
@@ -26,10 +26,10 @@
 				You will use this key to collect telemetry data from your server, such as logs and crash reports, hardware load
 				and so on. This key is best kept private so that the data coming back can be fully trusted.
 				Here is your telemetry key:
-			.code.snippet.border.mb-4 {{app.audienceKey}}
+			.code.snippet.border.mb-4 {{app.telemetryKey}}
 		.card.m-4
 			h2 Edit app
-			form(@submit.prevent)
+			form(@submit.prevent="saveChanges()")
 				.mb-3
 					label(for="name-input") App name
 					input#name-input(type="text" name="name" v-model="app.name")
@@ -45,11 +45,18 @@ import {useRoute} from 'vue-router';
 import type {App} from '../scripts/types';
 import Api from '../scripts/api';
 import appState from '../scripts/store';
+import {alert, PopupColor} from '../scripts/popups';
 
 const route = useRoute();
 const app = ref<App | null>(null);
 
 Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
+
+function saveChanges() {
+	Api.apps
+		.edit(app.value)
+		.then(() => alert('Changes saved', PopupColor.Green, 'Changes saved successfully!'));
+}
 </script>
 
 <style scoped>

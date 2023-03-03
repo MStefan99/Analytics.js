@@ -176,6 +176,8 @@ export const AppAPI = {
 		request<App>('/apps', {auth: true, method: RequestMethod.POST, body: {name}}),
 	getAll: () => request<App[]>('/apps', {auth: true}),
 	getByID: (id: App['id']) => request<App>('/apps/' + id, {auth: true}),
+	edit: (app: App) =>
+		request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.PATCH, body: app}),
 	getOverview: (id: App['id']) => request<AppOverview>('/apps/' + id + '/overview', {auth: true}),
 	getRealtimeAudience: (id: App['id']) =>
 		request<RealtimeAudience>('/apps/' + id + '/now', {auth: true}),
@@ -185,7 +187,6 @@ export const AppAPI = {
 			auth: true,
 			query: {startTime: startTime?.toString() ?? '', level: level?.toString() ?? ''}
 		}),
-	edit: (): null => null,
 	delete: (): null => null
 };
 

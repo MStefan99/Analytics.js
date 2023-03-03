@@ -12,8 +12,8 @@ router.post('/register', hasCredentials(), async (ctx) => {
 	const body = await ctx.request.body({ type: 'json' }).value;
 
 	const user = await User.create(
-		body.username.trim(),
-		body.password,
+		body.username.toString().trim(),
+		body.password.toString(),
 	);
 	const session = await Session.create(
 		user,
@@ -28,7 +28,7 @@ router.post('/register', hasCredentials(), async (ctx) => {
 // Log in
 router.post('/login', hasCredentials(), async (ctx) => {
 	const body = await ctx.request.body({ type: 'json' }).value;
-	const user = await User.getByUsername(body.username.trim());
+	const user = await User.getByUsername(body.username.toString().trim());
 
 	if (user === null) {
 		ctx.response.status = 400;
@@ -37,7 +37,7 @@ router.post('/login', hasCredentials(), async (ctx) => {
 			message: 'User was not found',
 		};
 		return;
-	} else if (!(await user.verifyPassword(body.password))) {
+	} else if (!(await user.verifyPassword(body.password.toString()))) {
 		ctx.response.status = 400;
 		ctx.response.body = {
 			error: 'WRONG_PASSWORD',
@@ -91,8 +91,8 @@ router.patch('/me', hasBody(), auth.authenticated(), async (ctx) => {
 		return;
 	}
 
-	if (body.password?.length) {
-		await user.setPassword(body.password);
+	if (body.password.toString()?.length) {
+		await user.setPassword(body.password.toString());
 	}
 
 	await user.save();

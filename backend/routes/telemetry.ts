@@ -20,14 +20,14 @@ router.post('/metrics', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 
 	const body = await ctx.request.body({ type: 'json' }).value;
 	await app.createMetrics({
-		device: body.device,
-		cpu: body.cpu,
-		memFree: body.memFree,
-		memTotal: body.memTotal,
-		netUp: body.netUp,
-		netDown: body.netDown,
-		diskFree: body.diskFree,
-		diskTotal: body.diskTotal,
+		device: body.device.toString().trim(),
+		cpu: body.cpu.toString().trim(),
+		memFree: body.memFree.toString().trim(),
+		memTotal: body.memTotal.toString().trim(),
+		netUp: body.netUp.toString().trim(),
+		netDown: body.netDown.toString().trim(),
+		diskFree: body.diskFree.toString().trim(),
+		diskTotal: body.diskTotal.toString().trim(),
 	});
 
 	ctx.response.status = 201;
@@ -55,7 +55,11 @@ router.post('/logs', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 		return;
 	}
 
-	await app.createServerLog(body.message, body.level, body.tag);
+	await app.createServerLog(
+		body.message.toString().trim(),
+		+body.level,
+		body.tag.toString().trim(),
+	);
 
 	ctx.response.status = 201;
 });

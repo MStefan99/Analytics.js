@@ -36,7 +36,11 @@ router.post('/hits', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 			ctx.request.headers.get('accept-language') ?? undefined,
 		);
 
-	await app.createHit(client, body.url, body.referrer);
+	await app.createHit(
+		client,
+		body.url.toString().trim(),
+		body.referrer.toString().trim(),
+	);
 
 	ctx.response.status = 201;
 	ctx.response.body = {
@@ -66,7 +70,11 @@ router.post('/logs', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 		return;
 	}
 
-	await app.createClientLog(body.message, body.level, body.tag);
+	await app.createClientLog(
+		body.message.toString().trim(),
+		+body.level,
+		body.tag.toString().trim(),
+	);
 
 	ctx.response.status = 201;
 });
