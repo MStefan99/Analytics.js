@@ -1,5 +1,5 @@
 <template lang="pug">
-#app-status(v-if="!!app")
+#status(v-if="!!app")
 	h1 {{app.name}} status
 	.row(v-if="overview")
 		.card.accent.m-4
@@ -15,7 +15,7 @@
 					h2 Client errors
 					span.large {{logCount.client['3'] ?? 0}}
 			.m-4
-				RouterLink.btn(:to="{name: 'setup', params: {id: $route.params.id}}") Set up
+				RouterLink.btn(:to="{name: 'settings', params: {id: $route.params.id}}") Settings
 				RouterLink.btn(:to="{name: 'feedback', params: {id: $route.params.id}}") Feedback
 		.card.m-4
 			h2 Page views
@@ -147,6 +147,6 @@ onUnmounted(() => clearInterval(interval));
 
 <style>
 .row .card {
-	@apply basis-1/3;
+	flex-basis: 500px;
 }
 </style>

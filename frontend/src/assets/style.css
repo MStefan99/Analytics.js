@@ -75,8 +75,8 @@ a {
 	@apply flex flex-wrap justify-between;
 }
 
-.row * {
-	@apply max-w-full flex-grow flex-shrink;
+.row > * {
+	@apply min-w-0 max-w-full flex-grow flex-shrink;
 }
 
 .code {
@@ -143,15 +143,15 @@ a {
 }
 
 h1 {
-	@apply text-4xl text-accent my-4 pb-2 border-b;
+	@apply text-4xl text-accent mb-4 pb-2 border-b;
 }
 
 h2 {
-	@apply text-2xl my-3;
+	@apply text-2xl mb-3;
 }
 
 h3 {
-	@apply text-lg font-bold my-2;
+	@apply text-lg font-bold mb-2;
 }
 
 table {

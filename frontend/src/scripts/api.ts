@@ -1,14 +1,15 @@
 import appState from './store';
 import type {
+	NewApp,
 	App,
 	AppOverview,
 	DayAudience,
-	Log,
 	NewUser,
 	RealtimeAudience,
 	Session,
 	UpdateUser,
-	User
+	User,
+	Log
 } from './types';
 
 type MessageResponse = {
@@ -172,8 +173,7 @@ export const SessionAPI = {
 };
 
 export const AppAPI = {
-	add: (name: string) =>
-		request<App>('/apps', {auth: true, method: RequestMethod.POST, body: {name}}),
+	add: (app: NewApp) => request<App>('/apps', {auth: true, method: RequestMethod.POST, body: app}),
 	getAll: () => request<App[]>('/apps', {auth: true}),
 	getByID: (id: App['id']) => request<App>('/apps/' + id, {auth: true}),
 	edit: (app: App) =>
@@ -187,7 +187,7 @@ export const AppAPI = {
 			auth: true,
 			query: {startTime: startTime?.toString() ?? '', level: level?.toString() ?? ''}
 		}),
-	delete: (): null => null
+	delete: (app: App) => request('/apps/' + app.id, {auth: true, method: RequestMethod.DELETE})
 };
 
 export default {

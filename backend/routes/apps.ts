@@ -79,9 +79,14 @@ router.post('/', hasBody(), auth.authenticated(), async (ctx) => {
 			error: 'NO_NAME',
 			message: 'App name needs to be provided',
 		};
+		return;
 	}
 
-	const app = await App.create(user, body.name.toString().trim());
+	const app = await App.create(
+		user,
+		body.name.toString().trim(),
+		body.description.toString().trim(),
+	);
 	await initApp(app.id);
 
 	ctx.response.status = 201;
@@ -97,20 +102,21 @@ router.get('/:id', auth.authenticated(), async (ctx) => {
 router.patch('/:id', hasBody(), auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 
-	if (app) {
-		const body = await ctx.request.body({ type: 'json' }).value;
-
-		if (body.name) {
-			app.name = body.name.toString().trim();
-		}
-
-		if (body.description) {
-			app.description = body.description.toString().trim();
-		}
-
-		app.save();
-		ctx.response.body = app;
+	if (!app) {
+		return;
 	}
+
+	const body = await ctx.request.body({ type: 'json' }).value;
+	if (body.name) {
+		app.name = body.name.toString().trim();
+	}
+
+	if (body.description) {
+		app.description = body.description.toString().trim();
+	}
+
+	app.save();
+	ctx.response.body = app;
 });
 
 router.get('/:id/overview', auth.authenticated(), async (ctx) => {
@@ -163,6 +169,17 @@ router.get('/:id/logs/client', auth.authenticated(), async (ctx) => {
 	const level = params.has('level') ? +(params.get('level') as string) : 0;
 
 	ctx.response.body = await app.getClientLogs(startTime, level);
+});
+
+router.delete('/:id', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	if (!app) {
+		return;
+	}
+
+	app.delete(false);
+	ctx.response.body = app;
 });
 
 export default router;

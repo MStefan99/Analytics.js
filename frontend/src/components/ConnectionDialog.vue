@@ -1,7 +1,7 @@
 <template lang="pug">
 .popup-wrapper(@click.self="$emit('close')")
 	.popup
-		p.text-2xl.mb-4.font-semibold.popup-title Sign in
+		h2.popup-title Sign in
 		.popup-content
 			form(@submit.prevent="connect()")
 				.mb-3
@@ -126,8 +126,4 @@ function register() {
 }
 </script>
 
-<style scoped>
-label {
-	@apply block mb-2;
-}
-</style>
+<style scoped></style>

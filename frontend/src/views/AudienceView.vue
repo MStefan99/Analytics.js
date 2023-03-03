@@ -1,5 +1,5 @@
 <template lang="pug">
-#audience(v-if="!!app")
+#audience(v-if="app")
 	h1 {{app.name}} audience
 	.row
 		.card.accent.m-4(v-if="realtimeAudience")
@@ -96,4 +96,8 @@ function avgSession(seconds: number): string {
 onUnmounted(() => clearInterval(interval));
 </script>
 
-<style scoped></style>
+<style scoped>
+.row .card {
+	flex-basis: 400px;
+}
+</style>

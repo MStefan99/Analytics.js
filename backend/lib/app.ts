@@ -1,4 +1,4 @@
-import openDB from './db.ts';
+import openDB, { deleteDB } from './db.ts';
 import User from './user.ts';
 import { encode as hexEncode } from '../deps.ts';
 
@@ -410,7 +410,7 @@ class App {
 		return m;
 	}
 
-	async delete(): Promise<void> {
+	async delete(keepDB = false): Promise<void> {
 		const db = await openDB();
 		await db.queryEntries(
 			`delete
@@ -418,6 +418,10 @@ class App {
        where id = ?`,
 			[this.id],
 		);
+
+		if (!keepDB) {
+			deleteDB(this.id);
+		}
 	}
 }
 

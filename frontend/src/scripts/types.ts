@@ -23,10 +23,13 @@ export type Session = {
 	time: number;
 };
 
-export type App = {
-	id: number;
+export type NewApp = {
 	name: string;
-	description: string;
+	description?: string;
+};
+
+export type App = NewApp & {
+	id: number;
 	audienceKey: string;
 	telemetryKey: string;
 	ownerID: number;

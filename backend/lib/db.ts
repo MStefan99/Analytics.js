@@ -26,7 +26,9 @@ export async function openDB(name?: string | number): Promise<DB> {
 	}
 }
 
-export async function deleteDB(nameString: string) {
+export async function deleteDB(name: string | number) {
+	const nameString = name?.toString() ?? '';
+
 	nameString.length && await Deno.remove(`./db/apps/${nameString}.sqlite`);
 }
 

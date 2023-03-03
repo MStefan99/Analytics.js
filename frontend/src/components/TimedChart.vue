@@ -1,5 +1,5 @@
 <template lang="pug">
-.chart.relative
+.chart.relative(ref="chart")
 	Bar(:data="chartData" :options="options")
 </template>
 
@@ -17,7 +17,7 @@ import {
 	LinearScale
 	//@ts-ignore
 } from 'chart.js';
-import {computed, ref} from 'vue';
+import {computed, onUnmounted, ref} from 'vue';
 
 const props = defineProps<{
 	data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
@@ -26,10 +26,44 @@ const props = defineProps<{
 const sessionLength = 60 * 1000;
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+const chart = ref(null);
+let lastResize = Date.now();
+
+function updateResized() {
+	lastResize = Date.now();
+}
+
+window.addEventListener('resize', updateResized);
+onUnmounted(() => window.removeEventListener('resize', updateResized));
 
 const options = ref({
 	responsive: true,
 	maintainAspectRatio: false,
+	onResize(c: unknown, size: {width: number; height: number}) {
+		// Attempts to fix Chart.js resize flickering
+		// TODO: might not work in all situations
+		if (Date.now() - lastResize < 20) {
+			return; // Regular window resize
+		}
+
+		if (chart.value.parentNode.clientWidth > size.width) {
+			return; // Size is probably already fine
+		}
+
+		console.log('Chart resize loop detected, attempting to fix');
+		const computedStyle = window.getComputedStyle(chart.value.parentNode);
+		chart.value.parentNode.style.width =
+			chart.value.parentNode.clientWidth -
+			parseFloat(computedStyle.paddingLeft) -
+			parseFloat(computedStyle.paddingRight) +
+			'px';
+
+		// Attempting again if everything else failed
+		chart.value.parentNode.clientWidth < size.width &&
+			setTimeout(() => {
+				options.value.onResize(c, {width: chart.value.parentNode.clientWidth, height: size.height});
+			});
+	},
 	scales: {
 		x: {stacked: true, ticks: {color: props.color ?? '#000000'}},
 		y: {stacked: true, ticks: {color: props.color ?? '#000000'}}
