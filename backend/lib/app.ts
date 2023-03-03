@@ -153,8 +153,8 @@ class App {
 		name: string,
 		description?: string,
 	): Promise<App> {
-		const audienceKey = getRandomString(32);
-		const telemetryKey = getRandomString(32);
+		const audienceKey = getRandomString(8);
+		const telemetryKey = getRandomString(8);
 
 		const db = await openDB();
 		await db.queryEntries(

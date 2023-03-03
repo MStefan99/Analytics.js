@@ -2,13 +2,11 @@ import { Context, Router } from '../deps.ts';
 
 import auth from '../lib/auth.ts';
 import App from '../lib/app.ts';
-import { getBody, hasBody } from './middleware.ts';
+import { hasBody } from './middleware.ts';
 import { initApp } from '../lib/init.ts';
 import analyzer from '../lib/analyzer.ts';
 
 const dayLength = 1000 * 60 * 60 * 24;
-const clamp = (num: number, min: number, max: number) =>
-	Math.min(Math.max(num, min), max);
 
 const router = new Router({
 	prefix: '/apps',

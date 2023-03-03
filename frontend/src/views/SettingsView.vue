@@ -1,6 +1,7 @@
 <template lang="pug">
 #settings
-	h2.text-accent.text-2xl.mb-4 Settings
+	h1 Settings
+	h2 Username and password
 	.mb-2
 		span You are logged in as
 			|
@@ -21,7 +22,7 @@
 		p.mb-2.text-red(v-if="(updateUser.password ?? '') !== passwordRepeat") Passwords do not match
 		button(type="submit" :disabled="!passwordsMatch") Save
 	.sessions
-		h3.text-accent.text-xl.my-4 Active sessions
+		h2 Active sessions
 		table.w-full
 			thead
 				tr

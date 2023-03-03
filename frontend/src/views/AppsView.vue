@@ -2,11 +2,11 @@
 #apps
 	h1 Your apps
 	#apps-container(v-if="apps.length")
-		RouterLink.block.card.m-0(
+		RouterLink.block.card.my-4(
 			v-for="app in apps"
 			:key="app.id"
 			:to="{name: 'overview', params: {id: app.id}}")
-			h2 {{app.name}} app
+			h2 {{app.name}}
 			p {{app.description}}
 		.d-flex
 			button.mt-4 Add an app

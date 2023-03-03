@@ -14,7 +14,7 @@ html {
 	--color-muted: #888;
 	--color-light: #ccc;
 	--color-accent: #258600;
-	--color-secondary: #017375;
+	--color-gradient: #017375;
 
 	--color-overlay: #fffb;
 	--color-shadow: #0001;
@@ -32,10 +32,10 @@ body {
 }
 
 header {
-	padding: 1em 2em;
-	background-image: linear-gradient(90deg, var(--color-accent), var(--color-secondary));
+	padding: 1rem 2rem;
+	background-image: linear-gradient(90deg, var(--color-accent), var(--color-gradient));
 	color: var(--color-background);
-	border-radius: 0 0 1em 1em;
+	border-radius: 0 0 1rem 1rem;
 }
 
 nav {
@@ -49,7 +49,7 @@ nav span a:not(:last-child) {
 }
 
 main {
-	margin: 1em auto;
+	margin: 1rem auto;
 	flex-grow: 1;
 	max-width: min(90vw, 1440px);
 }
@@ -58,7 +58,7 @@ footer {
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: space-between;
-	padding: 1em 2em;
+	padding: 1rem 2rem;
 	background-color: #f2f2f2;
 }
 
@@ -85,7 +85,7 @@ a {
 	font-family: monospace;
 }
 
-.script {
+.snippet {
 	@apply p-4 rounded;
 	background-color: var(--color-background);
 	color: var(--color-foreground);
@@ -128,7 +128,7 @@ a {
 
 .popup .popup-title {
 	color: var(--color-background);
-	background-color: var(--color-accent);
+	background-image: linear-gradient(90deg, var(--color-accent), var(--color-gradient));
 }
 
 .popup-enter-from,
@@ -161,12 +161,12 @@ table {
 table.cells td,
 table.cells th {
 	@apply border;
-	padding: 0.2em 1ch;
+	padding: 0.2rem 1ch;
 }
 
 th,
 td {
-	padding: 0.2em 0.2ch;
+	padding: 0.2rem 0.2ch;
 }
 
 .large {
@@ -180,23 +180,24 @@ td {
 }
 
 .card {
-	border-radius: 8px;
-	padding: 1em 2ch;
+	border-radius: 1rem;
+	padding: 1rem 2ch;
 	border: 1px solid var(--color-shadow);
-	box-shadow: 0 0.25em 0.5em var(--color-shadow);
+	box-shadow: 0 0.25rem 0.5rem var(--color-shadow);
 }
 
 .card.accent {
 	@apply text-white;
-	background-image: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
+	background-image: linear-gradient(135deg, var(--color-accent), var(--color-gradient));
 }
 
 input:not([type='checkbox']),
+textarea,
 select,
 button,
 .btn {
 	display: block;
-	padding: 0.5em 1ch;
+	padding: 0.5rem 1ch;
 	border-radius: 10px;
 	appearance: none;
 	color: var(--color-foreground);
@@ -212,7 +213,7 @@ button,
 }
 
 .log-level {
-	padding: 0.5em 0.5ch;
+	padding: 0.5rem 0.5ch;
 	text-align: center;
 }
 
