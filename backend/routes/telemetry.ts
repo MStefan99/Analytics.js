@@ -58,7 +58,7 @@ router.post('/logs', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 	await app.createServerLog(
 		body.message.toString().trim(),
 		+body.level,
-		body.tag.toString().trim(),
+		body.tag?.toString()?.trim(),
 	);
 
 	ctx.response.status = 201;

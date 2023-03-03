@@ -20,7 +20,7 @@
 		.card.m-4
 			h2 Traffic
 			h3 Most popular pages
-			table(v-if="pages")
+			table.cells(v-if="pages")
 				thead
 					tr
 						td Page
@@ -31,7 +31,7 @@
 							a.underline(:href="page.url") {{page.url}}
 						td {{page.hits}}
 			h3 Top referrals
-			table(v-if="referrers")
+			table.cells(v-if="referrers")
 				thead
 					tr
 						td Source
@@ -39,7 +39,7 @@
 				tbody
 					tr(v-for="referrer of referrers" :key="referrer.url")
 						td
-							a.underline(:href="referrer.url") {{referrer.url}}
+							a.underline(:href="referrer.url || undefined") {{referrer.url || 'Unknown'}}
 						td {{referrer.count}}
 </template>
 

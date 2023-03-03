@@ -6,12 +6,11 @@
 			h2 Audience
 			p.mb-4 To start collecting audience data, please add the following script to every page of your website:
 			pre.code.snippet.
-				&lt;script async type="module" src="{{appState.backendURL + '/cc?k=' + app.audienceKey}}"&gt;
 				&lt;script&gt;
-					window.cc = window.cc || [];
-
-					window.cc.pop(); // This line will record every time the page is opened.
+					window.cc = [];
+					window.ccm = false; // Change to true to disable automatic logging
 				&lt;/script&gt;
+				&lt;script async type="module" src="{{appState.backendURL + '/cc?k=' + app.audienceKey}}"&gt;&lt;/script&gt;
 		.card.m-4
 			h2 Keys
 			h3 Audience Key
@@ -37,10 +36,8 @@
 					label(for="description-input") App description
 					textarea#description-input.w-full(placeholder="Description" v-model="app.description")
 				button.w-full(type="submit") Save changes
-		.card.m-4
-			h2 Delete app
-			p.text-rose-500 Warning! This will delete the app and all the collected data!
-			button.w-full(type="button") Delete app
+			.mt-4
+				button.w-full.red(type="button" @click="deleteApp()") Delete app
 </template>
 
 <script setup lang="ts">
@@ -49,7 +46,7 @@ import {useRoute} from 'vue-router';
 import type {App} from '../scripts/types';
 import Api from '../scripts/api';
 import appState from '../scripts/store';
-import {alert, PopupColor} from '../scripts/popups';
+import {alert, confirm, PopupColor} from '../scripts/popups';
 
 const route = useRoute();
 const app = ref<App | null>(null);
@@ -61,10 +58,26 @@ function saveChanges() {
 		.edit(app.value)
 		.then(() => alert('Changes saved', PopupColor.Green, 'Changes saved successfully!'));
 }
+
+async function deleteApp() {
+	if (
+		!(await confirm(
+			'Are you sure you want to delete ' + app.value.name + '?',
+			PopupColor.Red,
+			'Warning, all application data will be deleted. Please confirm to proceed.'
+		))
+	) {
+		return;
+	}
+
+	Api.apps.delete(app.value).then((a) => {
+		alert(a.name + ' deleted', PopupColor.Green, 'App was successfully deleted');
+	});
+}
 </script>
 
 <style scoped>
 .row .card {
-	flex-basis: 350px;
+	flex-basis: 500px;
 }
 </style>

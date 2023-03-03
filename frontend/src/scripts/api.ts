@@ -187,7 +187,7 @@ export const AppAPI = {
 			auth: true,
 			query: {startTime: startTime?.toString() ?? '', level: level?.toString() ?? ''}
 		}),
-	delete: (app: App) => request('/apps/' + app.id, {auth: true, method: RequestMethod.DELETE})
+	delete: (app: App) => request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.DELETE})
 };
 
 export default {

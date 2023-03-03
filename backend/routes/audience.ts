@@ -73,7 +73,7 @@ router.post('/logs', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	await app.createClientLog(
 		body.message.toString().trim(),
 		+body.level,
-		body.tag.toString().trim(),
+		body.tag?.toString()?.trim(),
 	);
 
 	ctx.response.status = 201;
