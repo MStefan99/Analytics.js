@@ -2,9 +2,10 @@ import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
 import AppsView from '../views/AppsView.vue';
 import StatusView from '../views/StatusView.vue';
 import AudienceView from '../views/AudienceView.vue';
-import LogsView from '../views/LogsView.vue';
+import LogView from '../views/LogView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import ProfileView from '../views/ProfileView.vue';
+import FeedbackView from '../views/FeedbackView.vue';
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -32,7 +33,7 @@ const routes: Array<RouteRecordRaw> = [
 	{
 		path: '/apps/:id/logs/:type',
 		name: 'logs',
-		component: LogsView
+		component: LogView
 	},
 	{
 		path: '/apps/:id/settings',
@@ -42,7 +43,7 @@ const routes: Array<RouteRecordRaw> = [
 	{
 		path: '/apps/:id/feedback',
 		name: 'feedback',
-		component: SettingsView
+		component: FeedbackView
 	},
 	{
 		path: '/profile',

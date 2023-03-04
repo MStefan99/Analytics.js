@@ -68,3 +68,8 @@ export type Log = {
 	message: string;
 	level: number;
 };
+
+export type Feedback = {
+	time: number;
+	message: string;
+};

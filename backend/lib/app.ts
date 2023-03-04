@@ -85,7 +85,7 @@ export class Log {
 	}
 }
 
-type MetricsBase = {
+export type NewMetrics = {
 	device?: string;
 	cpu?: string;
 	memFree?: string;
@@ -96,7 +96,15 @@ type MetricsBase = {
 	diskTotal?: string;
 };
 
-export type Metrics = { time: number } & MetricsBase;
+export type Metrics = { time: number } & NewMetrics;
+
+export type NewFeedback = {
+	message: string;
+};
+
+export type Feedback = {
+	time: number;
+} & NewFeedback;
 
 type AppProps = {
 	id: number;
@@ -131,7 +139,7 @@ class App {
 				`insert or
          replace
          into apps(id,
-                    name,
+                   name,
                    description,
                    audience_key,
                    telemetry_key,
@@ -253,8 +261,8 @@ class App {
 		const db = await openDB(this.id);
 		await db.queryEntries<ClientProps>(
 			`insert into clients(id,
-                            ua,
-                            lang)
+                           ua,
+                           lang)
        values (?, ?, ?)`,
 			[
 				id,
@@ -288,7 +296,7 @@ class App {
 
 		await db.query(
 			`insert into hits(client_id, url, referrer, time)
-     values (?, ?, ?, ?)`,
+       values (?, ?, ?, ?)`,
 			[
 				client.id,
 				url,
@@ -324,7 +332,8 @@ class App {
 		const time = Date.now();
 
 		db.query(
-			`insert into client_logs(time, tag, message, level) values(?,?,?,?)`,
+			`insert into client_logs(time, tag, message, level)
+       values (?, ?, ?, ?)`,
 			[
 				time,
 				tag ?? null,
@@ -345,7 +354,11 @@ class App {
 		const db = await openDB(this.id);
 
 		const rows = await db.queryEntries<LogProps>(
-			`select * from client_logs where time >= ? and level >= ? limit 5000`,
+			`select *
+       from client_logs
+       where time >= ?
+         and level >= ?
+       limit 5000`,
 			[startTime, level],
 		);
 
@@ -357,7 +370,8 @@ class App {
 		const time = Date.now();
 
 		db.query(
-			`insert into server_logs(time, tag, message, level) values(?,?,?,?)`,
+			`insert into server_logs(time, tag, message, level)
+       values (?, ?, ?, ?)`,
 			[
 				time,
 				tag ?? null,
@@ -378,20 +392,24 @@ class App {
 		const db = await openDB(this.id);
 
 		const rows = await db.queryEntries<LogProps>(
-			`select * from server_logs where time >= ? and level >= ? limit 5000`,
+			`select *
+       from server_logs
+       where time >= ?
+         and level >= ?
+       limit 5000`,
 			[startTime, level],
 		);
 
 		return rows.map<Log>((r) => new Log(r));
 	}
 
-	async createMetrics(metrics: MetricsBase): Promise<Metrics> {
+	async createMetrics(metrics: NewMetrics): Promise<Metrics> {
 		const db = await openDB(this.id);
 		const time = Date.now();
 
 		db.query(
 			`insert into metrics(time, device, cpu, mem_free, mem_total, net_up, net_down, disk_free, disk_total)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			[
 				time,
 				metrics.device,
@@ -408,6 +426,45 @@ class App {
 		const m = metrics as Metrics;
 		m.time = time;
 		return m;
+	}
+
+	async getMetrics(startTime: number): Promise<Metrics[]> {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<Metrics>(
+			`select *
+       from metrics
+       where time > ?
+       limit 5000`,
+			[startTime],
+		);
+	}
+
+	async createFeedback(feedback: NewFeedback): Promise<Feedback> {
+		const db = await openDB(this.id);
+		const time = Date.now();
+
+		db.query(
+			`insert into feedback(time, message)
+              values (?, ?)`,
+			[time, feedback.message],
+		);
+
+		const f = feedback as Feedback;
+		f.time = time;
+		return f;
+	}
+
+	async getFeedback(startTime: number): Promise<Feedback[]> {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<Feedback>(
+			`select *
+       from feedback
+       where time > ?
+       limit 5000`,
+			[startTime],
+		);
 	}
 
 	async delete(keepDB = false): Promise<void> {

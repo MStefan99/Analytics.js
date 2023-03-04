@@ -187,6 +187,11 @@ export const AppAPI = {
 			auth: true,
 			query: {startTime: startTime?.toString() ?? '', level: level?.toString() ?? ''}
 		}),
+	getFeedbacks: (id: App['id'], startTime?: number) =>
+		request<Log[]>('/apps/' + id + '/feedback', {
+			auth: true,
+			query: {startTime: startTime?.toString() ?? ''}
+		}),
 	delete: (app: App) => request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.DELETE})
 };
 

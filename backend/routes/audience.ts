@@ -101,7 +101,7 @@ router.post('/feedback', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 		return;
 	}
 
-	// TODO: create feedback
+	app.createFeedback({ message: body.message });
 
 	ctx.response.status = 201;
 });
