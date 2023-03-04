@@ -21,13 +21,13 @@ router.post('/metrics', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 	const body = await ctx.request.body({ type: 'json' }).value;
 	await app.createMetrics({
 		device: body.device.toString().trim(),
-		cpu: body.cpu.toString().trim(),
-		memFree: body.memFree.toString().trim(),
-		memTotal: body.memTotal.toString().trim(),
-		netUp: body.netUp.toString().trim(),
-		netDown: body.netDown.toString().trim(),
-		diskFree: body.diskFree.toString().trim(),
-		diskTotal: body.diskTotal.toString().trim(),
+		cpu: +body.cpu,
+		memUsed: +body.memFree,
+		memTotal: +body.memTotal,
+		netUp: +body.netUp,
+		netDown: +body.netDown,
+		diskUsed: +body.diskFree,
+		diskTotal: +body.diskTotal,
 	});
 
 	ctx.response.status = 201;

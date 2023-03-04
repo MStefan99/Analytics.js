@@ -187,6 +187,22 @@ router.get('/:id/feedback', auth.authenticated(), async (ctx) => {
 	ctx.response.body = await app.getFeedback(startTime);
 });
 
+router.get('/:id/metrics', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+	if (!app) {
+		return;
+	}
+
+	const now = Date.now();
+	const params = new URLSearchParams(ctx.request.url.search);
+
+	const startTime = params.has('startTime')
+		? +(params?.get('startTime') as string)
+		: now - dayLength;
+
+	ctx.response.body = await app.getMetrics(startTime);
+});
+
 router.delete('/:id', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 

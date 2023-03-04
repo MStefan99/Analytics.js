@@ -3,9 +3,10 @@ import AppsView from '../views/AppsView.vue';
 import StatusView from '../views/StatusView.vue';
 import AudienceView from '../views/AudienceView.vue';
 import LogView from '../views/LogView.vue';
+import FeedbackView from '../views/FeedbackView.vue';
+import SystemView from '../views/SystemView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import ProfileView from '../views/ProfileView.vue';
-import FeedbackView from '../views/FeedbackView.vue';
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -36,14 +37,15 @@ const routes: Array<RouteRecordRaw> = [
 		component: LogView
 	},
 	{
-		path: '/apps/:id/settings',
-		name: 'settings',
-		component: SettingsView
-	},
-	{
 		path: '/apps/:id/feedback',
 		name: 'feedback',
 		component: FeedbackView
+	},
+	{path: '/apps/:id/system', name: 'system', component: SystemView},
+	{
+		path: '/apps/:id/settings',
+		name: 'settings',
+		component: SettingsView
 	},
 	{
 		path: '/profile',

@@ -9,7 +9,8 @@ import type {
 	Session,
 	UpdateUser,
 	User,
-	Log
+	Log,
+	Metrics
 } from './types';
 
 type MessageResponse = {
@@ -189,6 +190,11 @@ export const AppAPI = {
 		}),
 	getFeedbacks: (id: App['id'], startTime?: number) =>
 		request<Log[]>('/apps/' + id + '/feedback', {
+			auth: true,
+			query: {startTime: startTime?.toString() ?? ''}
+		}),
+	getMetrics: (id: App['id'], startTime?: number) =>
+		request<Metrics[]>('/apps/' + id + '/metrics', {
 			auth: true,
 			query: {startTime: startTime?.toString() ?? ''}
 		}),

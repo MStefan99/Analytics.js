@@ -26,11 +26,12 @@ import {computed, onUnmounted, ref} from 'vue';
 const props = defineProps<{
 	data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
 	area?: true;
-	suggestedMin?: number;
-	suggestedMax?: number;
+	min?: number;
+	max?: number;
 	color?: string;
 }>();
-const sessionLength = 60 * 1000;
+const minuteLength = 60 * 1000;
+const showMinutes = 30;
 
 ChartJS.register(
 	Title,
@@ -86,33 +87,39 @@ const options = ref({
 		y: {
 			stacked: true,
 			ticks: {color: props.color ?? '#000'},
-			suggestedMin: props.suggestedMin,
-			suggestedMax: props.suggestedMax
+			min: props.min,
+			max: props.max
 		}
 	},
 	plugins: {legend: {labels: {color: props.color ?? '#000'}}}
 });
 const labels: string[] = [];
-for (let i = 0; i <= 30; ++i) {
-	labels.push(30 - i + ' min');
+for (let i = 0; i <= showMinutes; ++i) {
+	labels.push(showMinutes - i + ' min');
 }
 
 const chartData = computed(() => {
 	const datasets: {label: string; backgroundColor: string; data: number[]}[] = [];
-	const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 30;
+	const now = Date.now();
 
 	for (const series of props.data) {
 		const dataset = {
 			label: series.label,
 			backgroundColor: props.area ? transparentize(series.color, 0.35) : series.color,
-			data: [] as number[],
+			data: new Array(showMinutes + 1).fill(0),
 			tension: 0.4,
 			borderColor: series.color,
 			fill: 'origin'
 		};
 
-		for (let i = 0; i <= 30; ++i) {
-			dataset.data[i] = series.data?.[startTime + sessionLength * i] ?? 0;
+		if (series.data) {
+			for (const time of Object.keys(series.data)) {
+				const minutes = showMinutes - Math.floor((now - +time) / minuteLength);
+
+				if (minutes <= showMinutes * minuteLength) {
+					dataset.data[minutes] = series.data[time];
+				}
+			}
 		}
 
 		datasets.push(dataset);

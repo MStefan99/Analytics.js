@@ -69,6 +69,18 @@ export type Log = {
 	level: number;
 };
 
+export type Metrics = {
+	time: number;
+	device?: string;
+	cpu?: number;
+	memUsed?: number;
+	memTotal?: number;
+	netUp?: number;
+	netDown?: number;
+	diskUsed?: number;
+	diskTotal?: number;
+};
+
 export type Feedback = {
 	time: number;
 	message: string;

@@ -15,8 +15,9 @@
 					h2 Client errors
 					span.large {{logCount.client['3'] ?? 0}}
 			.m-4
-				RouterLink.btn(:to="{name: 'settings', params: {id: $route.params.id}}") Settings
 				RouterLink.btn(:to="{name: 'feedback', params: {id: $route.params.id}}") Feedback
+				RouterLink.btn(:to="{name: 'system', params: {id: $route.params.id}}") System
+				RouterLink.btn(:to="{name: 'settings', params: {id: $route.params.id}}") Settings
 		.card.m-4
 			h2 Page views
 			TimedChart(:data="viewsChart")

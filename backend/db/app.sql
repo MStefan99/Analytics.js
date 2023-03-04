@@ -37,11 +37,11 @@ create table metrics
 	time       integer not null,
 	device     varchar(200),
 	cpu        integer,
-	mem_free   integer,
+	mem_used   integer,
 	mem_total  integer,
 	net_up     integer,
 	net_down   integer,
-	disk_free  integer,
+	disk_used  integer,
 	disk_total integer
 );
 

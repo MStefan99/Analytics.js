@@ -85,19 +85,6 @@ export class Log {
 	}
 }
 
-export type NewMetrics = {
-	device?: string;
-	cpu?: string;
-	memFree?: string;
-	memTotal?: string;
-	netUp?: string;
-	netDown?: string;
-	diskFree?: string;
-	diskTotal?: string;
-};
-
-export type Metrics = { time: number } & NewMetrics;
-
 export type NewFeedback = {
 	message: string;
 };
@@ -105,6 +92,19 @@ export type NewFeedback = {
 export type Feedback = {
 	time: number;
 } & NewFeedback;
+
+export type NewMetrics = {
+	device?: string;
+	cpu?: number;
+	memUsed?: number;
+	memTotal?: number;
+	netUp?: number;
+	netDown?: number;
+	diskUsed?: number;
+	diskTotal?: number;
+};
+
+export type Metrics = { time: number } & NewMetrics;
 
 type AppProps = {
 	id: number;
@@ -403,43 +403,6 @@ class App {
 		return rows.map<Log>((r) => new Log(r));
 	}
 
-	async createMetrics(metrics: NewMetrics): Promise<Metrics> {
-		const db = await openDB(this.id);
-		const time = Date.now();
-
-		db.query(
-			`insert into metrics(time, device, cpu, mem_free, mem_total, net_up, net_down, disk_free, disk_total)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-			[
-				time,
-				metrics.device,
-				metrics.cpu,
-				metrics.memFree,
-				metrics.memTotal,
-				metrics.netUp,
-				metrics.netDown,
-				metrics.diskFree,
-				metrics.diskTotal,
-			],
-		);
-
-		const m = metrics as Metrics;
-		m.time = time;
-		return m;
-	}
-
-	async getMetrics(startTime: number): Promise<Metrics[]> {
-		const db = await openDB(this.id);
-
-		return await db.queryEntries<Metrics>(
-			`select *
-       from metrics
-       where time > ?
-       limit 5000`,
-			[startTime],
-		);
-	}
-
 	async createFeedback(feedback: NewFeedback): Promise<Feedback> {
 		const db = await openDB(this.id);
 		const time = Date.now();
@@ -461,6 +424,51 @@ class App {
 		return await db.queryEntries<Feedback>(
 			`select *
        from feedback
+       where time > ?
+       limit 5000`,
+			[startTime],
+		);
+	}
+
+	async createMetrics(metrics: NewMetrics): Promise<Metrics> {
+		const db = await openDB(this.id);
+		const time = Date.now();
+
+		db.query(
+			`insert into metrics(time, device, cpu, mem_used, mem_total, net_up, net_down, disk_used, disk_total)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			[
+				time,
+				metrics.device,
+				metrics.cpu,
+				metrics.memUsed,
+				metrics.memTotal,
+				metrics.netUp,
+				metrics.netDown,
+				metrics.diskUsed,
+				metrics.diskTotal,
+			],
+		);
+
+		const m = metrics as Metrics;
+		m.time = time;
+		return m;
+	}
+
+	async getMetrics(startTime: number): Promise<Metrics[]> {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<Metrics>(
+			`select time,
+              device,
+              cpu,
+              mem_used as memUsed,
+              mem_total as memTotal,
+              net_up as netUp,
+              net_down as netDown,
+              disk_used as diskUsed,
+              disk_total as diskTotal
+       from metrics
        where time > ?
        limit 5000`,
 			[startTime],
