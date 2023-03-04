@@ -1,11 +1,12 @@
 <template lang="pug">
 .chart.relative(ref="chart")
-	Bar(:data="chartData" :options="options")
+	Line(v-if="area" :data="chartData" :options="options")
+	Bar(v-else :data="chartData" :options="options")
 </template>
 
 <script setup lang="ts">
 //@ts-ignore
-import {Bar} from 'vue-chartjs';
+import {Bar, Line} from 'vue-chartjs';
 
 import {
 	Chart as ChartJS,
@@ -14,18 +15,34 @@ import {
 	Legend,
 	BarElement,
 	CategoryScale,
-	LinearScale
+	LinearScale,
+	PointElement,
+	LineElement,
+	Filler
 	//@ts-ignore
 } from 'chart.js';
 import {computed, onUnmounted, ref} from 'vue';
 
 const props = defineProps<{
 	data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
+	area?: true;
+	suggestedMin?: number;
+	suggestedMax?: number;
 	color?: string;
 }>();
 const sessionLength = 60 * 1000;
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+ChartJS.register(
+	Title,
+	Tooltip,
+	Legend,
+	BarElement,
+	CategoryScale,
+	LinearScale,
+	PointElement,
+	LineElement,
+	Filler
+);
 const chart = ref(null);
 let lastResize = Date.now();
 
@@ -65,10 +82,15 @@ const options = ref({
 			});
 	},
 	scales: {
-		x: {stacked: true, ticks: {color: props.color ?? '#000000'}},
-		y: {stacked: true, ticks: {color: props.color ?? '#000000'}}
+		x: {stacked: true, ticks: {color: props.color ?? '#000'}},
+		y: {
+			stacked: true,
+			ticks: {color: props.color ?? '#000'},
+			suggestedMin: props.suggestedMin,
+			suggestedMax: props.suggestedMax
+		}
 	},
-	plugins: {legend: {labels: {color: props.color ?? '#000000'}}}
+	plugins: {legend: {labels: {color: props.color ?? '#000'}}}
 });
 const labels: string[] = [];
 for (let i = 0; i <= 30; ++i) {
@@ -80,7 +102,14 @@ const chartData = computed(() => {
 	const startTime = Date.now() - (Date.now() % sessionLength) - sessionLength * 30;
 
 	for (const series of props.data) {
-		const dataset = {label: series.label, backgroundColor: series.color, data: [] as number[]};
+		const dataset = {
+			label: series.label,
+			backgroundColor: props.area ? transparentize(series.color, 0.35) : series.color,
+			data: [] as number[],
+			tension: 0.4,
+			borderColor: series.color,
+			fill: 'origin'
+		};
 
 		for (let i = 0; i <= 30; ++i) {
 			dataset.data[i] = series.data?.[startTime + sessionLength * i] ?? 0;
@@ -94,6 +123,18 @@ const chartData = computed(() => {
 		datasets
 	};
 });
+
+function transparentize(color: string, opacity: number): string {
+	opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
+
+	if (color.match(/^#[0-9a-fA-F]{3}$/)) {
+		return color + Math.floor(opacity * 0xf).toString(16);
+	} else if (color.match(/^#[0-9a-fA-F]{6}$/)) {
+		return color + Math.floor(opacity * 0xff).toString(16);
+	} else {
+		return color;
+	}
+}
 </script>
 
 <style scoped></style>

@@ -79,6 +79,14 @@ a {
 	@apply min-w-0 max-w-full flex-grow flex-shrink;
 }
 
+.col {
+	@apply flex flex-col;
+}
+
+.col > {
+	@apply items-stretch;
+}
+
 .code {
 	white-space: pre-wrap;
 	word-break: break-all;
