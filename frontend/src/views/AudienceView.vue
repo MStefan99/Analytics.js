@@ -64,14 +64,6 @@ const viewsChart = computed(() => [
 	}
 ]);
 
-Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
-Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
-const interval = setInterval(
-	() => Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a)),
-	1000 * 30
-);
-Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
-
 const pages = computed<{url: string; hits: number}[]>(() =>
 	Object.keys(realtimeAudience.value?.pages ?? {})
 		.sort((k1, k2) => realtimeAudience.value.pages[k2] - realtimeAudience.value.pages[k1])
@@ -92,6 +84,14 @@ const referrers = computed<{url: string; count: number}[]>(() =>
 function avgSession(seconds: number): string {
 	return Math.floor((seconds / 60 / 1000) % 60) + 'm ' + Math.floor((seconds / 1000) % 60) + 's';
 }
+
+Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
+Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
+const interval = setInterval(
+	() => Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a)),
+	1000 * 30
+);
+Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
 
 onUnmounted(() => clearInterval(interval));
 </script>

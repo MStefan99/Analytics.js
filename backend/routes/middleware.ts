@@ -16,9 +16,9 @@ export function hasBody(): Middleware {
 		} else {
 			ctx.response.status = 400;
 			ctx.response.body = {
-				error: 'NO_BODY',
+				error: 'INVALID_BODY',
 				message:
-					'Required information must be provided in the request body',
+					'Failed to parse request body. Check for errors and try again.',
 			};
 		}
 	};

@@ -28,6 +28,8 @@ const props = defineProps<{
 	area?: true;
 	min?: number;
 	max?: number;
+	suggestedMin?: number;
+	suggestedMax?: number;
 	color?: string;
 }>();
 const minuteLength = 60 * 1000;
@@ -88,7 +90,9 @@ const options = ref({
 			stacked: true,
 			ticks: {color: props.color ?? '#000'},
 			min: props.min,
-			max: props.max
+			max: props.max,
+			suggestedMin: props.suggestedMin,
+			suggestedMax: props.suggestedMax
 		}
 	},
 	plugins: {legend: {labels: {color: props.color ?? '#000'}}}

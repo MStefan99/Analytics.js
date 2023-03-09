@@ -22,11 +22,11 @@ router.post('/metrics', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 	await app.createMetrics({
 		device: body.device.toString().trim(),
 		cpu: +body.cpu,
-		memUsed: +body.memFree,
+		memUsed: +body.memUsed,
 		memTotal: +body.memTotal,
 		netUp: +body.netUp,
 		netDown: +body.netDown,
-		diskUsed: +body.diskFree,
+		diskUsed: +body.diskUsed,
 		diskTotal: +body.diskTotal,
 	});
 

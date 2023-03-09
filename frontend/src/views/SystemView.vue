@@ -10,15 +10,15 @@
 			TimedChart(:data="chartData.mem" :area="true" :min="0" :max="100")
 		.card.m-4
 			h2 Network usage
-			TimedChart(:data="chartData.up" :area="true" :min="0")
-			TimedChart(:data="chartData.down" :area="true" :min="0")
+			TimedChart(:data="chartData.up" :area="true" :min="0" :suggestedMax="0.25")
+			TimedChart(:data="chartData.down" :area="true" :min="0" :suggestedMax="0.25")
 		.card.m-4
 			h2 Disk usage
 			TimedChart(:data="chartData.disk" :area="true" :min="0" :max="100")
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import {computed, onUnmounted, ref} from 'vue';
 import {useRoute} from 'vue-router';
 import TimedChart from '../components/TimedChart.vue';
 import type {Metrics} from '../scripts/types';
@@ -26,13 +26,14 @@ import Api from '../scripts/api';
 
 type Dataset = {label: string; color: string; data: {[key: string]: number}};
 
+const mb = 1024 * 1024;
 const route = useRoute();
 const metrics = ref<Metrics[]>([]);
 const charts: {name: string; val(m: Metrics): number; label: string; color: string}[] = [
 	{
 		name: 'cpu',
 		val(m) {
-			return m.cpu * 100;
+			return m.cpu;
 		},
 		label: 'CPU, %',
 		color: '#436'
@@ -48,7 +49,7 @@ const charts: {name: string; val(m: Metrics): number; label: string; color: stri
 	{
 		name: 'up',
 		val(m) {
-			return m.netUp;
+			return m.netUp / mb;
 		},
 		label: 'Upload, MB/s',
 		color: '#528'
@@ -56,7 +57,7 @@ const charts: {name: string; val(m: Metrics): number; label: string; color: stri
 	{
 		name: 'down',
 		val(m) {
-			return m.netDown;
+			return m.netDown / mb;
 		},
 		label: 'Download, MB/s',
 		color: '#272'
@@ -88,6 +89,11 @@ const chartData = computed(() => {
 });
 
 Api.apps.getMetrics(+route.params.id).then((m) => (metrics.value = m));
+const interval = setInterval(
+	() => Api.apps.getMetrics(+route.params.id).then((m) => (metrics.value = m)),
+	1000 * 30
+);
+onUnmounted(() => clearInterval(interval));
 </script>
 
 <style scoped></style>
