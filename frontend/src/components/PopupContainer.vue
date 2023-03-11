@@ -83,18 +83,15 @@ function rejectPrompt() {
 }
 
 .green {
-	border-color: var(--color-green);
-	color: var(--color-green);
+	@apply text-emerald-700 border-emerald-700;
 }
 
 .yellow {
-	border-color: var(--color-yellow);
-	color: var(--color-yellow);
+	@apply text-amber-700 border-amber-700;
 }
 
 .red {
-	border-color: var(--color-red);
-	color: var(--color-red);
+	@apply border-rose-700 border-rose-700;
 }
 
 form input {

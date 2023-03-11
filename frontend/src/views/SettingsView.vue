@@ -31,7 +31,7 @@
 			form(@submit.prevent="saveChanges()")
 				.mb-3
 					label(for="name-input") App name
-					input#name-input.w-full(type="text" placeholder="Name" v-model="app.name")
+					input#name-input.w-full(type="text" placeholder="Name" v-model="newName")
 				.mb-3
 					label(for="description-input") App description
 					textarea#description-input.w-full(placeholder="Description" v-model="app.description")
@@ -50,13 +50,20 @@ import {alert, confirm, PopupColor} from '../scripts/popups';
 
 const route = useRoute();
 const app = ref<App | null>(null);
+const newName = ref<string>('');
 
-Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
+Api.apps.getByID(+route.params.id).then((a) => {
+	newName.value = a.name;
+	app.value = a;
+});
 
 function saveChanges() {
-	Api.apps
-		.edit(app.value)
-		.then(() => alert('Changes saved', PopupColor.Green, 'Changes saved successfully!'));
+	app.value.name = newName.value;
+
+	Api.apps.edit(app.value).then((a) => {
+		app.value = a;
+		alert('Changes saved', PopupColor.Green, 'Changes saved successfully!');
+	});
 }
 
 async function deleteApp() {
