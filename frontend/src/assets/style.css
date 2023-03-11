@@ -83,10 +83,6 @@ a {
 	@apply flex flex-col;
 }
 
-.col > {
-	@apply items-stretch;
-}
-
 .code {
 	white-space: pre-wrap;
 	word-break: break-all;

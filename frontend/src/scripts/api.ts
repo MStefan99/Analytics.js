@@ -104,7 +104,7 @@ function connect(host: string | null): Promise<boolean> {
 		}
 
 		fetch(host + apiPrefix)
-			.then((res) => resolve(res.ok && res.headers.get('who-am-i') === 'Invenfinder'))
+			.then((res) => resolve(res.ok && res.headers.get('who-am-i') === 'Crash Course'))
 			.catch(() => {
 				reject(requestFailed);
 			});

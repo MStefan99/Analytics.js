@@ -198,7 +198,7 @@ router.get('/:id/metrics', auth.authenticated(), async (ctx) => {
 
 	const startTime = params.has('startTime')
 		? +(params?.get('startTime') as string)
-		: now - dayLength;
+		: now - 1000 * 60 * 30;
 
 	ctx.response.body = await app.getMetrics(startTime);
 });
