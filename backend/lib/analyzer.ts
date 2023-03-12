@@ -15,6 +15,7 @@ export default {
 		const serverLogs: { [key: number]: { [key: number]: number } } = {};
 		const currentUsers = new Set<string>();
 
+		const now = Date.now();
 		const startTime = Date.now() - sessionLength;
 
 		const app = await App.getByID(appID);
@@ -27,8 +28,8 @@ export default {
 		const clientRows = await app.getClientLogs(startTime);
 
 		for (const hit of hits) {
-			const timeSlot = hit.time -
-				(hit.time % divisionLength);
+			const timeSlot = now -
+				Math.floor((now - hit.time) / divisionLength) * divisionLength;
 
 			if (
 				Date.now() - hit.time < divisionLength &&
@@ -42,8 +43,8 @@ export default {
 		}
 
 		for (const row of serverRows) {
-			const timeSlot = row.time -
-				(row.time % divisionLength);
+			const timeSlot = now -
+				Math.floor((now - row.time) / divisionLength) * divisionLength;
 
 			if (serverLogs[row.level]) {
 				serverLogs[row.level][timeSlot] = 1 +
@@ -54,8 +55,8 @@ export default {
 		}
 
 		for (const row of clientRows) {
-			const timeSlot = row.time -
-				(row.time % divisionLength);
+			const timeSlot = now -
+				Math.floor((now - row.time) / divisionLength) * divisionLength;
 
 			if (clientLogs[row.level]) {
 				clientLogs[row.level][timeSlot] = 1 +
@@ -78,6 +79,7 @@ export default {
 		const pages: { [key: string]: number } = {};
 		const sessions: { [key: number]: number } = {};
 		const referrers: { [key: string]: number } = {};
+		const now = Date.now();
 
 		const app = await App.getByID(appID);
 		if (!app) {
@@ -96,9 +98,8 @@ export default {
 				currentUsers.add(hit.clientID);
 			}
 
-			const sessionTime = hit.time -
-				(hit.time % divisionLength);
-
+			const sessionTime = now -
+				Math.floor((now - hit.time) / divisionLength) * divisionLength;
 			pages[hit.url] = 1 +
 				(pages[hit.url] || 0);
 			sessions[sessionTime] = 1 +
