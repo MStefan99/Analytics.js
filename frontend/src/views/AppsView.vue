@@ -47,7 +47,7 @@ Api.apps.getAll().then((a) => (apps.value = a));
 
 function addApp() {
 	Api.apps.add(newApp.value).then((a) => {
-		router.replace({name: 'status', params: {id: a.id}});
+		router.replace({name: 'settings', params: {id: a.id}});
 	});
 }
 </script>

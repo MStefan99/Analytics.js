@@ -5,7 +5,7 @@ const serverURL = scriptLocation.host;
 const audienceKey = new URLSearchParams(scriptLocation.search).get('k');
 const errorLevel = 3;
 
-function sendHit() {
+export function sendHit() {
 	return fetch('//' + serverURL + '/audience/hits', {
 		method: 'POST',
 		headers: {
@@ -34,7 +34,7 @@ function sendHit() {
 		});
 }
 
-function sendLog(message, level = 0, tag = null) {
+export function sendLog(message, level = 0, tag = null) {
 	if (message === undefined || level === undefined) {
 		throw new Error('Level is required for logs');
 	}
@@ -57,18 +57,6 @@ function sendLog(message, level = 0, tag = null) {
 		});
 }
 
-window.cc = {};
-Object.defineProperties(window.cc, {
-	push: {
-		writable: false,
-		value: (data, level = 0, tag = null) => sendLog(data, level, tag),
-	},
-	pop: {
-		writable: false,
-		value: () => sendHit(),
-	},
-});
-
 for (const type of ['error', 'unhandledrejection']) {
 	addEventListener(type, (e) => {
 		sendLog(
@@ -80,4 +68,7 @@ for (const type of ['error', 'unhandledrejection']) {
 	});
 }
 
-window.ccm || sendHit();
+export default {
+	sendHit,
+	sendLog,
+};

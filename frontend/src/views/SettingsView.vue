@@ -5,12 +5,17 @@
 		.card.accent.m-4
 			h2 Audience
 			p.mb-4 To start collecting audience data, please add the following script to every page of your website:
-			pre.code.snippet.
-				&lt;script&gt;
-					window.cc = [];
-					window.ccm = false; // Change to true to disable automatic logging
+			pre.code.snippet.mb-4.
+				&lt;script async type="module"&gt;
+					import {sendHit} from '{{appState.backendURL + '/cc?k=' + app.audienceKey}}';
+					sendHit();
 				&lt;/script&gt;
-				&lt;script async type="module" src="{{appState.backendURL + '/cc?k=' + app.audienceKey}}"&gt;&lt;/script&gt;
+			p.mb-4.
+				The script above will send usage data to Crash Course every time someone opens your app.
+				If you want to use more Crash Course functionality like sending logs, you can import the necessary library
+				in your code like this:
+			pre.code.snippet.
+				import crashCourse from '{{appState.backendURL + '/cc?k=' + app.audienceKey}}';
 		.card.m-4
 			h2 Keys
 			h3 Audience Key
