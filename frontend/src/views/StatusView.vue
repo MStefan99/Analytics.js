@@ -102,7 +102,7 @@ const clientChart = computed(() => [
 	{
 		label: 'Critical',
 		color: colors.critical,
-		data: overview.value.serverLogs['4']
+		data: overview.value.clientLogs['4']
 	}
 ]);
 const viewsChart = computed(() => [
