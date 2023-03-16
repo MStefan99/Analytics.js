@@ -103,8 +103,12 @@ a {
 	@apply bg-white/80 backdrop-blur-md;
 }
 
+.footer-logo {
+	max-height: 3rem;
+}
+
 .popup-wrapper {
-	position: absolute;
+	position: fixed;
 	left: 0;
 	top: 0;
 	right: 0;

@@ -9,7 +9,7 @@ main
 	PopupContainer
 
 footer
-	span Crash Course
+	img.footer-logo.mx-auto(src="/logo.svg" alt="Crash Course logo")
 </template>
 
 <script setup lang="ts">
