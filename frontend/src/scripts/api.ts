@@ -28,7 +28,7 @@ type AuthResult = {
 	key: string;
 };
 
-const apiPrefix = '';
+const apiPrefix = import.meta.env.VITE_API_PREFIX ?? '';
 const notConfigured = {error: 'NOT_CONFIGURED', message: 'Not configured'} as ErrorResponse;
 const notAuthenticated = {
 	error: 'NOT_AUTHENTICATED',
