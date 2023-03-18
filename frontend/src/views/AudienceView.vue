@@ -56,6 +56,8 @@ const app = ref<App | null>(null);
 const realtimeAudience = ref<RealtimeAudience | null>(null);
 const todayAudience = ref<DayAudience | null>(null);
 
+window.document.title = 'Audience | Crash Course';
+
 const viewsChart = computed(() => [
 	{
 		label: 'Page views',

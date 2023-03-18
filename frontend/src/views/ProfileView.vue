@@ -57,6 +57,8 @@ const passwordsMatch = computed<boolean>(
 		updateUser.value.password === passwordRepeat.value
 );
 
+window.document.title = 'Profile | Crash Course';
+
 function parseUA(ua: string): string | null {
 	const res = ua.match(/.*? \((.*?); (.*?)([;)]).*/);
 	let os: string | null;

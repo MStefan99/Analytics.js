@@ -43,6 +43,8 @@ const newApp = ref<NewApp | null>(null);
 const emptyApp: NewApp = {name: '', description: ''};
 const router = useRouter();
 
+window.document.title = 'Apps | Crash Course';
+
 Api.apps.getAll().then((a) => (apps.value = a));
 
 function addApp() {

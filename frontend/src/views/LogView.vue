@@ -40,6 +40,8 @@ const levels = ['Debug', 'Information', 'Warning', 'Error', 'Critical'];
 const startTime = ref<Date>(initialDate);
 const level = ref<number>(1);
 
+window.document.title = 'Logs | Crash Course';
+
 function loadLogs() {
 	Api.apps
 		.getLogs(

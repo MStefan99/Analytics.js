@@ -57,6 +57,8 @@ const route = useRoute();
 const app = ref<App | null>(null);
 const newName = ref<string>('');
 
+window.document.title = 'Settings | Crash Course';
+
 Api.apps.getByID(+route.params.id).then((a) => {
 	newName.value = a.name;
 	app.value = a;

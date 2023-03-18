@@ -26,6 +26,8 @@ import Api from '../scripts/api';
 
 type Dataset = {label: string; color: string; data: {[key: string]: number}};
 
+window.document.title = 'System | Crash Course';
+
 const mb = 1024 * 1024;
 const route = useRoute();
 const metrics = ref<Metrics[]>([]);

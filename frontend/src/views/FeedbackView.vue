@@ -30,6 +30,8 @@ const initialDate = new Date(Date.now() - dayLength);
 
 const startTime = ref<Date>(initialDate);
 
+window.document.title = 'Feedback | Crash Course';
+
 function loadFeedbacks() {
 	Api.apps
 		.getFeedbacks(+route.params.id, startTime.value.getTime())

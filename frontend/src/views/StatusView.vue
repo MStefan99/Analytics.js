@@ -43,6 +43,8 @@ const app = ref<App | null>(null);
 const overview = ref<AppOverview | null>(null);
 const route = useRoute();
 
+window.document.title = 'Status | Crash Course';
+
 const colors = {
 	debug: '#4f46e5',
 	info: '#059669',
