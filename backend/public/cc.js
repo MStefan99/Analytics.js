@@ -1,12 +1,13 @@
 'use strict';
 
 const scriptLocation = new URL(import.meta.url);
-const serverURL = scriptLocation.host;
+const serverURL = scriptLocation.origin;
+console.log(serverURL);
 const audienceKey = new URLSearchParams(scriptLocation.search).get('k');
 const errorLevel = 3;
 
 export function sendHit() {
-	return fetch('//' + serverURL + '/audience/hits', {
+	return fetch(serverURL + '/audience/hits', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -39,7 +40,7 @@ export function sendLog(message, level = 0, tag = null) {
 		throw new Error('Level is required for logs');
 	}
 
-	return fetch('//' + serverURL + '/audience/logs', {
+	return fetch(serverURL + '/audience/logs', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

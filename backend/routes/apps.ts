@@ -7,6 +7,7 @@ import { initApp } from '../lib/init.ts';
 import analyzer from '../lib/analyzer.ts';
 
 const dayLength = 1000 * 60 * 60 * 24;
+const sessionLength = 1000 * 60 * 31; // 0 through 30 minutes ago
 
 const router = new Router({
 	prefix: '/apps',
@@ -198,7 +199,7 @@ router.get('/:id/metrics', auth.authenticated(), async (ctx) => {
 
 	const startTime = params.has('startTime')
 		? +(params?.get('startTime') as string)
-		: now - 1000 * 60 * 30;
+		: now - sessionLength;
 
 	ctx.response.body = await app.getMetrics(startTime);
 });
