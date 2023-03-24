@@ -37,6 +37,7 @@
 					td
 						button(@click="logout(session)") Sign out
 			button(@click="logoutAll()") Sign out everywhere
+			button.red(@click="deleteAccount()") Delete your account
 </template>
 
 <script setup lang="ts">
@@ -118,6 +119,10 @@ function logoutAll() {
 	Api.sessions.logoutAll();
 	appState.setApiKey(null);
 	appState.setUser(null);
+}
+
+function deleteAccount() {
+	Api.auth.delete();
 }
 
 onMounted(() =>

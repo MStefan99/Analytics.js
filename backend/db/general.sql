@@ -32,16 +32,17 @@ create table apps
 
 create table sessions
 (
-	id        int auto_increment
-		primary key,
-	public_id varchar(80)  not null,
-	user_id   int          not null,
+	id        integer      not null
+		constraint sessions_pk
+			primary key autoincrement,
+	public_id varchar(80)  not null
+		constraint sessions_public_id
+			unique,
+	user_id   int          not null
+		constraint sessions_users_id
+			references users (id)
+			on update cascade on delete cascade,
 	ip        varchar(20)  not null,
 	ua        varchar(200) not null,
-	time      bigint       not null,
-	constraint sessions_public_id_pk
-		unique (public_id),
-	constraint sessions_users_id_fk
-		foreign key (user_id) references users (id)
-			on update cascade on delete cascade
+	time      bigint       not null
 );

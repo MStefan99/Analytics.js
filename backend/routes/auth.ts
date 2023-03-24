@@ -1,4 +1,4 @@
-import { Router } from '../deps.ts';
+import { Middleware, Router } from '../deps.ts';
 
 import auth from '../lib/auth.ts';
 import User from '../lib/user.ts';
@@ -7,8 +7,26 @@ import { hasBody, hasCredentials } from './middleware.ts';
 
 const router = new Router();
 
+function accountsEnabled(): Middleware {
+	if (Deno.env.has('NO_ACCOUNTS')) {
+		return (ctx, _next) => {
+			ctx.response.status = 422;
+			ctx.response.body = {
+				error: 'ACCOUNTS_DISABLED',
+				message:
+					'Account management is disabled for this Crash Course installation',
+			};
+			return;
+		};
+	} else {
+		return async (_ctx, next) => {
+			await next();
+		};
+	}
+}
+
 // Register
-router.post('/register', hasCredentials(), async (ctx) => {
+router.post('/register', accountsEnabled(), hasCredentials(), async (ctx) => {
 	const body = await ctx.request.body({ type: 'json' }).value;
 
 	const user = await User.create(
@@ -110,6 +128,7 @@ router.get('/logout', auth.authenticated(), async (ctx) => {
 // Delete account
 router.delete(
 	'/me',
+	accountsEnabled(),
 	auth.authenticated(),
 	async (ctx) => {
 		const user = await auth.methods.getUser(ctx);

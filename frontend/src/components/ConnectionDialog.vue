@@ -30,7 +30,7 @@
 						type="button"
 						:disabled="connectionState === ConnectionState.TESTING"
 						@click="register()") Sign up
-				p.text-red(v-if="authError") {{authError}}
+				p.text-red-700(v-if="authError") {{authError}}
 			span.text-muted {{getAuthenticationState()}}
 </template>
 
@@ -122,7 +122,18 @@ function login() {
 }
 
 function register() {
-	// WIP
+	connectionState.value = ConnectionState.TESTING;
+
+	Api.auth
+		.register(username.value, password.value)
+		.then(() => {
+			connectionState.value = ConnectionState.AUTHENTICATED;
+			emit('close');
+		})
+		.catch((err) => {
+			connectionState.value = ConnectionState.CONNECTED;
+			authError.value = err.message;
+		});
 }
 </script>
 

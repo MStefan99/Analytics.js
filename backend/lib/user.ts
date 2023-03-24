@@ -1,6 +1,7 @@
 import { decode as hexDecode, encode as hexEncode } from '../deps.ts';
 
-import openDB from './db.ts';
+import openDB, { deleteDB } from './db.ts';
+import App from './app.ts';
 
 const PBKDF2ITERATIONS = 100000;
 
@@ -164,6 +165,12 @@ class User {
 	}
 
 	async delete(): Promise<void> {
+		const apps = await App.getByUser(this);
+
+		for (const app of apps) {
+			deleteDB(app.id);
+		}
+
 		const db = await openDB();
 		await db.queryEntries(
 			`delete

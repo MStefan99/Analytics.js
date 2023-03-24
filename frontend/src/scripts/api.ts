@@ -159,7 +159,16 @@ export const AuthAPI = {
 				})
 				.catch((err) => reject(err));
 		}),
-	delete: () => request<User>('/me', {auth: true, method: RequestMethod.DELETE})
+	delete: () =>
+		new Promise<boolean>((resolve, reject) =>
+			request<User>('/me', {auth: true, method: RequestMethod.DELETE})
+				.then(() => {
+					appState.setApiKey(null);
+					appState.setUser(null);
+					resolve(true);
+				})
+				.catch((err) => reject(err))
+		)
 };
 
 export const SessionAPI = {
