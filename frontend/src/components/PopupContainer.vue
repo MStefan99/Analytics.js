@@ -91,7 +91,7 @@ function rejectPrompt() {
 }
 
 .red {
-	@apply border-rose-700 border-rose-700;
+	@apply text-rose-700 border-rose-700;
 }
 
 form input {

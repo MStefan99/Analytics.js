@@ -14,7 +14,6 @@ html {
 	--color-muted: #888;
 	--color-light: #ccc;
 	--color-accent: #258600;
-	--color-red: #cb074c;
 	--color-gradient: #017375;
 
 	--color-overlay: #fffb;
@@ -234,14 +233,12 @@ textarea.red,
 select.red,
 button.red,
 .btn.red {
-	color: var(--color-red);
-	border-color: var(--color-red);
+	@apply text-rose-700 border-rose-700;
 }
 
 button.red:hover,
 .btn.red:hover {
-	color: var(--color-background);
-	background-color: var(--color-red);
+	@apply text-white bg-rose-700;
 }
 
 .log-level {
