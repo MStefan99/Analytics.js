@@ -47,12 +47,13 @@
 
 <script setup lang="ts">
 import {ref} from 'vue';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import type {App} from '../scripts/types';
 import Api from '../scripts/api';
 import appState from '../scripts/store';
 import {alert, confirm, PopupColor} from '../scripts/popups';
 
+const router = useRouter();
 const route = useRoute();
 const app = ref<App | null>(null);
 const newName = ref<string>('');
@@ -93,6 +94,7 @@ async function deleteApp() {
 	Api.apps
 		.delete(app.value)
 		.then((a) => {
+			router.replace({name: 'apps'});
 			alert(a.name + ' deleted', PopupColor.Green, 'App was successfully deleted');
 		})
 		.catch((err) => alert('Failed to delete app', PopupColor.Red, err.message));

@@ -46,7 +46,7 @@ import {computed, onMounted, ref} from 'vue';
 import appState from '../scripts/store';
 import Api from '../scripts/api';
 import type {Session, UpdateUser} from '../scripts/types';
-import {alert, PopupColor} from '../scripts/popups';
+import {alert, confirm, PopupColor} from '../scripts/popups';
 
 const sessions = ref<Session[]>([]);
 const updateUser = ref<UpdateUser>({id: appState.user.id});
@@ -117,7 +117,17 @@ function logoutAll() {
 	Api.sessions.logoutAll().catch((err) => alert('Failed to sign out', PopupColor.Red, err.message));
 }
 
-function deleteAccount() {
+async function deleteAccount() {
+	if (
+		!(await confirm(
+			'Are you sure you want to delete your account?',
+			PopupColor.Red,
+			'Warning, your account and all application data will be deleted. Please confirm to proceed.'
+		))
+	) {
+		return;
+	}
+
 	Api.auth.delete().catch((err) => alert('Failed to delete account', PopupColor.Red, err.message));
 }
 

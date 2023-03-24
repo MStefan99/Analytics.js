@@ -90,17 +90,12 @@ const chartData = computed(() => {
 	return data;
 });
 
-Api.apps
-	.getMetrics(+route.params.id)
-	.then((m) => {
-		metrics.value = m;
-		const interval = setInterval(
-			() => Api.apps.getMetrics(+route.params.id).then((m) => (metrics.value = m)),
-			1000 * 30
-		);
-		onUnmounted(() => clearInterval(interval));
-	})
-	.catch((err) => alert('Failed to load metrics', PopupColor.Red, err.message));
+function loadMetrics() {
+	return Api.apps.getMetrics(+route.params.id).then((m) => (metrics.value = m));
+}
+
+loadMetrics().catch((err) => alert('Failed to load metrics', PopupColor.Red, err.message));
+onUnmounted(() => clearInterval(setInterval(loadMetrics, 1000 * 30)));
 </script>
 
 <style scoped></style>

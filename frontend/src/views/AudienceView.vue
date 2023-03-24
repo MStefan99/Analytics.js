@@ -90,20 +90,16 @@ function avgSession(seconds: number): string {
 
 Api.apps
 	.getByID(+route.params.id)
-	.then((a) => {
-		app.value = a;
-
-		Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
-		const interval = setInterval(
-			() =>
-				Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a)),
-			1000 * 30
-		);
-		Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
-
-		onUnmounted(() => clearInterval(interval));
-	})
+	.then((a) => (app.value = a))
 	.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
+
+function loadAudience() {
+	Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
+	Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
+}
+
+loadAudience();
+onUnmounted(() => clearInterval(setInterval(loadAudience, 1000 * 30)));
 </script>
 
 <style scoped>

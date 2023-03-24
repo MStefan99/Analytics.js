@@ -1,11 +1,11 @@
 <template lang="pug">
 #feedback
-	h1 Feedback
+	h1 {{app?.name}} feedback
 	.row.py-3.sticky.top-0.glass
 		.input
 			label(for="date-input") Starting from
-			DatePicker#date-input(type="date" v-model="startTime" @change="loadFeedbacks()")
-	table.cells
+			DatePicker#date-input.w-full(type="date" v-model="startTime" @change="loadFeedbacks()")
+	table.cells.w-full
 		thead
 			tr
 				th Time
@@ -14,17 +14,20 @@
 			tr(v-for="feedback in feedbacks" :key="feedback.time")
 				td {{new Date(feedback.time).toLocaleString()}}
 				td {{feedback.message}}
+			tr(v-if="!feedbacks.length")
+				td.text-center(colspan="2") No feedback found matching your criteria
 </template>
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
 import {ref} from 'vue';
-import type {Feedback} from '../scripts/types';
+import type {App, Feedback} from '../scripts/types';
 import DatePicker from '../components/DatePicker.vue';
 import Api from '../scripts/api';
 import {alert, PopupColor} from '../scripts/popups';
 
 const route = useRoute();
+const app = ref<App | null>(null);
 const feedbacks = ref<Feedback[]>([]);
 const dayLength = 1000 * 60 * 60 * 24;
 const initialDate = new Date(Date.now() - dayLength);
@@ -32,6 +35,8 @@ const initialDate = new Date(Date.now() - dayLength);
 const startTime = ref<Date>(initialDate);
 
 window.document.title = 'Feedback | Crash Course';
+
+Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
 
 function loadFeedbacks() {
 	Api.apps
