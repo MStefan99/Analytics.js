@@ -29,6 +29,7 @@ import {onUnmounted, ref} from 'vue';
 import type {Log} from '../scripts/types';
 import DropdownSelect from '../components/DropdownSelect.vue';
 import DatePicker from '../components/DatePicker.vue';
+import {alert, PopupColor} from '../scripts/popups';
 import Api from '../scripts/api';
 
 const route = useRoute();
@@ -50,7 +51,8 @@ function loadLogs() {
 			startTime.value.getTime(),
 			level.value
 		)
-		.then((l) => (logs.value = l));
+		.then((l) => (logs.value = l))
+		.catch((err) => alert('Failed to load logs', PopupColor.Red, err.message));
 }
 
 loadLogs();

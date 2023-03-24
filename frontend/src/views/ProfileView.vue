@@ -107,22 +107,18 @@ function updatePassword() {
 }
 
 function logout(session: Session) {
-	Api.sessions.logout(session.id);
+	Api.sessions
+		.logout(session.id)
+		.catch((err) => alert('Failed to sign out', PopupColor.Red, err.message));
 	sessions.value.splice(sessions.value.indexOf(session), 1);
-	if (session.id === appState.apiKey) {
-		appState.setApiKey(null);
-		appState.setUser(null);
-	}
 }
 
 function logoutAll() {
-	Api.sessions.logoutAll();
-	appState.setApiKey(null);
-	appState.setUser(null);
+	Api.sessions.logoutAll().catch((err) => alert('Failed to sign out', PopupColor.Red, err.message));
 }
 
 function deleteAccount() {
-	Api.auth.delete();
+	Api.auth.delete().catch((err) => alert('Failed to delete account', PopupColor.Red, err.message));
 }
 
 onMounted(() =>

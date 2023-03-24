@@ -50,6 +50,7 @@ import {useRoute} from 'vue-router';
 import Api from '../scripts/api';
 import type {App, DayAudience, RealtimeAudience} from '../scripts/types';
 import TimedChart from '../components/TimedChart.vue';
+import {alert, PopupColor} from '../scripts/popups';
 
 const route = useRoute();
 const app = ref<App | null>(null);
@@ -87,15 +88,22 @@ function avgSession(seconds: number): string {
 	return Math.floor((seconds / 60 / 1000) % 60) + 'm ' + Math.floor((seconds / 1000) % 60) + 's';
 }
 
-Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
-Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
-const interval = setInterval(
-	() => Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a)),
-	1000 * 30
-);
-Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
+Api.apps
+	.getByID(+route.params.id)
+	.then((a) => {
+		app.value = a;
 
-onUnmounted(() => clearInterval(interval));
+		Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
+		const interval = setInterval(
+			() =>
+				Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a)),
+			1000 * 30
+		);
+		Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
+
+		onUnmounted(() => clearInterval(interval));
+	})
+	.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
 </script>
 
 <style scoped>

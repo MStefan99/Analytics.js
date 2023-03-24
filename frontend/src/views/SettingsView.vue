@@ -59,18 +59,24 @@ const newName = ref<string>('');
 
 window.document.title = 'Settings | Crash Course';
 
-Api.apps.getByID(+route.params.id).then((a) => {
-	newName.value = a.name;
-	app.value = a;
-});
+Api.apps
+	.getByID(+route.params.id)
+	.then((a) => {
+		newName.value = a.name;
+		app.value = a;
+	})
+	.catch((err) => alert('Failed to load app', PopupColor.Red, err.message));
 
 function saveChanges() {
 	app.value.name = newName.value;
 
-	Api.apps.edit(app.value).then((a) => {
-		app.value = a;
-		alert('Changes saved', PopupColor.Green, 'Changes saved successfully!');
-	});
+	Api.apps
+		.edit(app.value)
+		.then((a) => {
+			app.value = a;
+			alert('Changes saved', PopupColor.Green, 'Changes saved successfully!');
+		})
+		.catch((err) => alert('Failed to save app', PopupColor.Red, err.message));
 }
 
 async function deleteApp() {
@@ -84,9 +90,12 @@ async function deleteApp() {
 		return;
 	}
 
-	Api.apps.delete(app.value).then((a) => {
-		alert(a.name + ' deleted', PopupColor.Green, 'App was successfully deleted');
-	});
+	Api.apps
+		.delete(app.value)
+		.then((a) => {
+			alert(a.name + ' deleted', PopupColor.Green, 'App was successfully deleted');
+		})
+		.catch((err) => alert('Failed to delete app', PopupColor.Red, err.message));
 }
 </script>
 

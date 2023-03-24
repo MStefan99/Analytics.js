@@ -37,6 +37,7 @@ import {ref} from 'vue';
 import type {App, NewApp} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRouter} from 'vue-router';
+import {alert, PopupColor} from '../scripts/popups';
 
 const apps = ref<App[]>([]);
 const newApp = ref<NewApp | null>(null);
@@ -45,12 +46,18 @@ const router = useRouter();
 
 window.document.title = 'Apps | Crash Course';
 
-Api.apps.getAll().then((a) => (apps.value = a));
+Api.apps
+	.getAll()
+	.then((a) => (apps.value = a))
+	.catch((err) => alert('Failed to load apps', PopupColor.Red, err.message));
 
 function addApp() {
-	Api.apps.add(newApp.value).then((a) => {
-		router.replace({name: 'settings', params: {id: a.id}});
-	});
+	Api.apps
+		.add(newApp.value)
+		.then((a) => {
+			router.replace({name: 'settings', params: {id: a.id}});
+		})
+		.catch((err) => alert('Failed to save the app', PopupColor.Red, err.message));
 }
 </script>
 

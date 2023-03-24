@@ -23,9 +23,12 @@ import appState from './scripts/store';
 onMounted(checkConnection);
 
 function checkConnection() {
-	Api.auth.me().then((user) => {
-		appState.setUser(user);
-	});
+	Api.auth
+		.me()
+		.then((user) => {
+			appState.setUser(user);
+		})
+		.catch((err) => console.warn('Not authenticated:', err));
 }
 </script>
 

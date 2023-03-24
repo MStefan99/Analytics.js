@@ -22,6 +22,7 @@ import {useRoute} from 'vue-router';
 import TimedChart from '../components/TimedChart.vue';
 import type {Metrics} from '../scripts/types';
 import Api from '../scripts/api';
+import {alert, PopupColor} from '../scripts/popups';
 
 type Dataset = {label: string; color: string; data: {[key: string]: number}};
 
@@ -89,12 +90,17 @@ const chartData = computed(() => {
 	return data;
 });
 
-Api.apps.getMetrics(+route.params.id).then((m) => (metrics.value = m));
-const interval = setInterval(
-	() => Api.apps.getMetrics(+route.params.id).then((m) => (metrics.value = m)),
-	1000 * 30
-);
-onUnmounted(() => clearInterval(interval));
+Api.apps
+	.getMetrics(+route.params.id)
+	.then((m) => {
+		metrics.value = m;
+		const interval = setInterval(
+			() => Api.apps.getMetrics(+route.params.id).then((m) => (metrics.value = m)),
+			1000 * 30
+		);
+		onUnmounted(() => clearInterval(interval));
+	})
+	.catch((err) => alert('Failed to load metrics', PopupColor.Red, err.message));
 </script>
 
 <style scoped></style>

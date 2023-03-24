@@ -38,6 +38,7 @@ import type {App, AppOverview} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRoute} from 'vue-router';
 import TimedChart from '../components/TimedChart.vue';
+import {alert, PopupColor} from '../scripts/popups';
 
 const app = ref<App | null>(null);
 const overview = ref<AppOverview | null>(null);
@@ -138,14 +139,19 @@ const logCount = computed(() => {
 	};
 });
 
-Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
-Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o));
+Api.apps
+	.getByID(+route.params.id)
+	.then((a) => {
+		app.value = a;
+		Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o));
 
-const interval = setInterval(
-	() => Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o)),
-	1000 * 30
-);
-onUnmounted(() => clearInterval(interval));
+		const interval = setInterval(
+			() => Api.apps.getOverview(+route.params.id).then((o) => (overview.value = o)),
+			1000 * 30
+		);
+		onUnmounted(() => clearInterval(interval));
+	})
+	.catch((err) => alert('Failed to load app', PopupColor.Red, err.message));
 </script>
 
 <style>

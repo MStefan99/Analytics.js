@@ -22,6 +22,7 @@ import {ref} from 'vue';
 import type {Feedback} from '../scripts/types';
 import DatePicker from '../components/DatePicker.vue';
 import Api from '../scripts/api';
+import {alert, PopupColor} from '../scripts/popups';
 
 const route = useRoute();
 const feedbacks = ref<Feedback[]>([]);
@@ -35,7 +36,8 @@ window.document.title = 'Feedback | Crash Course';
 function loadFeedbacks() {
 	Api.apps
 		.getFeedbacks(+route.params.id, startTime.value.getTime())
-		.then((f) => (feedbacks.value = f));
+		.then((f) => (feedbacks.value = f))
+		.catch((err) => alert('Failed to load feedback', PopupColor.Red, err.message));
 }
 
 loadFeedbacks();

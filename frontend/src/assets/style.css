@@ -213,7 +213,7 @@ button,
 	background-color: var(--color-background);
 	border: 0.1rem solid var(--color-accent);
 	@apply my-2;
-	transition: color 0.2s ease, background-color 0.2s ease;
+	transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 button,
@@ -225,6 +225,7 @@ button,
 button:hover,
 .btn:hover {
 	color: var(--color-background);
+	border-color: var(--color-background);
 	background-color: var(--color-accent);
 }
 

@@ -18,13 +18,12 @@ import {ref} from 'vue';
 import {appState} from '../scripts/store';
 import Api from '../scripts/api';
 import ConnectionDialog from './ConnectionDialog.vue';
+import {alert, PopupColor} from '../scripts/popups';
 
 const connectionDialogOpen = ref<boolean>(false);
 
 function logout() {
-	Api.auth.logout();
-	appState.setApiKey(null);
-	appState.setUser(null);
+	Api.auth.logout().catch((err) => alert('Failed to sign out', PopupColor.Red, err.message));
 }
 </script>
 

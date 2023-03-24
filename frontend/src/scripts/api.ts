@@ -173,6 +173,7 @@ export const AuthAPI = {
 
 export const SessionAPI = {
 	getAll: () => request<Session[]>('/sessions', {auth: true}),
+	// TODO: clear state key
 	logout: (id: Session['id']) =>
 		request<Session>('/sessions/' + id, {
 			auth: true,
