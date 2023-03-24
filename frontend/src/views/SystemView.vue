@@ -4,17 +4,16 @@
 	.row
 		.card.m-4
 			h2 CPU usage
-			TimedChart(:data="chartData.cpu" :area="true" :min="0" :max="100")
+			TimedChart(:data="[chartData.cpu]" :area="true" :min="0" :max="100")
 		.card.m-4
 			h2 Memory usage
-			TimedChart(:data="chartData.mem" :area="true" :min="0" :max="100")
+			TimedChart(:data="[chartData.mem]" :area="true" :min="0" :max="100")
 		.card.m-4
 			h2 Network usage
-			TimedChart(:data="chartData.up" :area="true" :min="0" :suggestedMax="0.25")
-			TimedChart(:data="chartData.down" :area="true" :min="0" :suggestedMax="0.25")
+			TimedChart(:data="[chartData.up, chartData.down]" :area="true" :min="0" :suggestedMax="0.25")
 		.card.m-4
 			h2 Disk usage
-			TimedChart(:data="chartData.disk" :area="true" :min="0" :max="100")
+			TimedChart(:data="[chartData.disk]" :area="true" :min="0" :max="100")
 </template>
 
 <script setup lang="ts">
@@ -75,7 +74,7 @@ const charts: {name: string; val(m: Metrics): number; label: string; color: stri
 ];
 
 const chartData = computed(() => {
-	const data: {[key: string]: Dataset[]} = {};
+	const data: {[key: string]: Dataset} = {};
 
 	for (const chart of charts) {
 		const dataset: Dataset = {label: chart.label, color: chart.color, data: {}};
@@ -84,7 +83,7 @@ const chartData = computed(() => {
 			dataset.data[metricsEntry.time] = chart.val(metricsEntry);
 		}
 
-		data[chart.name] = [dataset];
+		data[chart.name] = dataset;
 	}
 
 	return data;
