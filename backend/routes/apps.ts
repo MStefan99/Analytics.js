@@ -7,7 +7,7 @@ import { initApp } from '../lib/init.ts';
 import analyzer from '../lib/analyzer.ts';
 
 const dayLength = 1000 * 60 * 60 * 24;
-const sessionLength = 1000 * 60 * 31; // 0 through 30 minutes ago
+const sessionLength = 1000 * 60 * 30;
 
 const router = new Router({
 	prefix: '/apps',

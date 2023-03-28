@@ -23,17 +23,21 @@ import {
 } from 'chart.js';
 import {computed, onUnmounted, ref} from 'vue';
 
-const props = defineProps<{
-	data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
-	area?: true;
-	min?: number;
-	max?: number;
-	suggestedMin?: number;
-	suggestedMax?: number;
-	color?: string;
-}>();
-const minuteLength = 60 * 1000;
-const showMinutes = 30;
+const props = withDefaults(
+	defineProps<{
+		data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
+		stepSize?: number;
+		area?: true;
+		min?: number;
+		max?: number;
+		suggestedMin?: number;
+		suggestedMax?: number;
+		color?: string;
+	}>(),
+	{
+		stepSize: 1000 * 60
+	}
+);
 
 ChartJS.register(
 	Title,
@@ -46,7 +50,40 @@ ChartJS.register(
 	LineElement,
 	Filler
 );
+
+const units = [
+	{length: 1000, name: 'sec'},
+	{length: 1000 * 60, name: 'min'},
+	{length: 1000 * 60 * 60, name: 'hours'},
+	{length: 1000 * 60 * 60 * 24, name: 'days'},
+	{length: 1000 * 60 * 60 * 24 * 30, name: 'months'}
+];
 const chart = ref(null);
+const steps = computed(() =>
+	Math.floor(
+		(Date.now() -
+			(props.data[0]?.data
+				? Object.keys(props.data[0].data)
+						.map((k) => +k)
+						.reduce((min, val) => (val < min ? val : min), Date.now())
+				: Date.now())) /
+			props.stepSize
+	)
+);
+const labels = computed(() => {
+	const array = [];
+	const unit = units
+		.slice()
+		.reverse()
+		.find((u) => u.length <= props.stepSize);
+	const unitMultiplier = props.stepSize / unit.length;
+	for (let i = 0; i <= steps.value; ++i) {
+		const step = (steps.value - i) * unitMultiplier;
+		array.push((step % 1 === 0 ? step : step.toFixed(2)) + ' ' + unit.name);
+	}
+	return array;
+});
+
 let lastResize = Date.now();
 
 function updateResized() {
@@ -97,10 +134,6 @@ const options = ref({
 	},
 	plugins: {legend: {labels: {color: props.color ?? '#000'}}}
 });
-const labels: string[] = [];
-for (let i = 0; i <= showMinutes; ++i) {
-	labels.push(showMinutes - i + ' min');
-}
 
 const chartData = computed(() => {
 	const datasets: {label: string; backgroundColor: string; data: number[]}[] = [];
@@ -110,7 +143,7 @@ const chartData = computed(() => {
 		const dataset = {
 			label: series.label,
 			backgroundColor: props.area ? transparentize(series.color, 0.35) : series.color,
-			data: new Array(showMinutes + 1).fill(0),
+			data: new Array(steps.value + 1).fill(0),
 			tension: 0.4,
 			borderColor: series.color,
 			fill: 'origin'
@@ -118,9 +151,9 @@ const chartData = computed(() => {
 
 		if (series.data) {
 			for (const time of Object.keys(series.data)) {
-				const minutes = showMinutes - Math.floor((now - +time) / minuteLength);
+				const minutes = steps.value - Math.floor((now - +time) / props.stepSize);
 
-				if (minutes <= showMinutes * minuteLength) {
+				if (minutes <= steps.value * props.stepSize) {
 					dataset.data[minutes] = series.data[time];
 				}
 			}
@@ -130,7 +163,7 @@ const chartData = computed(() => {
 	}
 
 	return {
-		labels,
+		labels: labels.value,
 		datasets
 	};
 });
