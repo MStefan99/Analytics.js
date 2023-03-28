@@ -9,81 +9,30 @@ function getRandomString(byteCount: number): string {
 	return dec.decode(hexEncode(data));
 }
 
-type ClientProps = {
-	id: string;
-	ua?: string;
-	lang?: string;
-};
-
-export class Client {
+export type Client = {
 	id: string;
 	ua: string | null;
 	lang: string | null;
-
-	constructor(props: ClientProps) {
-		this.id = props.id;
-		this.ua = props.ua ?? null;
-		this.lang = props.lang ?? null;
-	}
-}
-
-type HitProps = {
-	clientID: string;
-	url: string;
-	referrer?: string;
-	time: number;
 };
 
-export class Hit {
+export type Hit = {
 	clientID: string;
 	url: string;
 	referrer: string | null;
 	time: number;
+};
 
-	constructor(props: HitProps) {
-		this.clientID = props.clientID;
-		this.url = props.url;
-		this.referrer = props.referrer ?? null;
-		this.time = props.time;
-	}
-}
-
-type ClientHitProps = HitProps & {
+export type ClientHit = Hit & {
 	ua: string;
 	lang: string;
 };
 
-export class ClientHit extends Hit {
-	ua: string;
-	lang: string;
-
-	constructor(props: ClientHitProps) {
-		super(props);
-		this.ua = props.ua;
-		this.lang = props.lang;
-	}
-}
-
-type LogProps = {
+export type Log = {
 	time: number;
 	tag?: string;
 	message: string;
 	level: number;
 };
-
-export class Log {
-	time: number;
-	tag: string | null;
-	message: string;
-	level: number;
-
-	constructor(props: LogProps) {
-		this.time = props.time;
-		this.tag = props.tag ?? null;
-		this.message = props.message;
-		this.level = props.level;
-	}
-}
 
 export type NewFeedback = {
 	message: string;
@@ -259,7 +208,7 @@ class App {
 		const id = getRandomString(32);
 
 		const db = await openDB(this.id);
-		await db.queryEntries<ClientProps>(
+		await db.queryEntries<Client>(
 			`insert into clients(id,
                            ua,
                            lang)
@@ -271,23 +220,23 @@ class App {
 			],
 		);
 
-		return new Client({
+		return {
 			id,
 			ua,
 			lang,
-		});
+		} as Client;
 	}
 
 	async getClientByID(id: number): Promise<Client | null> {
 		const db = await openDB(this.id);
-		const rows = await db.queryEntries<ClientProps>(
+		const rows = await db.queryEntries<Client>(
 			`select *
        from clients
        where id = ?`,
 			[id],
 		);
 
-		return rows.length ? new Client(rows[0]) : null;
+		return rows.length ? rows[0] as Client : null;
 	}
 
 	async createHit(client: Client, url: string, referrer?: string) {
@@ -305,26 +254,24 @@ class App {
 			],
 		);
 
-		return new Hit({
+		return {
 			clientID: client.id,
 			url,
 			referrer,
 			time,
-		});
+		} as Hit;
 	}
 
 	async getHits(startTime: number): Promise<ClientHit[]> {
 		const db = await openDB(this.id);
 
-		const rows = await db.queryEntries<ClientHitProps>(
+		return await db.queryEntries<ClientHit>(
 			`select id as clientID, url, referrer, time, ua, lang
        from hits
                 join clients on client_id = clients.id
        where hits.time > ?`,
 			[startTime],
 		);
-
-		return rows.map<ClientHit>((r) => new ClientHit(r));
 	}
 
 	async createClientLog(message: string, level: number, tag?: string) {
@@ -342,18 +289,18 @@ class App {
 			],
 		);
 
-		return new Log({
+		return {
 			time,
 			tag,
 			message,
 			level,
-		});
+		} as Log;
 	}
 
 	async getClientLogs(startTime: number, level = 0): Promise<Log[]> {
 		const db = await openDB(this.id);
 
-		const rows = await db.queryEntries<LogProps>(
+		return await db.queryEntries<Log>(
 			`select *
        from client_logs
        where time >= ?
@@ -361,8 +308,6 @@ class App {
        limit 5000`,
 			[startTime, level],
 		);
-
-		return rows.map<Log>((r) => new Log(r));
 	}
 
 	async createServerLog(message: string, level: number, tag?: string) {
@@ -380,18 +325,18 @@ class App {
 			],
 		);
 
-		return new Log({
+		return {
 			time,
 			tag,
 			message,
 			level,
-		});
+		} as Log;
 	}
 
 	async getServerLogs(startTime: number, level = 0): Promise<Log[]> {
 		const db = await openDB(this.id);
 
-		const rows = await db.queryEntries<LogProps>(
+		return await db.queryEntries<Log>(
 			`select *
        from server_logs
        where time >= ?
@@ -399,8 +344,6 @@ class App {
        limit 5000`,
 			[startTime, level],
 		);
-
-		return rows.map<Log>((r) => new Log(r));
 	}
 
 	async createFeedback(feedback: NewFeedback): Promise<Feedback> {
