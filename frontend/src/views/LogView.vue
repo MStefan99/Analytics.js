@@ -63,7 +63,9 @@ function loadLogs() {
 }
 
 loadLogs();
-onUnmounted(() => clearInterval(setInterval(loadLogs, 1000 * 30)));
+
+const refreshInterval = setInterval(loadLogs, 1000 * 15);
+onUnmounted(() => clearInterval(refreshInterval));
 </script>
 
 <style scoped></style>

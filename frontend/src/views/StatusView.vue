@@ -151,7 +151,9 @@ function loadOverview() {
 }
 
 loadOverview();
-onUnmounted(() => clearInterval(setInterval(loadOverview, 1000 * 30)));
+
+const refreshInterval = setInterval(loadOverview, 1000 * 15);
+onUnmounted(() => clearInterval(refreshInterval));
 </script>
 
 <style>

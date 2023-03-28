@@ -95,7 +95,9 @@ function loadMetrics() {
 }
 
 loadMetrics().catch((err) => alert('Failed to load metrics', PopupColor.Red, err.message));
-onUnmounted(() => clearInterval(setInterval(loadMetrics, 1000 * 30)));
+
+const refreshInterval = setInterval(loadMetrics, 1000 * 30);
+onUnmounted(() => clearInterval(refreshInterval));
 </script>
 
 <style scoped></style>
