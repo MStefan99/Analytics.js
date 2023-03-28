@@ -9,13 +9,13 @@ create table clients
 
 create table hits
 (
+	time       integer      not null,
 	client_id char(32)     not null
 		constraint hits_clients_id_fk
 			references clients
 			on update cascade on delete cascade,
 	url        varchar(150) not null,
-	referrer   varchar(150) default null,
-	time       integer      not null
+	referrer   varchar(150) default null
 );
 
 create table client_logs

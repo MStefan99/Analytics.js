@@ -244,21 +244,21 @@ class App {
 		const time = Date.now();
 
 		await db.query(
-			`insert into hits(client_id, url, referrer, time)
+			`insert into hits(time, client_id, url, referrer)
        values (?, ?, ?, ?)`,
 			[
+				Math.floor(time / 1000),
 				client.id,
 				url,
 				referrer ?? null,
-				time,
 			],
 		);
 
 		return {
+			time,
 			clientID: client.id,
 			url,
 			referrer,
-			time,
 		} as Hit;
 	}
 
@@ -270,80 +270,69 @@ class App {
        from hits
                 join clients on client_id = clients.id
        where hits.time > ?`,
-			[startTime],
+			[Math.floor(startTime / 1000)],
+		).map((hit) => ({ ...hit, time: hit.time * 1000 }));
+	}
+
+	async #createLog(
+		type: 'server' | 'client',
+		message: string,
+		level: number,
+		tag?: string,
+	): Promise<Log> {
+		const db = await openDB(this.id);
+		const time = Date.now();
+
+		db.query(
+			`insert into ${type}_logs(time, tag, message, level)
+       values (?, ?, ?, ?)`,
+			[
+				Math.floor(time / 1000),
+				tag ?? null,
+				message,
+				level,
+			],
 		);
+
+		return {
+			time,
+			tag,
+			message,
+			level,
+		} as Log;
+	}
+
+	async #getLogs(
+		type: 'server' | 'client',
+		startTime: number,
+		level = 0,
+	): Promise<Log[]> {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<Log>(
+			`select *
+       from ${type}_logs
+       where time >= ?
+         and level >= ?
+       limit 5000`,
+			[Math.floor(startTime / 1000), level],
+		).map((log) => ({ ...log, time: log.time * 1000 }));
 	}
 
 	async createClientLog(message: string, level: number, tag?: string) {
-		const db = await openDB(this.id);
-		const time = Date.now();
-
-		db.query(
-			`insert into client_logs(time, tag, message, level)
-       values (?, ?, ?, ?)`,
-			[
-				time,
-				tag ?? null,
-				message,
-				level,
-			],
-		);
-
-		return {
-			time,
-			tag,
-			message,
-			level,
-		} as Log;
+		return await this.#createLog('client', message, level, tag);
 	}
 
-	async getClientLogs(startTime: number, level = 0): Promise<Log[]> {
-		const db = await openDB(this.id);
-
-		return await db.queryEntries<Log>(
-			`select *
-       from client_logs
-       where time >= ?
-         and level >= ?
-       limit 5000`,
-			[startTime, level],
-		);
+	async getClientLogs(startTime: number, level = 0) {
+		return await this.#getLogs('client', startTime, level);
 	}
 
 	async createServerLog(message: string, level: number, tag?: string) {
-		const db = await openDB(this.id);
-		const time = Date.now();
-
-		db.query(
-			`insert into server_logs(time, tag, message, level)
-       values (?, ?, ?, ?)`,
-			[
-				time,
-				tag ?? null,
-				message,
-				level,
-			],
-		);
-
-		return {
-			time,
-			tag,
-			message,
-			level,
-		} as Log;
+		return await this.#createLog('server', message, level, tag);
 	}
 
 	async getServerLogs(startTime: number, level = 0): Promise<Log[]> {
-		const db = await openDB(this.id);
-
-		return await db.queryEntries<Log>(
-			`select *
-       from server_logs
-       where time >= ?
-         and level >= ?
-       limit 5000`,
-			[startTime, level],
-		);
+		return await this.#getLogs('server', startTime, level);
 	}
 
 	async createFeedback(feedback: NewFeedback): Promise<Feedback> {
@@ -352,8 +341,8 @@ class App {
 
 		db.query(
 			`insert into feedback(time, message)
-              values (?, ?)`,
-			[time, feedback.message],
+       values (?, ?)`,
+			[Math.floor(time / 1000), feedback.message],
 		);
 
 		const f = feedback as Feedback;
@@ -369,8 +358,8 @@ class App {
        from feedback
        where time > ?
        limit 5000`,
-			[startTime],
-		);
+			[Math.floor(startTime / 1000)],
+		).map((feedback) => ({ ...feedback, time: feedback.time * 1000 }));
 	}
 
 	async createMetrics(metrics: NewMetrics): Promise<Metrics> {
@@ -381,7 +370,7 @@ class App {
 			`insert into metrics(time, device, cpu, mem_used, mem_total, net_up, net_down, disk_used, disk_total)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			[
-				time,
+				Math.floor(time / 1000),
 				metrics.device,
 				metrics.cpu,
 				metrics.memUsed,
@@ -405,17 +394,17 @@ class App {
 			`select time,
               device,
               cpu,
-              mem_used as memUsed,
-              mem_total as memTotal,
-              net_up as netUp,
-              net_down as netDown,
-              disk_used as diskUsed,
+              mem_used   as memUsed,
+              mem_total  as memTotal,
+              net_up     as netUp,
+              net_down   as netDown,
+              disk_used  as diskUsed,
               disk_total as diskTotal
        from metrics
        where time > ?
        limit 5000`,
-			[startTime],
-		);
+			[Math.floor(startTime / 1000)],
+		).map((metrics) => ({ ...metrics, time: metrics.time * 1000 }));
 	}
 
 	async delete(keepDB = false): Promise<void> {
