@@ -113,7 +113,7 @@ class User {
 		);
 
 		return new User({
-			id: db.lastInsertRowId ?? 0,
+			id: db.lastInsertRowId,
 			username,
 			passwordSalt,
 			passwordHash,

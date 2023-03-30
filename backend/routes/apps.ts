@@ -148,9 +148,9 @@ router.get('/:id/logs/server', auth.authenticated(), async (ctx) => {
 	const params = new URLSearchParams(ctx.request.url.search);
 
 	const startTime = params.has('startTime')
-		? +(params?.get('startTime') as string)
+		? +(params?.get('startTime') as string) // Safe because of the check
 		: now - dayLength;
-	const level = params.has('level') ? +(params.get('level') as string) : 0;
+	const level = params.has('level') ? +(params.get('level') as string) : 0; // Safe because of the check
 
 	ctx.response.body = await app.getServerLogs(startTime, level);
 });
@@ -165,9 +165,9 @@ router.get('/:id/logs/client', auth.authenticated(), async (ctx) => {
 	const params = new URLSearchParams(ctx.request.url.search);
 
 	const startTime = params.has('startTime')
-		? +(params?.get('startTime') as string)
+		? +(params?.get('startTime') as string) // Safe because of the check
 		: now - dayLength;
-	const level = params.has('level') ? +(params.get('level') as string) : 0;
+	const level = params.has('level') ? +(params.get('level') as string) : 0; // Safe because of the check
 
 	ctx.response.body = await app.getClientLogs(startTime, level);
 });
@@ -182,7 +182,7 @@ router.get('/:id/feedback', auth.authenticated(), async (ctx) => {
 	const params = new URLSearchParams(ctx.request.url.search);
 
 	const startTime = params.has('startTime')
-		? +(params?.get('startTime') as string)
+		? +(params?.get('startTime') as string) // Safe because of the check
 		: now - dayLength;
 
 	ctx.response.body = await app.getFeedback(startTime);
@@ -198,7 +198,7 @@ router.get('/:id/metrics', auth.authenticated(), async (ctx) => {
 	const params = new URLSearchParams(ctx.request.url.search);
 
 	const startTime = params.has('startTime')
-		? +(params?.get('startTime') as string)
+		? +(params?.get('startTime') as string) // Safe because of the check
 		: now - sessionLength;
 
 	ctx.response.body = await app.getMetrics(startTime);

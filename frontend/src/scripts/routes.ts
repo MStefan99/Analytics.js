@@ -51,6 +51,12 @@ const routes: Array<RouteRecordRaw> = [
 		path: '/profile',
 		name: 'profile',
 		component: ProfileView
+	},
+	{
+		path: '/:pathname(.*)*',
+		redirect: {
+			name: 'home'
+		}
 	}
 ];
 

@@ -93,7 +93,7 @@ class Session {
 		);
 
 		return new Session({
-			id: db.lastInsertRowId ?? 0,
+			id: db.lastInsertRowId,
 			publicID,
 			userID: user.id,
 			ip,

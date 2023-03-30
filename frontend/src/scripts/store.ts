@@ -8,11 +8,10 @@ type Store = {
 	user: User | null;
 	setUrl: (url: string | null) => void;
 	setApiKey: (key: string | null) => void;
-	setConnectionDialogOpen: (open: boolean) => void;
 	setUser: (user: User | null) => void;
 };
 
-export const appState = reactive({
+export const appState = reactive<Store>({
 	backendURL: localStorage.getItem('backendURL') ?? import.meta.env.VITE_BACKEND_URL ?? null,
 	apiKey: localStorage.getItem('apiKey') ?? null,
 	user: null,
@@ -36,6 +35,6 @@ export const appState = reactive({
 	setUser(user: User | null): void {
 		this.user = user;
 	}
-} as Store);
+});
 
 export default appState;

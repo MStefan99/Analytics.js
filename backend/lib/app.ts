@@ -27,18 +27,23 @@ export type ClientHit = Hit & {
 	lang: string;
 };
 
-export type Log = {
-	time: number;
+export type NewLog = {
 	tag?: string;
 	message: string;
 	level: number;
 };
+
+export type Log = {
+	id: number;
+	time: number;
+} & NewLog;
 
 export type NewFeedback = {
 	message: string;
 };
 
 export type Feedback = {
+	id: number;
 	time: number;
 } & NewFeedback;
 
@@ -53,7 +58,10 @@ export type NewMetrics = {
 	diskTotal?: number;
 };
 
-export type Metrics = { time: number } & NewMetrics;
+export type Metrics = {
+	id: number;
+	time: number;
+} & NewMetrics;
 
 type AppProps = {
 	id: number;
@@ -127,7 +135,7 @@ class App {
 		);
 
 		return new App({
-			id: db.lastInsertRowId ?? 0,
+			id: db.lastInsertRowId,
 			name,
 			description,
 			audienceKey,
@@ -222,9 +230,9 @@ class App {
 
 		return {
 			id,
-			ua,
-			lang,
-		} as Client;
+			ua: ua ?? null,
+			lang: lang ?? null,
+		};
 	}
 
 	async getClientByID(id: number): Promise<Client | null> {
@@ -236,7 +244,7 @@ class App {
 			[id],
 		);
 
-		return rows.length ? rows[0] as Client : null;
+		return rows.length ? rows[0] : null;
 	}
 
 	async createHit(client: Client, url: string, referrer?: string) {
@@ -259,7 +267,7 @@ class App {
 			clientID: client.id,
 			url,
 			referrer,
-		} as Hit;
+		};
 	}
 
 	async getHits(startTime: number): Promise<ClientHit[]> {
@@ -295,11 +303,12 @@ class App {
 		);
 
 		return {
+			id: db.lastInsertRowId,
 			time,
 			tag,
 			message,
 			level,
-		} as Log;
+		};
 	}
 
 	async #getLogs(
@@ -345,9 +354,7 @@ class App {
 			[Math.floor(time / 1000), feedback.message],
 		);
 
-		const f = feedback as Feedback;
-		f.time = time;
-		return f;
+		return { id: db.lastInsertRowId, time, ...feedback };
 	}
 
 	async getFeedback(startTime: number): Promise<Feedback[]> {
@@ -382,9 +389,7 @@ class App {
 			],
 		);
 
-		const m = metrics as Metrics;
-		m.time = time;
-		return m;
+		return { id: db.lastInsertRowId, time, ...metrics };
 	}
 
 	async getMetrics(startTime: number): Promise<Metrics[]> {

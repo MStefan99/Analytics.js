@@ -9,7 +9,7 @@ import { init } from './lib/init.ts';
 
 const defaultPort = 3001;
 const parsedPort = Deno.env.has('PORT')
-	? +(Deno.env.get('PORT') as string)
+	? +(Deno.env.get('PORT') as string) // Safe because of the check above
 	: defaultPort;
 const port =
 	Number.isInteger(parsedPort) && parsedPort > 0 && parsedPort < 65535

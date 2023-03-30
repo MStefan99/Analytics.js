@@ -37,7 +37,7 @@ export const activePrompt = ref<{
 
 export function alert(title: string, type: PopupColor, details?: string): Promise<void> {
 	return new Promise<void>((resolve) => {
-		const alert = {title, details, type} as Alert;
+		const alert: Alert = {title, details, type};
 
 		setTimeout(() => {
 			activeAlerts.splice(activeAlerts.indexOf(alert), 1);
