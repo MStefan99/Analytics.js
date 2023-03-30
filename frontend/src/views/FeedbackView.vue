@@ -11,7 +11,7 @@
 				th Time
 				th Message
 		tbody
-			tr(v-for="feedback in feedbacks" :key="feedback.time")
+			tr(v-for="feedback in feedbacks" :key="feedback.id")
 				td {{new Date(feedback.time).toLocaleString()}}
 				td {{feedback.message}}
 			tr(v-if="!feedbacks.length")

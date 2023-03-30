@@ -16,6 +16,7 @@ export type Client = {
 };
 
 export type Hit = {
+	id: number;
 	clientID: string;
 	url: string;
 	referrer: string | null;
@@ -247,7 +248,11 @@ class App {
 		return rows.length ? rows[0] : null;
 	}
 
-	async createHit(client: Client, url: string, referrer?: string) {
+	async createHit(
+		client: Client,
+		url: string,
+		referrer?: string,
+	): Promise<Hit> {
 		const db = await openDB(this.id);
 		const time = Date.now();
 
@@ -263,10 +268,11 @@ class App {
 		);
 
 		return {
+			id: db.lastInsertRowId,
 			time,
 			clientID: client.id,
 			url,
-			referrer,
+			referrer: referrer ?? null,
 		};
 	}
 
@@ -274,7 +280,7 @@ class App {
 		const db = await openDB(this.id);
 
 		return await db.queryEntries<ClientHit>(
-			`select id as clientID, url, referrer, time, ua, lang
+			`select clients.id as clientID, url, referrer, time, ua, lang
        from hits
                 join clients on client_id = clients.id
        where hits.time > ?`,

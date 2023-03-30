@@ -16,7 +16,7 @@
 				th Time
 				th Message
 		tbody
-			tr.log-row(:class="'log-' + log.level" v-for="log in logs" :key="log.time")
+			tr.log-row(:class="'log-' + log.level" v-for="log in logs" :key="log.id")
 				td.log-level(:class="'log-' + log.level") {{levels[log.level]}}
 				td {{log.tag}}
 				td {{new Date(log.time).toLocaleString()}}

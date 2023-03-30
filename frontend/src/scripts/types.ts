@@ -63,10 +63,17 @@ export type DayAudience = {
 };
 
 export type Log = {
+	id: number;
 	time: number;
 	tag?: string;
 	message: string;
 	level: number;
+};
+
+export type Feedback = {
+	id: number;
+	time: number;
+	message: string;
 };
 
 export type Metrics = {
@@ -79,9 +86,4 @@ export type Metrics = {
 	netDown?: number;
 	diskUsed?: number;
 	diskTotal?: number;
-};
-
-export type Feedback = {
-	time: number;
-	message: string;
 };

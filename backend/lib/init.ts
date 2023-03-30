@@ -19,6 +19,8 @@ export async function initDB() {
 		const sql = await Deno.readTextFile('./db/general.sql');
 		await db.execute(sql);
 		await User.create('admin', 'admin');
+
+		await Deno.mkdir('./db/apps');
 	}
 }
 
