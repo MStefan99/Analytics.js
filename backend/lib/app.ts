@@ -64,6 +64,26 @@ export type Metrics = {
 	time: number;
 } & NewMetrics;
 
+export type HitAggregate = {
+	time: number;
+	day: string;
+	clients: number;
+	views: number;
+};
+
+export type LogAggregate = {
+	time: number;
+	day: string;
+	level: number;
+	count: number;
+};
+
+// export type LogAggregate = {
+// 	[key: number]: { // Log level
+// 		[key: number]: number // Log timestamp and count
+// 	}
+// }
+
 type AppProps = {
 	id: number;
 	name: string;
@@ -283,7 +303,8 @@ class App {
 			`select clients.id as clientID, url, referrer, time, ua, lang
        from hits
                 join clients on client_id = clients.id
-       where hits.time > ?`,
+       where hits.time > ?
+       limit 5000`,
 			[Math.floor(startTime / 1000)],
 		).map((hit) => ({ ...hit, time: hit.time * 1000 }));
 	}
@@ -334,6 +355,32 @@ class App {
 		).map((log) => ({ ...log, time: log.time * 1000 }));
 	}
 
+	async #getLogAggregates(
+		type: 'server' | 'client',
+		startTime: number,
+		endTime: number,
+	): Promise<LogAggregate[]> {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<LogAggregate>(
+			`select time,
+              date(time, 'unixepoch') as day,
+              level,
+              count(level)            as count
+       from ${type}_logs
+       where time between ? and ?
+       group by day, level
+       order by day, level
+       limit 5000`,
+			[startTime / 1000, endTime / 1000],
+		)
+			.map((a) => {
+				const date = new Date(a.time);
+				date.setHours(0, 0, 0, 0);
+				return { ...a, time: date.getTime() };
+			});
+	}
+
 	async createClientLog(message: string, level: number, tag?: string) {
 		return await this.#createLog('client', message, level, tag);
 	}
@@ -370,7 +417,7 @@ class App {
 			`select *
        from feedback
        where time > ?
-       limit 5000`,
+       limit 1000`,
 			[Math.floor(startTime / 1000)],
 		).map((feedback) => ({ ...feedback, time: feedback.time * 1000 }));
 	}
@@ -413,9 +460,48 @@ class App {
               disk_total as diskTotal
        from metrics
        where time > ?
-       limit 5000`,
+       limit 500`,
 			[Math.floor(startTime / 1000)],
 		).map((metrics) => ({ ...metrics, time: metrics.time * 1000 }));
+	}
+
+	async getHitAggregates(
+		startTime: number,
+		endTime: number,
+	): Promise<HitAggregate[]> {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<HitAggregate>(
+			`select time                      as time,
+              date(time, 'unixepoch')   as day,
+              count(distinct client_id) as clients,
+              count(*)                  as views
+       from hits
+       where time between ? and ?
+       group by day
+       order by day
+       limit 3650`,
+			[startTime / 1000, endTime / 1000],
+		)
+			.map((a) => {
+				const date = new Date(a.time);
+				date.setHours(0, 0, 0, 0);
+				return { ...a, time: date.getTime() };
+			});
+	}
+
+	async getServerLogAggregates(
+		startTime: number,
+		endTime: number,
+	): Promise<LogAggregate[]> {
+		return await this.#getLogAggregates('server', startTime, endTime);
+	}
+
+	async getClientLogAggregates(
+		startTime: number,
+		endTime: number,
+	): Promise<LogAggregate[]> {
+		return await this.#getLogAggregates('client', startTime, endTime);
 	}
 
 	async delete(keepDB = false): Promise<void> {

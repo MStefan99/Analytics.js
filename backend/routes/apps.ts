@@ -123,19 +123,19 @@ router.patch('/:id', hasBody(), auth.authenticated(), async (ctx) => {
 router.get('/:id/overview', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 
-	app && (ctx.response.body = await analyzer.metricsOverview(app.id));
+	app && (ctx.response.body = await analyzer.realtimeMetrics(app.id));
 });
 
-router.get('/:id/now', auth.authenticated(), async (ctx) => {
+router.get('/:id/audience/now', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 
 	app && (ctx.response.body = await analyzer.realtimeAudience(app.id));
 });
 
-router.get('/:id/today', auth.authenticated(), async (ctx) => {
+router.get('/:id/audience/today', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 
-	app && (ctx.response.body = await analyzer.dayAudience(app.id));
+	app && (ctx.response.body = await analyzer.todayAudience(app.id));
 });
 
 router.get('/:id/logs/server', auth.authenticated(), async (ctx) => {
