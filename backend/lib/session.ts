@@ -47,30 +47,6 @@ class Session {
 		};
 	}
 
-	async save(): Promise<void> {
-		const db = await openDB();
-		await db
-			.query(
-				`insert or
-         replace
-         into sessions(id,
-                       public_id,
-                       user_id,
-                       ip,
-                       ua,
-                       time)
-         values (?, ?, ?, ?, ?, ?)`,
-				[
-					this.id,
-					this.publicID,
-					this.userID,
-					this.ip,
-					this.ua,
-					this.time,
-				],
-			);
-	}
-
 	static async create(user: User, ip: string, ua: string): Promise<Session> {
 		const publicID = getRandomString(32);
 		const time = new Date().toISOString().replace('T', ' ').slice(0, -1);

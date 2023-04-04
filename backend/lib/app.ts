@@ -114,21 +114,14 @@ class App {
 		const db = await openDB();
 		await db
 			.query(
-				`insert or
-         replace
-         into apps(id,
-                   name,
-                   description,
-                   audience_key,
-                   telemetry_key,
-                   owner_id)
-         values (?, ?, ?, ?, ?, ?)`,
+				`update apps
+         set name=?,
+             description=?
+         where id = ?
+				`,
 				[
-					this.id,
 					this.name,
 					this.description,
-					this.audienceKey,
-					this.telemetryKey,
 					this.ownerID,
 				],
 			);

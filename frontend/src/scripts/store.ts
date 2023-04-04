@@ -15,7 +15,7 @@ export const appState = reactive<Store>({
 	backendURL: localStorage.getItem('backendURL') ?? import.meta.env.VITE_BACKEND_URL ?? null,
 	apiKey: localStorage.getItem('apiKey') ?? null,
 	user: null,
-	setUrl(url) {
+	setUrl(url: string) {
 		url = url?.replace(/\/$/, '') ?? null;
 		this.backendURL = url;
 		if (url !== null) {
@@ -24,7 +24,7 @@ export const appState = reactive<Store>({
 			localStorage.removeItem('backendURL');
 		}
 	},
-	setApiKey(key) {
+	setApiKey(key: string) {
 		this.apiKey = key;
 		if (key !== null) {
 			localStorage.setItem('apiKey', key);

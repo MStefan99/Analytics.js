@@ -74,18 +74,17 @@ class User {
 		const db = await openDB();
 		await db
 			.query(
-				`insert or
-         replace
-         into users(id,
-                    username,
-                    password_salt,
-                    password_hash)
-         values (?, ?, ?, ?)`,
+				`update users
+         set username=?,
+             password_salt=?,
+             password_hash=?
+         where id = ?
+				`,
 				[
-					this.id,
 					this.username,
 					this.passwordSalt,
 					this.passwordHash,
+					this.id,
 				],
 			);
 	}
