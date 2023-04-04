@@ -76,6 +76,21 @@ const steps = computed(() => {
 			props.stepSize
 	);
 });
+const now = Date.now();
+console.log(
+	'steps',
+	steps.value,
+	props.data
+		.filter((d) => (d?.data ? Object.keys(d.data).length : false))
+		.reduce<number>(
+			(min, curr) =>
+				Math.min(
+					min,
+					Object.keys(curr.data).reduce<number>((m, c) => Math.min(m, +c), now)
+				),
+			now
+		)
+);
 const labels = computed(() => {
 	const array = [];
 	const unit = units

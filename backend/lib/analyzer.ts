@@ -306,11 +306,11 @@ export async function historyLogs(
 	}
 
 	for (const aggregate of clientLogAggregates) {
-		if (!serverLogs[aggregate.level]) {
-			serverLogs[aggregate.level] = {};
+		if (!clientLogs[aggregate.level]) {
+			clientLogs[aggregate.level] = {};
 		}
 
-		serverLogs[aggregate.level][aggregate.time] = aggregate.count;
+		clientLogs[aggregate.level][aggregate.time] = aggregate.count;
 	}
 
 	return {

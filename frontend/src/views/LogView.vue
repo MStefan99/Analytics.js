@@ -1,6 +1,8 @@
 <template lang="pug">
 #logs
 	h1 {{app?.name}} {{$route.params.type === 'client' ? 'client' : 'server'}} logs
+	div(v-if="historicalLogs")
+		TimedChart(:data="chartData" :step-size="1000 * 60 * 60 * 24")
 	.row.py-3.sticky.top-0.glass
 		.input
 			label(for="date-input") Starting from
@@ -27,22 +29,75 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {onUnmounted, ref} from 'vue';
-import type {App, Log} from '../scripts/types';
+import {computed, onUnmounted, ref} from 'vue';
+import type {App, HistoricalLogs, Log} from '../scripts/types';
 import DropdownSelect from '../components/DropdownSelect.vue';
 import DatePicker from '../components/DatePicker.vue';
+import TimedChart from '../components/TimedChart.vue';
 import {alert, PopupColor} from '../scripts/popups';
 import Api from '../scripts/api';
 
 const route = useRoute();
 const app = ref<App | null>(null);
 const logs = ref<Log[]>([]);
+const historicalLogs = ref<HistoricalLogs | null>(null);
 const dayLength = 1000 * 60 * 60 * 24;
 const initialDate = new Date(Date.now() - dayLength);
 const levels = ['Debug', 'Information', 'Warning', 'Error', 'Critical'];
 
 const startTime = ref<Date>(initialDate);
 const level = ref<number>(1);
+
+const colors = {
+	debug: '#4f46e5',
+	info: '#059669',
+	warning: '#ca8a04',
+	error: '#ea580c',
+	critical: '#e11d48'
+};
+
+const chartData = computed(() => [
+	{
+		label: 'Debug logs',
+		color: colors.debug,
+		data:
+			route.params.type === 'server'
+				? historicalLogs.value.serverLogs['0']
+				: historicalLogs.value.clientLogs['0']
+	},
+	{
+		label: 'Info logs',
+		color: colors.info,
+		data:
+			route.params.type === 'server'
+				? historicalLogs.value.serverLogs['1']
+				: historicalLogs.value.clientLogs['1']
+	},
+	{
+		label: 'Warnings',
+		color: colors.warning,
+		data:
+			route.params.type === 'server'
+				? historicalLogs.value.serverLogs['2']
+				: historicalLogs.value.clientLogs['2']
+	},
+	{
+		label: 'Errors',
+		color: colors.error,
+		data:
+			route.params.type === 'server'
+				? historicalLogs.value.serverLogs['3']
+				: historicalLogs.value.clientLogs['3']
+	},
+	{
+		label: 'Critical',
+		color: colors.critical,
+		data:
+			route.params.type === 'server'
+				? historicalLogs.value.serverLogs['4']
+				: historicalLogs.value.clientLogs['4']
+	}
+]);
 
 window.document.title = 'Logs | Crash Course';
 
@@ -60,6 +115,7 @@ function loadLogs() {
 			level.value
 		)
 		.then((l) => (logs.value = l));
+	Api.apps.getHistoricalLogs(+route.params.id).then((l) => (historicalLogs.value = l));
 }
 
 loadLogs();

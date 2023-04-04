@@ -356,12 +356,13 @@ class App {
 		const db = await openDB(this.id);
 
 		return await db.queryEntries<LogAggregate>(
-			`select time,
+			`select time                    as t,
+              min(time)               as time,
               date(time, 'unixepoch') as day,
               level,
               count(level)            as count
        from ${type}_logs
-       where time between ? and ?
+       where t between ? and ?
        group by day, level
        order by day, level
        limit 5000`,
@@ -370,7 +371,7 @@ class App {
 			.map((a) => {
 				const date = new Date(a.time * 1000);
 				date.setHours(0, 0, 0, 0);
-				return { ...a, time: date.getTime() };
+				return { ...a, time: date.getTime(), t: undefined };
 			});
 	}
 
@@ -479,7 +480,7 @@ class App {
 			.map((a) => {
 				const date = new Date(a.time * 1000);
 				date.setHours(0, 0, 0, 0);
-				return { ...a, time: date.getTime() };
+				return { ...a, time: date.getTime(), t: undefined };
 			});
 	}
 
