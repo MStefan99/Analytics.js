@@ -10,7 +10,9 @@ import type {
 	UpdateUser,
 	User,
 	Log,
-	Metrics
+	Metrics,
+	HistoricalLogs,
+	HistoricalAudience
 } from './types';
 
 type MessageResponse = {
@@ -191,13 +193,18 @@ export const AppAPI = {
 		request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.PATCH, body: app}),
 	getOverview: (id: App['id']) => request<AppOverview>('/apps/' + id + '/overview', {auth: true}),
 	getRealtimeAudience: (id: App['id']) =>
-		request<RealtimeAudience>('/apps/' + id + '/now', {auth: true}),
-	getTodayAudience: (id: App['id']) => request<DayAudience>('/apps/' + id + '/today', {auth: true}),
+		request<RealtimeAudience>('/apps/' + id + '/audience/now', {auth: true}),
+	getTodayAudience: (id: App['id']) =>
+		request<DayAudience>('/apps/' + id + '/audience/today', {auth: true}),
+	getHistoricalAudience: (id: App['id']) =>
+		request<HistoricalAudience>('/apps/' + id + '/audience/history', {auth: true}),
 	getLogs: (id: App['id'], type: 'server' | 'client', startTime?: number, level?: number) =>
 		request<Log[]>('/apps/' + id + '/logs/' + type, {
 			auth: true,
 			query: {startTime: startTime?.toString() ?? '', level: level?.toString() ?? ''}
 		}),
+	getHistoricalLogs: (id: App['id']) =>
+		request<HistoricalLogs>('/apps/' + id + '/logs/history', {auth: true}),
 	getFeedbacks: (id: App['id'], startTime?: number) =>
 		request<Log[]>('/apps/' + id + '/feedback', {
 			auth: true,

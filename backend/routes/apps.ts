@@ -178,6 +178,12 @@ router.get('/:id/logs/client', auth.authenticated(), async (ctx) => {
 	ctx.response.body = await app.getClientLogs(startTime, level);
 });
 
+router.get('/:id/logs/history', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	app && (ctx.response.body = await analyzer.historyLogs(app.id));
+});
+
 router.get('/:id/feedback', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 	if (!app) {

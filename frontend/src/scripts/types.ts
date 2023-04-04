@@ -62,12 +62,22 @@ export type DayAudience = {
 	];
 };
 
+export type HistoricalAudience = {
+	clients: {[key: number]: number};
+	views: {[key: number]: number};
+};
+
 export type Log = {
 	id: number;
 	time: number;
 	tag?: string;
 	message: string;
 	level: number;
+};
+
+export type HistoricalLogs = {
+	serverLogs: {[key: number]: {[key: number]: number}};
+	clientLogs: {[key: number]: {[key: number]: number}};
 };
 
 export type Feedback = {
