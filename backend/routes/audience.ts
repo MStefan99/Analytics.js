@@ -39,7 +39,7 @@ router.post('/hits', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	await app.createHit(
 		client,
 		body.url.toString().trim(),
-		body.referrer.toString().trim(),
+		body.referrer?.toString().trim() ?? null,
 	);
 
 	ctx.response.status = 201;

@@ -138,6 +138,12 @@ router.get('/:id/audience/today', auth.authenticated(), async (ctx) => {
 	app && (ctx.response.body = await analyzer.todayAudience(app.id));
 });
 
+router.get('/:id/audience/history', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	app && (ctx.response.body = await analyzer.historyAudience(app.id));
+});
+
 router.get('/:id/logs/server', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 	if (!app) {

@@ -375,7 +375,7 @@ class App {
 			[startTime / 1000, endTime / 1000],
 		)
 			.map((a) => {
-				const date = new Date(a.time);
+				const date = new Date(a.time * 1000);
 				date.setHours(0, 0, 0, 0);
 				return { ...a, time: date.getTime() };
 			});
@@ -484,7 +484,7 @@ class App {
 			[startTime / 1000, endTime / 1000],
 		)
 			.map((a) => {
-				const date = new Date(a.time);
+				const date = new Date(a.time * 1000);
 				date.setHours(0, 0, 0, 0);
 				return { ...a, time: date.getTime() };
 			});

@@ -10,7 +10,7 @@ const defaultHistoryRange = 1000 * 60 * 60 * 24 * 30;
 type Page = { url: string; referrer: string | null; time: number };
 type Session = { duration: number; ua: string; pages: Page[] };
 
-export type RealtimeMetrics = {
+export type Overview = {
 	currentUsers: number;
 	views: { [key: number]: number };
 	serverLogs: { [key: number]: { [key: number]: number } };
@@ -41,13 +41,13 @@ export type HistoricalLogs = {
 	clientLogs: { [key: number]: { [key: number]: number } };
 };
 
-export async function realtimeMetrics(
+export async function overview(
 	appID: App['id'],
 	timeRange: number = defaultRealtimeRange,
-): Promise<RealtimeMetrics | null> {
-	const views: RealtimeMetrics['views'] = {};
-	const serverLogs: RealtimeMetrics['serverLogs'] = {};
-	const clientLogs: RealtimeMetrics['clientLogs'] = {};
+): Promise<Overview | null> {
+	const views: Overview['views'] = {};
+	const serverLogs: Overview['serverLogs'] = {};
+	const clientLogs: Overview['clientLogs'] = {};
 	const currentUsers = new Set<string>();
 
 	const now = Date.now();
@@ -320,7 +320,7 @@ export async function historyLogs(
 }
 
 export default {
-	realtimeMetrics,
+	realtimeMetrics: overview,
 	realtimeAudience,
 	todayAudience,
 	historyAudience,

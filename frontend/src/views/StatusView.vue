@@ -112,7 +112,7 @@ const viewsChart = computed(() => [
 	{
 		label: 'Page views',
 		color: '#44c40c',
-		data: overview.value.sessions
+		data: overview.value.views
 	}
 ]);
 

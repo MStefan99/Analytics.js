@@ -59,17 +59,23 @@ const units = [
 	{length: 1000 * 60 * 60 * 24 * 30, name: 'months'}
 ];
 const chart = ref(null);
-const steps = computed(() =>
-	Math.floor(
-		(Date.now() -
-			(props.data[0]?.data
-				? Object.keys(props.data[0].data)
-						.map((k) => +k)
-						.reduce((min, val) => (val < min ? val : min), Date.now())
-				: Date.now())) /
+const steps = computed(() => {
+	const now = Date.now();
+	return Math.floor(
+		(now -
+			props.data
+				.filter((d) => (d?.data ? Object.keys(d.data).length : false))
+				.reduce<number>(
+					(min, curr) =>
+						Math.min(
+							min,
+							Object.keys(curr.data).reduce<number>((m, c) => Math.min(m, +c), now)
+						),
+					now
+				)) /
 			props.stepSize
-	)
-);
+	);
+});
 const labels = computed(() => {
 	const array = [];
 	const unit = units

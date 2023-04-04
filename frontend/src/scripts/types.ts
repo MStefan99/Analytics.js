@@ -37,7 +37,7 @@ export type App = NewApp & {
 
 export type AppOverview = {
 	currentUsers: number;
-	sessions: {[key: string]: number};
+	views: {[key: string]: number};
 	clientLogs: {[key: string]: {[key: string]: number}};
 	serverLogs: {[key: string]: {[key: string]: number}};
 };
@@ -57,7 +57,7 @@ export type DayAudience = {
 		{
 			duration: number;
 			ua: string;
-			pages: {url: string; time: number}[];
+			pages: {url: string; referrer: string | null; time: number}[];
 		}
 	];
 };
