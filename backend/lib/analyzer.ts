@@ -33,7 +33,7 @@ export type DayAudience = {
 };
 
 export type HistoricalAudience = {
-	clients: { [key: string]: number };
+	users: { [key: string]: number };
 	views: { [key: string]: number };
 };
 
@@ -252,7 +252,7 @@ export async function historyAudience(
 	timeRange: number = defaultHistoryRange,
 	endTime: number = Date.now(),
 ): Promise<HistoricalAudience | null> {
-	const clients: HistoricalAudience['clients'] = {};
+	const users: HistoricalAudience['users'] = {};
 	const views: HistoricalAudience['views'] = {};
 
 	const app = await App.getByID(appID);
@@ -266,12 +266,12 @@ export async function historyAudience(
 	);
 
 	for (const aggregate of aggregates) {
-		clients[aggregate.time] = aggregate.clients;
+		users[aggregate.time] = aggregate.clients;
 		views[aggregate.time] = aggregate.views;
 	}
 
 	return {
-		clients,
+		users,
 		views,
 	};
 }

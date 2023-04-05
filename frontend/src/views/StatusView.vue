@@ -20,15 +20,15 @@
 				RouterLink.btn(:to="{name: 'settings', params: {id: $route.params.id}}") Settings
 		.card.m-4
 			h2 Audience
-			TimedChart(:data="viewsChart" :yStacked="false")
+			TimedChart(:data="audienceDataset" :yStacked="false")
 			RouterLink.btn(:to="{name: 'audience', params: {id: $route.params.id}}") View audience
 		.card.m-4
 			h2 Server logs
-			TimedChart(:data="serverChart")
+			TimedChart(:data="serverLogsDataset")
 			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'server'}}") View server logs
 		.card.m-4
 			h2 Client logs
-			TimedChart(:data="clientChart")
+			TimedChart(:data="clientLogsDataset")
 			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'client'}}") View client logs
 </template>
 
@@ -54,7 +54,7 @@ const colors = {
 	critical: '#e11d48'
 };
 
-const serverChart = computed(() => [
+const serverLogsDataset = computed(() => [
 	{
 		label: 'Debug logs',
 		color: colors.debug,
@@ -81,7 +81,7 @@ const serverChart = computed(() => [
 		data: overview.value.serverLogs['4']
 	}
 ]);
-const clientChart = computed(() => [
+const clientLogsDataset = computed(() => [
 	{
 		label: 'Debug logs',
 		color: colors.debug,
@@ -108,7 +108,7 @@ const clientChart = computed(() => [
 		data: overview.value.clientLogs['4']
 	}
 ]);
-const viewsChart = computed(() => [
+const audienceDataset = computed(() => [
 	{
 		label: 'Users',
 		color: '#ef8105',

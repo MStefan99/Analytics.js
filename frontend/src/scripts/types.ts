@@ -64,7 +64,7 @@ export type DayAudience = {
 };
 
 export type HistoricalAudience = {
-	clients: {[key: string]: number};
+	users: {[key: string]: number};
 	views: {[key: string]: number};
 };
 

@@ -4,16 +4,20 @@
 	.row
 		.card.m-4
 			h2 CPU usage
-			TimedChart(:data="[chartData.cpu]" :area="true" :min="0" :max="100")
+			TimedChart(:data="[chartDatasets.cpu]" type="line" :min="0" :max="100")
 		.card.m-4
 			h2 Memory usage
-			TimedChart(:data="[chartData.mem]" :area="true" :min="0" :max="100")
+			TimedChart(:data="[chartDatasets.mem]" type="line" :min="0" :max="100")
 		.card.m-4
 			h2 Network usage
-			TimedChart(:data="[chartData.up, chartData.down]" :area="true" :min="0" :suggestedMax="0.25")
+			TimedChart(
+				:data="[chartDatasets.up, chartDatasets.down]"
+				type="line"
+				:min="0"
+				:suggestedMax="0.25")
 		.card.m-4
 			h2 Disk usage
-			TimedChart(:data="[chartData.disk]" :area="true" :min="0" :max="100")
+			TimedChart(:data="[chartDatasets.disk]" type="line" :min="0" :max="100")
 </template>
 
 <script setup lang="ts">
@@ -31,7 +35,7 @@ window.document.title = 'System | Crash Course';
 const mb = 1024 * 1024;
 const route = useRoute();
 const metrics = ref<Metrics[]>([]);
-const charts: {name: string; val(m: Metrics): number; label: string; color: string}[] = [
+const datasetOptions: {name: string; val(m: Metrics): number; label: string; color: string}[] = [
 	{
 		name: 'cpu',
 		val(m) {
@@ -74,10 +78,10 @@ const charts: {name: string; val(m: Metrics): number; label: string; color: stri
 	}
 ];
 
-const chartData = computed(() => {
+const chartDatasets = computed(() => {
 	const data: {[key: string]: Dataset} = {};
 
-	for (const chart of charts) {
+	for (const chart of datasetOptions) {
 		const dataset: Dataset = {label: chart.label, color: chart.color, data: {}};
 
 		for (const metricsEntry of metrics.value) {

@@ -1,7 +1,7 @@
 <template lang="pug">
 .chart.relative(ref="chart")
-	Line(v-if="area" :data="chartData" :options="options")
-	Bar(v-else :data="chartData" :options="options")
+	Bar(v-if="type === 'bar'" :data="chartData" :options="options")
+	Line(v-else :data="chartData" :options="options")
 </template>
 
 <script setup lang="ts">
@@ -26,10 +26,10 @@ import {computed, onUnmounted, ref} from 'vue';
 const props = withDefaults(
 	defineProps<{
 		data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
+		type?: 'bar' | 'line';
 		xStacked?: boolean;
 		yStacked?: boolean;
 		stepSize?: number;
-		area?: true;
 		min?: number;
 		max?: number;
 		suggestedMin?: number;
@@ -38,6 +38,7 @@ const props = withDefaults(
 	}>(),
 	{
 		stepSize: 1000 * 60,
+		type: 'bar',
 		xStacked: true,
 		yStacked: true
 	}
@@ -152,7 +153,7 @@ const chartData = computed(() => {
 	for (const series of props.data) {
 		const dataset = {
 			label: series.label,
-			backgroundColor: props.area ? transparentize(series.color, 0.35) : series.color,
+			backgroundColor: props.type === 'line' ? transparentize(series.color, 0.35) : series.color,
 			data: new Array(steps.value + 1).fill(0),
 			tension: 0.4,
 			borderColor: series.color,
