@@ -4,9 +4,9 @@
 	.row
 		.card.accent.m-4(v-if="realtimeAudience")
 			h2 Audience now
-			TimedChart(:data="viewsChart" color="#ffffff")
+			TimedChart(:data="chartData" color="#ffffff" type="line" :yStacked="false")
 			h3 Active users
-			//p#active-users.large {{realtimeAudience.users}}
+			p#active-users.large {{currentUsers}}
 		.card.m-4(v-if="todayAudience")
 			h2 Audience today
 			p Users
@@ -59,28 +59,39 @@ const todayAudience = ref<DayAudience | null>(null);
 
 window.document.title = 'Audience | Crash Course';
 
-const viewsChart = computed(() => [
+const chartData = computed(() => [
+	{
+		label: 'Users',
+		color: '#ef8105',
+		data: realtimeAudience.value?.users
+	},
 	{
 		label: 'Page views',
 		color: '#44c40c',
-		data: realtimeAudience.value.sessions
+		data: realtimeAudience.value?.views
 	}
 ]);
+const currentUsers = computed(() => {
+	const keys = Object.keys(realtimeAudience.value.users);
+
+	const lastInterval = keys.length ? keys[keys.length - 1] : null;
+	return Date.now() - +lastInterval < 1000 * 60 ? realtimeAudience.value.users[lastInterval] : 0;
+});
 
 const pages = computed<{url: string; hits: number}[]>(() =>
-	Object.keys(realtimeAudience.value?.pages ?? {})
-		.sort((k1, k2) => realtimeAudience.value.pages[k2] - realtimeAudience.value.pages[k1])
+	Object.keys(todayAudience.value?.pages ?? {})
+		.sort((k1, k2) => todayAudience.value.pages[k2] - todayAudience.value.pages[k1])
 		.slice(0, 5)
 		.map((k) => {
-			return {url: k, hits: realtimeAudience.value.pages[k]};
+			return {url: k, hits: todayAudience.value.pages[k]};
 		})
 );
 const referrers = computed<{url: string; count: number}[]>(() =>
-	Object.keys(realtimeAudience.value?.referrers ?? {})
-		.sort((k1, k2) => realtimeAudience.value.referrers[k2] - realtimeAudience.value.referrers[k1])
+	Object.keys(todayAudience.value?.referrers ?? {})
+		.sort((k1, k2) => todayAudience.value.referrers[k2] - todayAudience.value.referrers[k1])
 		.slice(0, 5)
 		.map((k) => {
-			return {url: k, count: realtimeAudience.value.referrers[k]};
+			return {url: k, count: todayAudience.value.referrers[k]};
 		})
 );
 

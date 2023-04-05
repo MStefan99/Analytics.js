@@ -44,9 +44,7 @@ export type Overview = {
 
 export type RealtimeAudience = {
 	users: {[key: string]: number};
-	pages: {[key: string]: number};
-	sessions: {[key: string]: number};
-	referrers: {[key: string]: number};
+	views: {[key: string]: number};
 };
 
 export type DayAudience = {
@@ -61,11 +59,13 @@ export type DayAudience = {
 	bounceRate: number;
 	avgDuration: number;
 	views: number;
+	pages: {[key: string]: number};
+	referrers: {[key: string]: number};
 };
 
 export type HistoricalAudience = {
-	clients: {[key: number]: number};
-	views: {[key: number]: number};
+	clients: {[key: string]: number};
+	views: {[key: string]: number};
 };
 
 export type Log = {
@@ -76,7 +76,7 @@ export type Log = {
 	level: number;
 };
 
-export type HistoricalLogs = {[key: number]: {[key: number]: number}};
+export type HistoricalLogs = {[key: string]: {[key: string]: number}};
 
 export type Feedback = {
 	id: number;

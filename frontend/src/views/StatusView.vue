@@ -7,20 +7,20 @@
 			.row
 				.mx-4
 					h2 Active users
-					//span.large {{overview.users}}
+					span.large {{currentUsers}}
 				.mx-4
 					h2 Server errors
-					span.large {{logCount.server['3'] ?? 0}}
+					span.large {{logCount.server['3'] + logCount.server['4'] || 0}}
 				.mx-4
 					h2 Client errors
-					span.large {{logCount.client['3'] ?? 0}}
+					span.large {{logCount.client['3'] + logCount.client['4'] || 0}}
 			.m-4
 				RouterLink.btn(:to="{name: 'feedback', params: {id: $route.params.id}}") Feedback
 				RouterLink.btn(:to="{name: 'system', params: {id: $route.params.id}}") System
 				RouterLink.btn(:to="{name: 'settings', params: {id: $route.params.id}}") Settings
 		.card.m-4
-			h2 Page views
-			TimedChart(:data="viewsChart")
+			h2 Audience
+			TimedChart(:data="viewsChart" :yStacked="false")
 			RouterLink.btn(:to="{name: 'audience', params: {id: $route.params.id}}") View audience
 		.card.m-4
 			h2 Server logs
@@ -142,6 +142,12 @@ const logCount = computed(() => {
 			  }, {})
 			: null
 	};
+});
+const currentUsers = computed(() => {
+	const keys = Object.keys(overview.value.users);
+
+	const lastInterval = keys.length ? keys[keys.length - 1] : null;
+	return Date.now() - +lastInterval < 1000 * 60 ? overview.value.users[lastInterval] : 0;
 });
 
 Api.apps

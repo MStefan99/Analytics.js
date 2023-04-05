@@ -11,17 +11,15 @@ type Page = { url: string; referrer: string | null; time: number };
 type Session = { duration: number; ua: string; pages: Page[] };
 
 export type Overview = {
-	users: { [key: number]: number };
-	views: { [key: number]: number };
-	serverLogs: { [key: number]: { [key: number]: number } };
-	clientLogs: { [key: number]: { [key: number]: number } };
+	users: { [key: string]: number };
+	views: { [key: string]: number };
+	serverLogs: { [key: string]: { [key: string]: number } };
+	clientLogs: { [key: string]: { [key: string]: number } };
 };
 
 export type RealtimeAudience = {
 	users: { [key: string]: number };
-	pages: { [key: string]: number };
-	sessions: { [key: number]: number };
-	referrers: { [key: string]: number };
+	views: { [key: string]: number };
 };
 
 export type DayAudience = {
@@ -30,11 +28,13 @@ export type DayAudience = {
 	bounceRate: number;
 	avgDuration: number;
 	views: number;
+	pages: { [key: string]: number };
+	referrers: { [key: string]: number };
 };
 
 export type HistoricalAudience = {
-	clients: { [key: number]: number };
-	views: { [key: number]: number };
+	clients: { [key: string]: number };
+	views: { [key: string]: number };
 };
 
 export type HistoricalLogs = { [key: number]: { [key: number]: number } };
@@ -43,7 +43,7 @@ export async function overview(
 	appID: App['id'],
 	timeRange: number = defaultRealtimeRange,
 ): Promise<Overview | null> {
-	const users: Overview['users'] = {};
+	const userSets: { [key: string]: Set<string> } = {};
 	const views: Overview['views'] = {};
 	const serverLogs: Overview['serverLogs'] = {};
 	const clientLogs: Overview['clientLogs'] = {};
@@ -64,7 +64,13 @@ export async function overview(
 		const timeSlot = now -
 			Math.floor((now - hit.time) / divisionLength) * divisionLength;
 
-		users[timeSlot] = 1 + (users[timeSlot] || 0);
+		if (!userSets[timeSlot]) {
+			userSets[timeSlot] = new Set([hit.clientID]);
+		} else {
+			!userSets[timeSlot].has(hit.clientID) &&
+				userSets[timeSlot].add(hit.clientID);
+		}
+
 		views[timeSlot] = 1 + (views[timeSlot] || 0);
 	}
 
@@ -95,7 +101,10 @@ export async function overview(
 	}
 
 	return {
-		users,
+		users: Object.keys(userSets).reduce<Overview['users']>(
+			(u, c) => ({ ...u, [c]: userSets[c].size }),
+			{},
+		),
 		views,
 		serverLogs,
 		clientLogs,
@@ -106,10 +115,8 @@ export async function realtimeAudience(
 	appID: App['id'],
 	length: number = defaultRealtimeRange,
 ): Promise<RealtimeAudience | null> {
-	const users: RealtimeAudience['users'] = {};
-	const pages: RealtimeAudience['pages'] = {};
-	const sessions: RealtimeAudience['sessions'] = {};
-	const referrers: RealtimeAudience['referrers'] = {};
+	const userSets: { [key: string]: Set<string> } = {};
+	const views: RealtimeAudience['views'] = {};
 
 	const now = Date.now();
 	const app = await App.getByID(appID);
@@ -122,22 +129,25 @@ export async function realtimeAudience(
 	);
 
 	for (const hit of hits) {
-		const sessionTime = now -
+		const timeSlot = now -
 			Math.floor((now - hit.time) / divisionLength) * divisionLength;
-		users[sessionTime] = 1 + (users[sessionTime] ?? 0);
-		sessions[sessionTime] = 1 + (sessions[sessionTime] || 0);
-		pages[hit.url] = 1 + (pages[hit.url] || 0);
 
-		if (hit.referrer !== null) {
-			referrers[hit.referrer] = 1 + (referrers[hit.referrer] || 0);
+		if (!userSets[timeSlot]) {
+			userSets[timeSlot] = new Set([hit.clientID]);
+		} else {
+			!userSets[timeSlot].has(hit.clientID) &&
+				userSets[timeSlot].add(hit.clientID);
 		}
+
+		views[timeSlot] = 1 + (views[timeSlot] || 0);
 	}
 
 	return {
-		users,
-		pages,
-		sessions,
-		referrers,
+		users: Object.keys(userSets).reduce<Overview['users']>(
+			(u, c) => ({ ...u, [c]: userSets[c].size }),
+			{},
+		),
+		views,
 	};
 }
 
@@ -155,6 +165,8 @@ export async function todayAudience(
 	const clients = new Set<string>();
 	let sessionCount = 0;
 	let bounced = 0;
+	const pages: DayAudience['pages'] = {};
+	const referrers: DayAudience['referrers'] = {};
 
 	const app = await App.getByID(appID);
 	if (!app) {
@@ -169,6 +181,10 @@ export async function todayAudience(
 		if (!clients.has(hit.clientID)) {
 			clients.add(hit.clientID);
 		}
+
+		pages[hit.url] = 1 + (pages[hit.url] || 0);
+		hit.referrer !== null &&
+			(referrers[hit.referrer] = 1 + (referrers[hit.referrer] || 0));
 
 		if (!sessionSets.has(hit.clientID)) {
 			sessionSets.set(hit.clientID, [
@@ -226,6 +242,8 @@ export async function todayAudience(
 			0,
 		),
 		views: hits.length,
+		pages,
+		referrers,
 	};
 }
 

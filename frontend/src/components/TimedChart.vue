@@ -26,6 +26,8 @@ import {computed, onUnmounted, ref} from 'vue';
 const props = withDefaults(
 	defineProps<{
 		data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
+		xStacked?: boolean;
+		yStacked?: boolean;
 		stepSize?: number;
 		area?: true;
 		min?: number;
@@ -35,7 +37,9 @@ const props = withDefaults(
 		color?: string;
 	}>(),
 	{
-		stepSize: 1000 * 60
+		stepSize: 1000 * 60,
+		xStacked: true,
+		yStacked: true
 	}
 );
 
@@ -76,21 +80,6 @@ const steps = computed(() => {
 			props.stepSize
 	);
 });
-const now = Date.now();
-console.log(
-	'steps',
-	steps.value,
-	props.data
-		.filter((d) => (d?.data ? Object.keys(d.data).length : false))
-		.reduce<number>(
-			(min, curr) =>
-				Math.min(
-					min,
-					Object.keys(curr.data).reduce<number>((m, c) => Math.min(m, +c), now)
-				),
-			now
-		)
-);
 const labels = computed(() => {
 	const array = [];
 	const unit = units
@@ -143,9 +132,9 @@ const options = ref({
 			});
 	},
 	scales: {
-		x: {stacked: true, ticks: {color: props.color ?? '#000'}},
+		x: {stacked: props.xStacked, ticks: {color: props.color ?? '#000'}},
 		y: {
-			stacked: true,
+			stacked: props.yStacked,
 			ticks: {color: props.color ?? '#000'},
 			min: props.min,
 			max: props.max,
