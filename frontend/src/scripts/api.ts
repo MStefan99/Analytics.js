@@ -2,7 +2,7 @@ import appState from './store';
 import type {
 	NewApp,
 	App,
-	AppOverview,
+	Overview,
 	DayAudience,
 	NewUser,
 	RealtimeAudience,
@@ -191,7 +191,7 @@ export const AppAPI = {
 	getByID: (id: App['id']) => request<App>('/apps/' + id, {auth: true}),
 	edit: (app: App) =>
 		request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.PATCH, body: app}),
-	getOverview: (id: App['id']) => request<AppOverview>('/apps/' + id + '/overview', {auth: true}),
+	getOverview: (id: App['id']) => request<Overview>('/apps/' + id + '/overview', {auth: true}),
 	getRealtimeAudience: (id: App['id']) =>
 		request<RealtimeAudience>('/apps/' + id + '/audience/now', {auth: true}),
 	getTodayAudience: (id: App['id']) =>

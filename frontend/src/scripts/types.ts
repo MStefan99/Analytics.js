@@ -35,23 +35,21 @@ export type App = NewApp & {
 	ownerID: number;
 };
 
-export type AppOverview = {
-	currentUsers: number;
+export type Overview = {
+	users: {[key: string]: number};
 	views: {[key: string]: number};
 	clientLogs: {[key: string]: {[key: string]: number}};
 	serverLogs: {[key: string]: {[key: string]: number}};
 };
 
 export type RealtimeAudience = {
-	currentUsers: number;
+	users: {[key: string]: number};
 	pages: {[key: string]: number};
 	sessions: {[key: string]: number};
 	referrers: {[key: string]: number};
 };
 
 export type DayAudience = {
-	bounceRate: number;
-	avgDuration: number;
 	users: number;
 	sessions: [
 		{
@@ -60,6 +58,9 @@ export type DayAudience = {
 			pages: {url: string; referrer: string | null; time: number}[];
 		}
 	];
+	bounceRate: number;
+	avgDuration: number;
+	views: number;
 };
 
 export type HistoricalAudience = {

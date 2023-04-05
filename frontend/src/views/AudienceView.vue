@@ -6,7 +6,7 @@
 			h2 Audience now
 			TimedChart(:data="viewsChart" color="#ffffff")
 			h3 Active users
-			p#active-users.large {{realtimeAudience.currentUsers}}
+			//p#active-users.large {{realtimeAudience.users}}
 		.card.m-4(v-if="todayAudience")
 			h2 Audience today
 			p Users

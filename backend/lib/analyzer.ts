@@ -11,24 +11,25 @@ type Page = { url: string; referrer: string | null; time: number };
 type Session = { duration: number; ua: string; pages: Page[] };
 
 export type Overview = {
-	currentUsers: number;
+	users: { [key: number]: number };
 	views: { [key: number]: number };
 	serverLogs: { [key: number]: { [key: number]: number } };
 	clientLogs: { [key: number]: { [key: number]: number } };
 };
 
 export type RealtimeAudience = {
-	currentUsers: number;
+	users: { [key: string]: number };
 	pages: { [key: string]: number };
 	sessions: { [key: number]: number };
 	referrers: { [key: string]: number };
 };
 
 export type DayAudience = {
-	bounceRate: number;
-	avgDuration: number;
 	users: number;
 	sessions: Session[];
+	bounceRate: number;
+	avgDuration: number;
+	views: number;
 };
 
 export type HistoricalAudience = {
@@ -42,10 +43,10 @@ export async function overview(
 	appID: App['id'],
 	timeRange: number = defaultRealtimeRange,
 ): Promise<Overview | null> {
+	const users: Overview['users'] = {};
 	const views: Overview['views'] = {};
 	const serverLogs: Overview['serverLogs'] = {};
 	const clientLogs: Overview['clientLogs'] = {};
-	const currentUsers = new Set<string>();
 
 	const now = Date.now();
 	const startTime = Date.now() - timeRange;
@@ -63,15 +64,8 @@ export async function overview(
 		const timeSlot = now -
 			Math.floor((now - hit.time) / divisionLength) * divisionLength;
 
-		if (
-			Date.now() - hit.time < divisionLength &&
-			!currentUsers.has(hit.clientID)
-		) {
-			currentUsers.add(hit.clientID);
-		}
-
-		views[timeSlot] = 1 +
-			(views[timeSlot] || 0);
+		users[timeSlot] = 1 + (users[timeSlot] || 0);
+		views[timeSlot] = 1 + (views[timeSlot] || 0);
 	}
 
 	for (const serverLog of serverLogsRaw) {
@@ -101,7 +95,7 @@ export async function overview(
 	}
 
 	return {
-		currentUsers: currentUsers.size,
+		users,
 		views,
 		serverLogs,
 		clientLogs,
@@ -112,7 +106,7 @@ export async function realtimeAudience(
 	appID: App['id'],
 	length: number = defaultRealtimeRange,
 ): Promise<RealtimeAudience | null> {
-	const currentUsers = new Set<string>();
+	const users: RealtimeAudience['users'] = {};
 	const pages: RealtimeAudience['pages'] = {};
 	const sessions: RealtimeAudience['sessions'] = {};
 	const referrers: RealtimeAudience['referrers'] = {};
@@ -128,28 +122,19 @@ export async function realtimeAudience(
 	);
 
 	for (const hit of hits) {
-		if (
-			Date.now() - hit.time < divisionLength &&
-			!currentUsers.has(hit.clientID)
-		) {
-			currentUsers.add(hit.clientID);
-		}
-
 		const sessionTime = now -
 			Math.floor((now - hit.time) / divisionLength) * divisionLength;
-		pages[hit.url] = 1 +
-			(pages[hit.url] || 0);
-		sessions[sessionTime] = 1 +
-			(sessions[sessionTime] || 0);
+		users[sessionTime] = 1 + (users[sessionTime] ?? 0);
+		sessions[sessionTime] = 1 + (sessions[sessionTime] || 0);
+		pages[hit.url] = 1 + (pages[hit.url] || 0);
 
 		if (hit.referrer !== null) {
-			referrers[hit.referrer] = 1 +
-				(referrers[hit.referrer] || 0);
+			referrers[hit.referrer] = 1 + (referrers[hit.referrer] || 0);
 		}
 	}
 
 	return {
-		currentUsers: currentUsers.size,
+		users,
 		pages,
 		sessions,
 		referrers,
@@ -233,13 +218,14 @@ export async function todayAudience(
 	const sessions = Array.from(sessionSets.values()).flat();
 
 	return {
+		users: clients.size,
+		sessions,
 		bounceRate: sessionCount ? bounced / sessionCount : 0,
 		avgDuration: sessions.reduce(
 			(avg, curr, i) => (avg + curr.duration) / (i + 1),
 			0,
 		),
-		users: clients.size,
-		sessions,
+		views: hits.length,
 	};
 }
 

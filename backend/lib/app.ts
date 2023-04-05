@@ -359,7 +359,7 @@ class App {
        where t between ? and ?
        group by day, level
        order by day, level
-       limit 5000`,
+       limit 2000`,
 			[startTime / 1000, endTime / 1000],
 		)
 			.map((a) => {

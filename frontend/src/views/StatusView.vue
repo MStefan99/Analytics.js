@@ -7,7 +7,7 @@
 			.row
 				.mx-4
 					h2 Active users
-					span.large {{overview.currentUsers}}
+					//span.large {{overview.users}}
 				.mx-4
 					h2 Server errors
 					span.large {{logCount.server['3'] ?? 0}}
@@ -34,14 +34,14 @@
 
 <script setup lang="ts">
 import {computed, onUnmounted, ref} from 'vue';
-import type {App, AppOverview} from '../scripts/types';
+import type {App, Overview} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRoute} from 'vue-router';
 import TimedChart from '../components/TimedChart.vue';
 import {alert, PopupColor} from '../scripts/popups';
 
 const app = ref<App | null>(null);
-const overview = ref<AppOverview | null>(null);
+const overview = ref<Overview | null>(null);
 const route = useRoute();
 
 window.document.title = 'Status | Crash Course';
@@ -109,6 +109,11 @@ const clientChart = computed(() => [
 	}
 ]);
 const viewsChart = computed(() => [
+	{
+		label: 'Users',
+		color: '#ef8105',
+		data: overview.value.users
+	},
 	{
 		label: 'Page views',
 		color: '#44c40c',
