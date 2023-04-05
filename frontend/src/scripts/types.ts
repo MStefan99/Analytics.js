@@ -75,10 +75,7 @@ export type Log = {
 	level: number;
 };
 
-export type HistoricalLogs = {
-	serverLogs: {[key: number]: {[key: number]: number}};
-	clientLogs: {[key: number]: {[key: number]: number}};
-};
+export type HistoricalLogs = {[key: number]: {[key: number]: number}};
 
 export type Feedback = {
 	id: number;

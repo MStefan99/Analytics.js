@@ -203,8 +203,8 @@ export const AppAPI = {
 			auth: true,
 			query: {startTime: startTime?.toString() ?? '', level: level?.toString() ?? ''}
 		}),
-	getHistoricalLogs: (id: App['id']) =>
-		request<HistoricalLogs>('/apps/' + id + '/logs/history', {auth: true}),
+	getHistoricalLogs: (id: App['id'], type: 'server' | 'client') =>
+		request<HistoricalLogs>('/apps/' + id + '/logs/' + type + '/history', {auth: true}),
 	getFeedbacks: (id: App['id'], startTime?: number) =>
 		request<Log[]>('/apps/' + id + '/feedback', {
 			auth: true,

@@ -78,12 +78,6 @@ export type LogAggregate = {
 	count: number;
 };
 
-// export type LogAggregate = {
-// 	[key: number]: { // Log level
-// 		[key: number]: number // Log timestamp and count
-// 	}
-// }
-
 type AppProps = {
 	id: number;
 	name: string;

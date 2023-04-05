@@ -5,7 +5,7 @@ import App from './app.ts';
 const divisionLength = 1000 * 60;
 const defaultSessionLength = 1000 * 60 * 30;
 const defaultRealtimeRange = 1000 * 60 * 31; // 0 through 30 minutes ago
-const defaultHistoryRange = 1000 * 60 * 60 * 24 * 31; // 0 through 30 days ago
+const defaultHistoryRange = 1000 * 60 * 60 * 24 * 91; // 0 through 90 days ago
 
 type Page = { url: string; referrer: string | null; time: number };
 type Session = { duration: number; ua: string; pages: Page[] };
@@ -36,10 +36,7 @@ export type HistoricalAudience = {
 	views: { [key: number]: number };
 };
 
-export type HistoricalLogs = {
-	serverLogs: { [key: number]: { [key: number]: number } };
-	clientLogs: { [key: number]: { [key: number]: number } };
-};
+export type HistoricalLogs = { [key: number]: { [key: number]: number } };
 
 export async function overview(
 	appID: App['id'],
@@ -277,50 +274,40 @@ export async function historyAudience(
 
 export async function historyLogs(
 	appID: App['id'],
+	type: 'server' | 'client',
 	timeRange: number = defaultHistoryRange,
 	endTime: number = Date.now(),
 ): Promise<HistoricalLogs | null> {
-	const serverLogs: HistoricalLogs['serverLogs'] = {};
-	const clientLogs: HistoricalLogs['clientLogs'] = {};
+	const logs: HistoricalLogs = {};
 
 	const app = await App.getByID(appID);
 	if (!app) {
 		return null;
 	}
 
-	const serverLogAggregates = await app.getServerLogAggregates(
-		endTime - timeRange,
-		endTime,
-	);
-	const clientLogAggregates = await app.getClientLogAggregates(
-		endTime - timeRange,
-		endTime,
-	);
+	const logAggregates = type === 'server'
+		? await app.getServerLogAggregates(
+			endTime - timeRange,
+			endTime,
+		)
+		: await app.getClientLogAggregates(
+			endTime - timeRange,
+			endTime,
+		);
 
-	for (const aggregate of serverLogAggregates) {
-		if (!serverLogs[aggregate.level]) {
-			serverLogs[aggregate.level] = {};
+	for (const aggregate of logAggregates) {
+		if (!logs[aggregate.level]) {
+			logs[aggregate.level] = {};
 		}
 
-		serverLogs[aggregate.level][aggregate.time] = aggregate.count;
+		logs[aggregate.level][aggregate.time] = aggregate.count;
 	}
 
-	for (const aggregate of clientLogAggregates) {
-		if (!clientLogs[aggregate.level]) {
-			clientLogs[aggregate.level] = {};
-		}
-
-		clientLogs[aggregate.level][aggregate.time] = aggregate.count;
-	}
-
-	return {
-		serverLogs,
-		clientLogs,
-	};
+	return logs;
 }
 
 export default {
-	realtimeMetrics: overview,
+	overview,
 	realtimeAudience,
 	todayAudience,
 	historyAudience,

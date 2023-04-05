@@ -60,42 +60,27 @@ const chartData = computed(() => [
 	{
 		label: 'Debug logs',
 		color: colors.debug,
-		data:
-			route.params.type === 'server'
-				? historicalLogs.value.serverLogs['0']
-				: historicalLogs.value.clientLogs['0']
+		data: historicalLogs.value['0']
 	},
 	{
 		label: 'Info logs',
 		color: colors.info,
-		data:
-			route.params.type === 'server'
-				? historicalLogs.value.serverLogs['1']
-				: historicalLogs.value.clientLogs['1']
+		data: historicalLogs.value['1']
 	},
 	{
 		label: 'Warnings',
 		color: colors.warning,
-		data:
-			route.params.type === 'server'
-				? historicalLogs.value.serverLogs['2']
-				: historicalLogs.value.clientLogs['2']
+		data: historicalLogs.value['2']
 	},
 	{
 		label: 'Errors',
 		color: colors.error,
-		data:
-			route.params.type === 'server'
-				? historicalLogs.value.serverLogs['3']
-				: historicalLogs.value.clientLogs['3']
+		data: historicalLogs.value['3']
 	},
 	{
 		label: 'Critical',
 		color: colors.critical,
-		data:
-			route.params.type === 'server'
-				? historicalLogs.value.serverLogs['4']
-				: historicalLogs.value.clientLogs['4']
+		data: historicalLogs.value['4']
 	}
 ]);
 
@@ -107,15 +92,11 @@ Api.apps
 	.catch((err) => alert('Failed to load logs', PopupColor.Red, err.message));
 
 function loadLogs() {
+	const type = route.params.type === 'client' ? 'client' : 'server';
 	Api.apps
-		.getLogs(
-			+route.params.id,
-			route.params.type === 'client' ? 'client' : 'server',
-			startTime.value.getTime(),
-			level.value
-		)
+		.getLogs(+route.params.id, type, startTime.value.getTime(), level.value)
 		.then((l) => (logs.value = l));
-	Api.apps.getHistoricalLogs(+route.params.id).then((l) => (historicalLogs.value = l));
+	Api.apps.getHistoricalLogs(+route.params.id, type).then((l) => (historicalLogs.value = l));
 }
 
 loadLogs();

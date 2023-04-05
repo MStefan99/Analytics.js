@@ -123,7 +123,7 @@ router.patch('/:id', hasBody(), auth.authenticated(), async (ctx) => {
 router.get('/:id/overview', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 
-	app && (ctx.response.body = await analyzer.realtimeMetrics(app.id));
+	app && (ctx.response.body = await analyzer.overview(app.id));
 });
 
 router.get('/:id/audience/now', auth.authenticated(), async (ctx) => {
@@ -178,10 +178,16 @@ router.get('/:id/logs/client', auth.authenticated(), async (ctx) => {
 	ctx.response.body = await app.getClientLogs(startTime, level);
 });
 
-router.get('/:id/logs/history', auth.authenticated(), async (ctx) => {
+router.get('/:id/logs/server/history', auth.authenticated(), async (ctx) => {
 	const app = await getApp(ctx, +ctx.params.id);
 
-	app && (ctx.response.body = await analyzer.historyLogs(app.id));
+	app && (ctx.response.body = await analyzer.historyLogs(app.id, 'server'));
+});
+
+router.get('/:id/logs/client/history', auth.authenticated(), async (ctx) => {
+	const app = await getApp(ctx, +ctx.params.id);
+
+	app && (ctx.response.body = await analyzer.historyLogs(app.id, 'client'));
 });
 
 router.get('/:id/feedback', auth.authenticated(), async (ctx) => {
