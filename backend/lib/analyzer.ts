@@ -5,7 +5,7 @@ import App from './app.ts';
 const divisionLength = 1000 * 60;
 const defaultSessionLength = 1000 * 60 * 30;
 const defaultRealtimeRange = 1000 * 60 * 31; // 0 through 30 minutes ago
-const defaultHistoryRange = 1000 * 60 * 60 * 24 * 91; // 0 through 90 days ago
+const defaultHistoryRange = 1000 * 60 * 60 * 24 * 31; // 0 through 30 days ago
 
 type Page = { url: string; referrer: string | null; time: number };
 type Session = { duration: number; ua: string; pages: Page[] };

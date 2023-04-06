@@ -2,7 +2,7 @@
 #logs
 	h1 {{app?.name}} {{$route.params.type === 'client' ? 'client' : 'server'}} logs
 	div(v-if="historicalLogs")
-		TimedChart(:data="chartData" :step-size="1000 * 60 * 60 * 24")
+		TimedChart.history-chart(:data="chartData" :step-size="1000 * 60 * 60 * 24")
 	.row.py-3.sticky.top-0.glass
 		.input
 			label(for="date-input") Starting from
@@ -105,4 +105,8 @@ const refreshInterval = setInterval(loadLogs, 1000 * 15);
 onUnmounted(() => clearInterval(refreshInterval));
 </script>
 
-<style scoped></style>
+<style scoped>
+.history-chart {
+	min-width: min(90vw, 1024px);
+}
+</style>
