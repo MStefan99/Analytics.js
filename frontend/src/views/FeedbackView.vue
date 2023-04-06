@@ -34,9 +34,10 @@ const initialDate = new Date(Date.now() - dayLength);
 
 const startTime = ref<Date>(initialDate);
 
-window.document.title = 'Feedback | Crash Course';
-
-Api.apps.getByID(+route.params.id).then((a) => (app.value = a));
+Api.apps.getByID(+route.params.id).then((a) => {
+	app.value = a;
+	window.document.title = a.name + ' feedback | Crash Course';
+});
 
 function loadFeedbacks() {
 	Api.apps

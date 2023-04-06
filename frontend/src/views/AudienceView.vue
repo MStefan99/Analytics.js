@@ -69,8 +69,6 @@ const realtimeAudience = ref<RealtimeAudience | null>(null);
 const historicalAudience = ref<HistoricalAudience | null>(null);
 const todayAudience = ref<DayAudience | null>(null);
 
-window.document.title = 'Audience | Crash Course';
-
 const realtimeDataset = computed(() => [
 	{
 		label: 'Users',
@@ -125,7 +123,10 @@ function formatTime(seconds: number): string {
 
 Api.apps
 	.getByID(+route.params.id)
-	.then((a) => (app.value = a))
+	.then((a) => {
+		app.value = a;
+		window.document.title = a.name + ' audience | Crash Course';
+	})
 	.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
 Api.apps.getHistoricalAudience(+route.params.id).then((a) => (historicalAudience.value = a));
 

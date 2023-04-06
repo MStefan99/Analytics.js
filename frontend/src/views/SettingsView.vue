@@ -58,13 +58,12 @@ const route = useRoute();
 const app = ref<App | null>(null);
 const newName = ref<string>('');
 
-window.document.title = 'Settings | Crash Course';
-
 Api.apps
 	.getByID(+route.params.id)
 	.then((a) => {
 		newName.value = a.name;
 		app.value = a;
+		window.document.title = a.name + ' settings | Crash Course';
 	})
 	.catch((err) => alert('Failed to load app', PopupColor.Red, err.message));
 

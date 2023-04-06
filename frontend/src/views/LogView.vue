@@ -84,19 +84,21 @@ const chartData = computed(() => [
 	}
 ]);
 
-window.document.title = 'Logs | Crash Course';
+const type = route.params.type === 'client' ? 'client' : 'server';
 
 Api.apps
 	.getByID(+route.params.id)
-	.then((a) => (app.value = a))
+	.then((a) => {
+		app.value = a;
+		window.document.title = a.name + ' logs | Crash Course';
+	})
 	.catch((err) => alert('Failed to load logs', PopupColor.Red, err.message));
+Api.apps.getHistoricalLogs(+route.params.id, type).then((l) => (historicalLogs.value = l));
 
 function loadLogs() {
-	const type = route.params.type === 'client' ? 'client' : 'server';
 	Api.apps
 		.getLogs(+route.params.id, type, startTime.value.getTime(), level.value)
 		.then((l) => (logs.value = l));
-	Api.apps.getHistoricalLogs(+route.params.id, type).then((l) => (historicalLogs.value = l));
 }
 
 loadLogs();

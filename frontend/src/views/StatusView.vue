@@ -44,8 +44,6 @@ const app = ref<App | null>(null);
 const overview = ref<Overview | null>(null);
 const route = useRoute();
 
-window.document.title = 'Status | Crash Course';
-
 const colors = {
 	debug: '#4f46e5',
 	info: '#059669',
@@ -154,6 +152,7 @@ Api.apps
 	.getByID(+route.params.id)
 	.then((a) => {
 		app.value = a;
+		window.document.title = a.name + ' status | Crash Course';
 	})
 	.catch((err) => alert('Failed to load app', PopupColor.Red, err.message));
 
