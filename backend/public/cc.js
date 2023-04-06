@@ -1,7 +1,8 @@
 'use strict';
 
 const scriptLocation = new URL(import.meta.url);
-const serverURL = scriptLocation.origin;
+const serverURL = scriptLocation.origin +
+	scriptLocation.pathname.replace(/\/cc$/, '');
 console.log(serverURL);
 const audienceKey = new URLSearchParams(scriptLocation.search).get('k');
 const errorLevel = 3;
