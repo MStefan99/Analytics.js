@@ -6,6 +6,7 @@ import appRouter from './routes/apps.ts';
 import telemetryRouter from './routes/telemetry.ts';
 import audienceRouter from './routes/audience.ts';
 import { init } from './lib/init.ts';
+import rateLimiter from './lib/rateLimiter.ts';
 
 const defaultPort = 3001;
 const parsedPort = Deno.env.has('PORT')
@@ -55,12 +56,8 @@ app.use(async (ctx, next) => {
 	}
 });
 
-apiRouter.get('/', (ctx) => {
+apiRouter.get('/', rateLimiter(), (ctx) => {
 	ctx.response.body = { message: 'Welcome!' };
-});
-
-apiRouter.get('/options', (ctx) => {
-	ctx.response.body = {};
 });
 
 apiRouter.get('/cc', async (ctx) => {
