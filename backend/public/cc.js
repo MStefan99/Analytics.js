@@ -3,7 +3,6 @@
 const scriptLocation = new URL(import.meta.url);
 const serverURL = scriptLocation.origin +
 	scriptLocation.pathname.replace(/\/cc$/, '');
-console.log(serverURL);
 const audienceKey = new URLSearchParams(scriptLocation.search).get('k');
 const errorLevel = 3;
 
@@ -37,8 +36,8 @@ export function sendHit() {
 }
 
 export function sendLog(message, level = 0, tag = null) {
-	if (message === undefined || level === undefined) {
-		throw new Error('Level is required for logs');
+	if (typeof message !== 'string' || typeof level !== 'number') {
+		throw new Error('Please provide both message and level to send');
 	}
 
 	return fetch(serverURL + '/audience/logs', {
@@ -59,6 +58,29 @@ export function sendLog(message, level = 0, tag = null) {
 		});
 }
 
+export function sendFeedback(message) {
+	if (typeof message !== 'string') {
+		throw new Error('Please provide message to send');
+	}
+
+	return fetch(serverURL + '/audience/feedback', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Audience-Key': audienceKey,
+		},
+		body: JSON.stringify({ message }),
+	})
+		.then(() => true)
+		.catch((err) => {
+			console.warn(
+				'Failed to send feedback to Crash Course! More details:',
+				err,
+			);
+			return err;
+		});
+}
+
 for (const type of ['error', 'unhandledrejection']) {
 	addEventListener(type, (e) => {
 		sendLog(
@@ -73,4 +95,5 @@ for (const type of ['error', 'unhandledrejection']) {
 export default {
 	sendHit,
 	sendLog,
+	sendFeedback,
 };
