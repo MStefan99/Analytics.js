@@ -143,7 +143,10 @@ const options = ref({
 			suggestedMax: props.suggestedMax
 		}
 	},
-	plugins: {legend: {labels: {color: props.color ?? '#000'}}}
+	plugins: {
+		legend: {labels: {color: props.color ?? '#000'}},
+		...(props.type === 'line' && {tooltip: {mode: 'index', intersect: false, position: 'nearest'}})
+	}
 });
 
 const chartData = computed(() => {
