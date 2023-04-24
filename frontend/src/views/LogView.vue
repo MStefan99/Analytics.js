@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
 import {computed, onUnmounted, ref} from 'vue';
-import type {App, HistoricalLogs, Log} from '../scripts/types';
+import type {App, LogAggregate, Log} from '../scripts/types';
 import DropdownSelect from '../components/DropdownSelect.vue';
 import DatePicker from '../components/DatePicker.vue';
 import TimedChart from '../components/TimedChart.vue';
@@ -40,7 +40,7 @@ import Api from '../scripts/api';
 const route = useRoute();
 const app = ref<App | null>(null);
 const logs = ref<Log[]>([]);
-const historicalLogs = ref<HistoricalLogs | null>(null);
+const historicalLogs = ref<LogAggregate | null>(null);
 const dayLength = 1000 * 60 * 60 * 24;
 const initialDate = new Date(Date.now() - dayLength);
 const levels = ['Debug', 'Information', 'Warning', 'Error', 'Critical'];
@@ -93,7 +93,7 @@ Api.apps
 		window.document.title = a.name + ' logs | Crash Course';
 	})
 	.catch((err) => alert('Failed to load logs', PopupColor.Red, err.message));
-Api.apps.getHistoricalLogs(+route.params.id, type).then((l) => (historicalLogs.value = l));
+Api.apps.getLogAggregate(+route.params.id, type).then((l) => (historicalLogs.value = l));
 
 function loadLogs() {
 	Api.apps

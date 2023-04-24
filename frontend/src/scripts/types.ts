@@ -63,9 +63,14 @@ export type DayAudience = {
 	referrers: {[key: string]: number};
 };
 
-export type HistoricalAudience = {
+export type AudienceAggregate = {
 	users: {[key: string]: number};
 	views: {[key: string]: number};
+};
+
+export type PageAggregate = {
+	url: string;
+	hits: number;
 };
 
 export type Log = {
@@ -76,7 +81,7 @@ export type Log = {
 	level: number;
 };
 
-export type HistoricalLogs = {[key: string]: {[key: string]: number}};
+export type LogAggregate = {[key: string]: {[key: string]: number}};
 
 export type Feedback = {
 	id: number;

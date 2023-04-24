@@ -7,6 +7,7 @@ import FeedbackView from '../views/FeedbackView.vue';
 import SystemView from '../views/SystemView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import ProfileView from '../views/ProfileView.vue';
+import AudienceHistoryView from '../views/AudienceHistoryView.vue';
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -27,9 +28,14 @@ const routes: Array<RouteRecordRaw> = [
 		component: StatusView
 	},
 	{
-		path: '/apps/:id/audience',
-		name: 'audience',
+		path: '/apps/:id/audience/today',
+		name: 'audience-today',
 		component: AudienceView
+	},
+	{
+		path: '/apps/:id/audience/history',
+		name: 'audience-history',
+		component: AudienceHistoryView
 	},
 	{
 		path: '/apps/:id/logs/:type',

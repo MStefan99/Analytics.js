@@ -32,12 +32,12 @@ export type DayAudience = {
 	referrers: { [key: string]: number };
 };
 
-export type HistoricalAudience = {
+export type AudienceAggregate = {
 	users: { [key: string]: number };
 	views: { [key: string]: number };
 };
 
-export type HistoricalLogs = { [key: number]: { [key: number]: number } };
+export type LogAggregate = { [key: number]: { [key: number]: number } };
 
 export async function overview(
 	appID: App['id'],
@@ -247,20 +247,20 @@ export async function todayAudience(
 	};
 }
 
-export async function historyAudience(
+export async function audienceAggregate(
 	appID: App['id'],
 	timeRange: number = defaultHistoryRange,
 	endTime: number = Date.now(),
-): Promise<HistoricalAudience | null> {
-	const users: HistoricalAudience['users'] = {};
-	const views: HistoricalAudience['views'] = {};
+): Promise<AudienceAggregate | null> {
+	const users: AudienceAggregate['users'] = {};
+	const views: AudienceAggregate['views'] = {};
 
 	const app = await App.getByID(appID);
 	if (!app) {
 		return null;
 	}
 
-	const aggregates = await app.getHitAggregates(
+	const aggregates = await app.getHitAggregate(
 		endTime - timeRange,
 		endTime,
 	);
@@ -276,13 +276,13 @@ export async function historyAudience(
 	};
 }
 
-export async function historyLogs(
+export async function logAggregate(
 	appID: App['id'],
 	type: 'server' | 'client',
 	timeRange: number = defaultHistoryRange,
 	endTime: number = Date.now(),
-): Promise<HistoricalLogs | null> {
-	const logs: HistoricalLogs = {};
+): Promise<LogAggregate | null> {
+	const logs: LogAggregate = {};
 
 	const app = await App.getByID(appID);
 	if (!app) {
@@ -290,11 +290,11 @@ export async function historyLogs(
 	}
 
 	const logAggregates = type === 'server'
-		? await app.getServerLogAggregates(
+		? await app.getServerLogAggregate(
 			endTime - timeRange,
 			endTime,
 		)
-		: await app.getClientLogAggregates(
+		: await app.getClientLogAggregate(
 			endTime - timeRange,
 			endTime,
 		);
@@ -314,6 +314,6 @@ export default {
 	overview,
 	realtimeAudience,
 	todayAudience,
-	historyAudience,
-	historyLogs,
+	audienceAggregate,
+	logAggregate,
 };

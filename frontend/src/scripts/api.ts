@@ -11,8 +11,9 @@ import type {
 	User,
 	Log,
 	Metrics,
-	HistoricalLogs,
-	HistoricalAudience
+	LogAggregate,
+	AudienceAggregate,
+	PageAggregate
 } from './types';
 
 type MessageResponse = {
@@ -196,15 +197,17 @@ export const AppAPI = {
 		request<RealtimeAudience>('/apps/' + id + '/audience/now', {auth: true}),
 	getTodayAudience: (id: App['id']) =>
 		request<DayAudience>('/apps/' + id + '/audience/today', {auth: true}),
-	getHistoricalAudience: (id: App['id']) =>
-		request<HistoricalAudience>('/apps/' + id + '/audience/history', {auth: true}),
+	getAudienceAggregate: (id: App['id']) =>
+		request<AudienceAggregate>('/apps/' + id + '/audience/aggregate', {auth: true}),
+	getPageAggregate: (id: App['id']) =>
+		request<PageAggregate>('/apps/' + id + '/pages/aggregate', {auth: true}),
 	getLogs: (id: App['id'], type: 'server' | 'client', startTime?: number, level?: number) =>
 		request<Log[]>('/apps/' + id + '/logs/' + type, {
 			auth: true,
 			query: {startTime: startTime?.toString() ?? '', level: level?.toString() ?? ''}
 		}),
-	getHistoricalLogs: (id: App['id'], type: 'server' | 'client') =>
-		request<HistoricalLogs>('/apps/' + id + '/logs/' + type + '/history', {auth: true}),
+	getLogAggregate: (id: App['id'], type: 'server' | 'client') =>
+		request<LogAggregate>('/apps/' + id + '/logs/' + type + '/aggregate', {auth: true}),
 	getFeedbacks: (id: App['id'], startTime?: number) =>
 		request<Log[]>('/apps/' + id + '/feedback', {
 			auth: true,

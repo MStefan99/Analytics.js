@@ -49,9 +49,6 @@
 						td
 							a.underline(:href="referrer.url || undefined") {{referrer.url || 'Unknown'}}
 						td {{referrer.count}}
-		.card.m-4
-			h2 Audience history
-			TimedChart(:data="historicalDataset" :yStacked="false" :step-size="1000 * 60 * 60 * 24")
 </template>
 
 <script setup lang="ts">
@@ -59,14 +56,13 @@ import {computed, onUnmounted, ref} from 'vue';
 import {useRoute} from 'vue-router';
 
 import Api from '../scripts/api';
-import type {App, DayAudience, HistoricalAudience, RealtimeAudience} from '../scripts/types';
+import type {App, DayAudience, RealtimeAudience} from '../scripts/types';
 import TimedChart from '../components/TimedChart.vue';
 import {alert, PopupColor} from '../scripts/popups';
 
 const route = useRoute();
 const app = ref<App | null>(null);
 const realtimeAudience = ref<RealtimeAudience | null>(null);
-const historicalAudience = ref<HistoricalAudience | null>(null);
 const todayAudience = ref<DayAudience | null>(null);
 
 const realtimeDataset = computed(() => [
@@ -79,18 +75,6 @@ const realtimeDataset = computed(() => [
 		label: 'Page views',
 		color: '#44c40c',
 		data: realtimeAudience.value?.views
-	}
-]);
-const historicalDataset = computed(() => [
-	{
-		label: 'Users',
-		color: '#ef8105',
-		data: historicalAudience.value?.users
-	},
-	{
-		label: 'Page views',
-		color: '#44c40c',
-		data: historicalAudience.value?.views
 	}
 ]);
 const currentUsers = computed(() => {
@@ -128,7 +112,6 @@ Api.apps
 		window.document.title = a.name + ' audience | Crash Course';
 	})
 	.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
-Api.apps.getHistoricalAudience(+route.params.id).then((a) => (historicalAudience.value = a));
 
 function loadAudience() {
 	Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));

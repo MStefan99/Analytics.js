@@ -7,8 +7,9 @@ import { initApp } from '../lib/init.ts';
 import analyzer from '../lib/analyzer.ts';
 import rateLimiter from '../lib/rateLimiter.ts';
 
-const dayLength = 1000 * 60 * 60 * 24;
 const sessionLength = 1000 * 60 * 30;
+const dayLength = 1000 * 60 * 60 * 24;
+const defaultHistoryLength = dayLength * 30;
 
 const router = new Router({
 	prefix: '/apps',
@@ -198,7 +199,7 @@ router.get(
 );
 
 router.get(
-	'/:id/audience/history',
+	'/:id/audience/aggregate',
 	auth.authenticated(),
 	rateLimiter({
 		tag: 'user',
@@ -207,7 +208,35 @@ router.get(
 	async (ctx) => {
 		const app = await getApp(ctx, +ctx.params.id);
 
-		app && (ctx.response.body = await analyzer.historyAudience(app.id));
+		app && (ctx.response.body = await analyzer.audienceAggregate(app.id));
+	},
+);
+
+router.get(
+	'/:id/pages/aggregate',
+	auth.authenticated(),
+	rateLimiter({
+		tag: 'user',
+		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
+	}),
+	async (ctx) => {
+		const app = await getApp(ctx, +ctx.params.id);
+		if (!app) {
+			return;
+		}
+
+		const now = Date.now();
+		const params = new URLSearchParams(ctx.request.url.search);
+
+		const startTime = params.has('startTime')
+			? +(params?.get('startTime') as string) // Safe because of the check
+			: now - defaultHistoryLength;
+		const endTime = params.has('endTime')
+			? +(params?.get('endTime') as string) // Safe because of the check
+			: now;
+
+		ctx.response.body = await app.getPageAggregate(startTime, endTime);
+		console.log(await app.getPageAggregate(startTime, endTime));
 	},
 );
 
@@ -266,7 +295,7 @@ router.get(
 );
 
 router.get(
-	'/:id/logs/server/history',
+	'/:id/logs/server/aggregate',
 	auth.authenticated(),
 	rateLimiter({
 		tag: 'user',
@@ -276,12 +305,12 @@ router.get(
 		const app = await getApp(ctx, +ctx.params.id);
 
 		app &&
-			(ctx.response.body = await analyzer.historyLogs(app.id, 'server'));
+			(ctx.response.body = await analyzer.logAggregate(app.id, 'server'));
 	},
 );
 
 router.get(
-	'/:id/logs/client/history',
+	'/:id/logs/client/aggregate',
 	auth.authenticated(),
 	rateLimiter({
 		tag: 'user',
@@ -291,7 +320,7 @@ router.get(
 		const app = await getApp(ctx, +ctx.params.id);
 
 		app &&
-			(ctx.response.body = await analyzer.historyLogs(app.id, 'client'));
+			(ctx.response.body = await analyzer.logAggregate(app.id, 'client'));
 	},
 );
 

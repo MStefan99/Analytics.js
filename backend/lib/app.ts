@@ -71,6 +71,11 @@ export type HitAggregate = {
 	views: number;
 };
 
+export type PageAggregate = {
+	url: string;
+	hits: number;
+};
+
 export type LogAggregate = {
 	time: number;
 	day: string;
@@ -342,7 +347,7 @@ class App {
 		).map((log) => ({ ...log, time: log.time * 1000 }));
 	}
 
-	async #getLogAggregates(
+	async #getLogAggregate(
 		type: 'server' | 'client',
 		startTime: number,
 		endTime: number,
@@ -453,7 +458,7 @@ class App {
 		).map((metrics) => ({ ...metrics, time: metrics.time * 1000 }));
 	}
 
-	async getHitAggregates(
+	async getHitAggregate(
 		startTime: number,
 		endTime: number,
 	): Promise<HitAggregate[]> {
@@ -478,18 +483,36 @@ class App {
 			});
 	}
 
-	async getServerLogAggregates(
+	async getPageAggregate(
 		startTime: number,
 		endTime: number,
-	): Promise<LogAggregate[]> {
-		return await this.#getLogAggregates('server', startTime, endTime);
+	) {
+		const db = await openDB(this.id);
+
+		return await db.queryEntries<PageAggregate>(
+			`select url,
+              count(*) as hits
+       from hits
+       where time between ? and ?
+       group by url
+       order by hits desc
+       limit 1000`,
+			[startTime / 1000, endTime / 1000],
+		);
 	}
 
-	async getClientLogAggregates(
+	async getServerLogAggregate(
 		startTime: number,
 		endTime: number,
 	): Promise<LogAggregate[]> {
-		return await this.#getLogAggregates('client', startTime, endTime);
+		return await this.#getLogAggregate('server', startTime, endTime);
+	}
+
+	async getClientLogAggregate(
+		startTime: number,
+		endTime: number,
+	): Promise<LogAggregate[]> {
+		return await this.#getLogAggregate('client', startTime, endTime);
 	}
 
 	async delete(keepDB = false): Promise<void> {

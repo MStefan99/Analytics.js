@@ -21,7 +21,9 @@
 		.card.m-4
 			h2 Audience
 			TimedChart(:data="audienceDataset" :yStacked="false")
-			RouterLink.btn(:to="{name: 'audience', params: {id: $route.params.id}}") View audience
+			.flex.gap-2
+				RouterLink.btn.grow(:to="{name: 'audience-today', params: {id: $route.params.id}}") View audience today
+				RouterLink.btn.grow(:to="{name: 'audience-history', params: {id: $route.params.id}}") View audience history
 		.card.m-4
 			h2 Server logs
 			TimedChart(:data="serverLogsDataset")
