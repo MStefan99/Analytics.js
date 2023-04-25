@@ -10,10 +10,10 @@
 					span.large {{currentUsers}}
 				.mx-4
 					h2 Server errors
-					span.large {{logCount.server['3'] + logCount.server['4'] || 0}}
+					span.large {{(logCount.server['3'] || 0) + (logCount.server['4'] || 0)}}
 				.mx-4
 					h2 Client errors
-					span.large {{logCount.client['3'] + logCount.client['4'] || 0}}
+					span.large {{(logCount.client['3'] || 0) + (logCount.client['4'] || 0)}}
 			.m-4
 				RouterLink.btn(:to="{name: 'feedback', params: {id: $route.params.id}}") Feedback
 				RouterLink.btn(:to="{name: 'system', params: {id: $route.params.id}}") System
@@ -123,24 +123,20 @@ const audienceDataset = computed(() => [
 
 const logCount = computed(() => {
 	return {
-		server: overview.value.serverLogs
-			? Object.keys(overview.value.serverLogs).reduce<{[key: string]: number}>((prev, k) => {
-					prev[k] = Object.keys(overview.value.serverLogs[k]).reduce<number>(
-						(prev1, k1) => prev1 + overview.value.serverLogs[k][k1],
-						0
-					);
-					return prev;
-			  }, {})
-			: null,
-		client: overview.value.clientLogs
-			? Object.keys(overview.value.clientLogs).reduce<{[key: string]: number}>((prev, k) => {
-					prev[k] = Object.keys(overview.value.clientLogs[k]).reduce<number>(
-						(prev1, k1) => prev1 + overview.value.clientLogs[k][k1],
-						0
-					);
-					return prev;
-			  }, {})
-			: null
+		server: Object.keys(overview.value?.serverLogs).reduce<{[key: string]: number}>((prev, k) => {
+			prev[k] = Object.keys(overview.value.serverLogs[k]).reduce<number>(
+				(prev1, k1) => prev1 + overview.value.serverLogs[k][k1],
+				0
+			);
+			return prev;
+		}, {}),
+		client: Object.keys(overview.value?.clientLogs).reduce<{[key: string]: number}>((prev, k) => {
+			prev[k] = Object.keys(overview.value.clientLogs[k]).reduce<number>(
+				(prev1, k1) => prev1 + overview.value.clientLogs[k][k1],
+				0
+			);
+			return prev;
+		}, {})
 	};
 });
 const currentUsers = computed(() => {
