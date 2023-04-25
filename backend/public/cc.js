@@ -4,7 +4,6 @@ const scriptLocation = new URL(import.meta.url);
 const serverURL = scriptLocation.origin +
 	scriptLocation.pathname.replace(/\/cc$/, '');
 const audienceKey = new URLSearchParams(scriptLocation.search).get('k');
-const errorLevel = 3;
 
 export function sendHit() {
 	return fetch(serverURL + '/audience/hits', {
@@ -46,7 +45,7 @@ export function sendLog(message, level = 0, tag = null) {
 			'Content-Type': 'application/json',
 			'Audience-Key': audienceKey,
 		},
-		body: JSON.stringify({ message, level, tag }),
+		body: JSON.stringify({message, level, tag}),
 	})
 		.then(() => true)
 		.catch((err) => {
@@ -69,7 +68,7 @@ export function sendFeedback(message) {
 			'Content-Type': 'application/json',
 			'Audience-Key': audienceKey,
 		},
-		body: JSON.stringify({ message }),
+		body: JSON.stringify({message}),
 	})
 		.then(() => true)
 		.catch((err) => {
@@ -81,16 +80,21 @@ export function sendFeedback(message) {
 		});
 }
 
-for (const type of ['error', 'unhandledrejection']) {
-	addEventListener(type, (e) => {
-		sendLog(
-			e.error?.stack ??
-				'Unhandled rejection: ' + JSON.stringify(e.reason),
-			errorLevel,
-		); // Promise is always resolved
-		return false;
-	});
-}
+addEventListener('error', (e) => {
+	sendLog(
+		e.error?.stack ?? JSON.stringify(e.error),
+		3,
+	); // Promise is always resolved
+	return false;
+});
+
+addEventListener('unhandledrejection', (e) => {
+	sendLog(
+		e.reason?.stack ?? JSON.stringify(e.reason),
+		3,
+	); // Promise is always resolved
+	return false;
+});
 
 export default {
 	sendHit,
