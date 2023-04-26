@@ -236,7 +236,6 @@ router.get(
 			: now;
 
 		ctx.response.body = await app.getPageAggregate(startTime, endTime);
-		console.log(await app.getPageAggregate(startTime, endTime));
 	},
 );
 

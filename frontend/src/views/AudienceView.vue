@@ -120,7 +120,7 @@ function loadAudience() {
 
 loadAudience();
 
-const refreshInterval = setInterval(loadAudience, 1000 * 15);
+const refreshInterval = setInterval(loadAudience, 1000 * 10);
 onUnmounted(() => clearInterval(refreshInterval));
 </script>
 
