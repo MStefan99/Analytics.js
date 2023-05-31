@@ -38,6 +38,9 @@ export function sendLog(message, level = 0, tag = null) {
 	if (typeof message !== 'string' || typeof level !== 'number') {
 		throw new Error('Please provide both message and level to send');
 	}
+	if (!tag) {
+		tag = null;
+	}
 
 	return fetch(serverURL + '/audience/logs', {
 		method: 'POST',

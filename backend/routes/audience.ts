@@ -61,7 +61,7 @@ router.post('/logs', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	}
 
 	const body = await ctx.request.body({ type: 'json' }).value;
-	if (body.message === undefined || body.level === undefined) {
+	if (!body.message || typeof body.level !== 'number') {
 		ctx.response.status = 400;
 		ctx.response.body = {
 			error: 'NO_MESSAGE_OR_LEVEL',
