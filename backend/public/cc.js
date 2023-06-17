@@ -48,7 +48,7 @@ export function sendLog(message, level = 0, tag = null) {
 			'Content-Type': 'application/json',
 			'Audience-Key': audienceKey,
 		},
-		body: JSON.stringify({message, level, tag}),
+		body: JSON.stringify({ message, level, tag }),
 	})
 		.then(() => true)
 		.catch((err) => {
@@ -71,7 +71,7 @@ export function sendFeedback(message) {
 			'Content-Type': 'application/json',
 			'Audience-Key': audienceKey,
 		},
-		body: JSON.stringify({message}),
+		body: JSON.stringify({ message }),
 	})
 		.then(() => true)
 		.catch((err) => {
