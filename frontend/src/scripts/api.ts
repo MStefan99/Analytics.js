@@ -51,7 +51,7 @@ type RequestParams = {
 	auth?: boolean;
 	method?: RequestMethod;
 	body?: unknown;
-	query?: Record<string, string>;
+	query?: Record<string, string | number | null | undefined>;
 };
 
 function request<T>(path: string, params?: RequestParams): Promise<T> {
@@ -69,7 +69,9 @@ function request<T>(path: string, params?: RequestParams): Promise<T> {
 		const query =
 			params?.query &&
 			Object.keys(params?.query).reduce<Record<string, string>>((q, key) => {
-				params.query?.[key].trim() && (q[key] = params.query[key]);
+				params.query?.[key] !== null &&
+					params.query?.[key] !== undefined &&
+					(q[key] = params.query[key].toString());
 				return q;
 			}, {});
 		const queryString =
@@ -192,31 +194,47 @@ export const AppAPI = {
 	getByID: (id: App['id']) => request<App>('/apps/' + id, {auth: true}),
 	edit: (app: App) =>
 		request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.PATCH, body: app}),
-	getOverview: (id: App['id']) => request<Overview>('/apps/' + id + '/overview', {auth: true}),
-	getRealtimeAudience: (id: App['id']) =>
-		request<RealtimeAudience>('/apps/' + id + '/audience/now', {auth: true}),
+	getOverview: (id: App['id'], period?: number) =>
+		request<Overview>('/apps/' + id + '/overview', {
+			auth: true,
+			query: {period}
+		}),
+	getRealtimeAudience: (id: App['id'], period?: number) =>
+		request<RealtimeAudience>('/apps/' + id + '/audience/now', {auth: true, query: {period}}),
 	getTodayAudience: (id: App['id']) =>
 		request<DayAudience>('/apps/' + id + '/audience/today', {auth: true}),
-	getAudienceAggregate: (id: App['id']) =>
-		request<AudienceAggregate>('/apps/' + id + '/audience/aggregate', {auth: true}),
-	getPageAggregate: (id: App['id']) =>
-		request<PageAggregate>('/apps/' + id + '/pages/aggregate', {auth: true}),
-	getLogs: (id: App['id'], type: 'server' | 'client', startTime?: number, level?: number) =>
+	getAudienceAggregate: (id: App['id'], start?: number, end?: number) =>
+		request<AudienceAggregate>('/apps/' + id + '/audience/aggregate', {
+			auth: true,
+			query: {start, end}
+		}),
+	getPageAggregate: (id: App['id'], start?: number, end?: number) =>
+		request<PageAggregate>('/apps/' + id + '/pages/aggregate', {auth: true, query: {start, end}}),
+	getLogs: (
+		id: App['id'],
+		type: 'server' | 'client',
+		level?: number,
+		start?: number,
+		end?: number
+	) =>
 		request<Log[]>('/apps/' + id + '/logs/' + type, {
 			auth: true,
-			query: {startTime: startTime?.toString() ?? '', level: level?.toString() ?? ''}
+			query: {level, start, end}
 		}),
-	getLogAggregate: (id: App['id'], type: 'server' | 'client') =>
-		request<LogAggregate>('/apps/' + id + '/logs/' + type + '/aggregate', {auth: true}),
-	getFeedbacks: (id: App['id'], startTime?: number) =>
+	getLogAggregate: (id: App['id'], type: 'server' | 'client', start?: number, end?: number) =>
+		request<LogAggregate>('/apps/' + id + '/logs/' + type + '/aggregate', {
+			auth: true,
+			query: {start, end}
+		}),
+	getFeedbacks: (id: App['id'], start?: number, end?: number) =>
 		request<Log[]>('/apps/' + id + '/feedback', {
 			auth: true,
-			query: {startTime: startTime?.toString() ?? ''}
+			query: {start, end}
 		}),
-	getMetrics: (id: App['id'], startTime?: number) =>
+	getMetrics: (id: App['id'], start?: number, end?: number) =>
 		request<Metrics[]>('/apps/' + id + '/metrics', {
 			auth: true,
-			query: {startTime: startTime?.toString() ?? ''}
+			query: {start, end}
 		}),
 	delete: (app: App) => request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.DELETE})
 };

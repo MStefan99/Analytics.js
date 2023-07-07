@@ -4,7 +4,7 @@
 	.row.py-3.sticky.top-0.glass
 		.input
 			label(for="date-input") Starting from
-			DatePicker#date-input.w-full(type="date" v-model="startTime" @change="loadFeedbacks()")
+			DatePicker#date-input.w-full(v-model="startTime" @change="loadFeedbacks()")
 	table.cells.w-full
 		thead
 			tr

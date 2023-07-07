@@ -100,7 +100,7 @@ a {
 }
 
 .glass {
-	@apply bg-white/80 backdrop-blur-md;
+	@apply bg-white/80 backdrop-blur-md z-10;
 }
 
 .footer-logo {
@@ -184,7 +184,7 @@ td {
 .chart {
 	@apply w-full mb-4;
 	min-width: 180px;
-	height: 30vh;
+	height: 300px;
 }
 
 .card {

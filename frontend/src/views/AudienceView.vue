@@ -4,7 +4,7 @@
 	.row
 		.card.accent.m-4(v-if="realtimeAudience")
 			h2 Audience now
-			TimedChart(:data="realtimeDataset" color="#ffffff" :yStacked="false")
+			TimedChart(:data="realtimeDataset" color="#ffffff" :y-stacked="false" :step-size="1000 * 60")
 			h3 Active users
 			p#active-users.large {{currentUsers}}
 		.card.m-4(v-if="todayAudience")

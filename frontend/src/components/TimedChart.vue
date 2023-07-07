@@ -18,9 +18,11 @@ import {
 	LinearScale,
 	PointElement,
 	LineElement,
+	TimeScale,
 	Filler
 	//@ts-ignore
 } from 'chart.js';
+import 'chartjs-adapter-date-fns';
 import {computed, onUnmounted, ref} from 'vue';
 
 const props = withDefaults(
@@ -37,7 +39,6 @@ const props = withDefaults(
 		color?: string;
 	}>(),
 	{
-		stepSize: 1000 * 60,
 		type: 'bar',
 		xStacked: true,
 		yStacked: true
@@ -53,6 +54,7 @@ ChartJS.register(
 	LinearScale,
 	PointElement,
 	LineElement,
+	TimeScale,
 	Filler
 );
 
@@ -133,7 +135,26 @@ const options = ref({
 			});
 	},
 	scales: {
-		x: {stacked: props.xStacked, ticks: {color: props.color ?? '#000'}},
+		x: {
+			stacked: props.xStacked,
+			...(props.stepSize === undefined && {
+				type: 'time',
+				time: {
+					displayFormats: {
+						millisecond: 'hh:mm:ss',
+						second: 'hh:mm:ss',
+						minute: 'hh:mm:ss',
+						hour: 'MMM dd h:mm',
+						day: 'MMM d',
+						week: 'MMM d',
+						month: 'YYYY MMM',
+						quarter: 'YYYY MMM',
+						year: 'YYYY MMM'
+					}
+				}
+			}),
+			ticks: {color: props.color ?? '#000'}
+		},
 		y: {
 			stacked: props.yStacked,
 			ticks: {color: props.color ?? '#000'},
@@ -150,36 +171,53 @@ const options = ref({
 });
 
 const chartData = computed(() => {
-	const datasets: {label: string; backgroundColor: string; data: number[]}[] = [];
-	const now = Date.now();
-
-	for (const series of props.data) {
-		const dataset = {
+	if (props.stepSize === undefined) {
+		const datasets: {
+			label: string;
+			backgroundColor: string;
+			data: {x: number; y: number}[];
+		}[] = props.data.map((series) => ({
 			label: series.label,
 			backgroundColor: props.type === 'line' ? transparentize(series.color, 0.35) : series.color,
-			data: new Array(steps.value + 1).fill(0),
+			data: Object.keys(series.data ?? {}).map((k) => ({x: +k, y: series.data[k]})),
 			tension: 0.4,
 			borderColor: series.color,
 			fill: 'origin'
-		};
+		}));
 
-		if (series.data) {
-			for (const time of Object.keys(series.data)) {
-				const minutes = steps.value - Math.floor((now - +time) / props.stepSize);
+		return {datasets};
+	} else {
+		const datasets: {label: string; backgroundColor: string; data: number[]}[] = [];
+		const now = Date.now();
 
-				if (minutes <= steps.value * props.stepSize) {
-					dataset.data[minutes] = series.data[time];
+		for (const series of props.data) {
+			const dataset = {
+				label: series.label,
+				backgroundColor: props.type === 'line' ? transparentize(series.color, 0.35) : series.color,
+				data: new Array(steps.value + 1).fill(0),
+				tension: 0.4,
+				borderColor: series.color,
+				fill: 'origin'
+			};
+
+			if (series.data) {
+				for (const time of Object.keys(series.data)) {
+					const minutes = steps.value - Math.floor((now - +time) / props.stepSize);
+
+					if (minutes <= steps.value * props.stepSize) {
+						dataset.data[minutes] = series.data[time];
+					}
 				}
 			}
+
+			datasets.push(dataset);
 		}
 
-		datasets.push(dataset);
+		return {
+			labels: labels.value,
+			datasets
+		};
 	}
-
-	return {
-		labels: labels.value,
-		datasets
-	};
 });
 
 function transparentize(color: string, opacity: number): string {

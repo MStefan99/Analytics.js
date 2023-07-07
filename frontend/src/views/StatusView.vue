@@ -20,17 +20,17 @@
 				RouterLink.btn(:to="{name: 'settings', params: {id: $route.params.id}}") Settings
 		.card.m-4
 			h2 Audience
-			TimedChart(:data="audienceDataset" :yStacked="false")
+			TimedChart(:data="audienceDataset" :y-stacked="false" :step-size="1000 * 60")
 			.flex.gap-2
 				RouterLink.btn.grow(:to="{name: 'audience-today', params: {id: $route.params.id}}") View audience today
 				RouterLink.btn.grow(:to="{name: 'audience-history', params: {id: $route.params.id}}") View audience history
 		.card.m-4
 			h2 Server logs
-			TimedChart(:data="serverLogsDataset")
+			TimedChart(:data="serverLogsDataset" :step-size="1000 * 60")
 			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'server'}}") View server logs
 		.card.m-4
 			h2 Client logs
-			TimedChart(:data="clientLogsDataset")
+			TimedChart(:data="clientLogsDataset" :step-size="1000 * 60")
 			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'client'}}") View client logs
 </template>
 

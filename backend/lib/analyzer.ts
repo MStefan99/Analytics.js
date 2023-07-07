@@ -3,9 +3,6 @@
 import App from './app.ts';
 
 const divisionLength = 1000 * 60;
-const defaultSessionLength = 1000 * 60 * 30;
-const defaultRealtimeRange = 1000 * 60 * 31; // 0 through 30 minutes ago
-const defaultHistoryRange = 1000 * 60 * 60 * 24 * 31; // 0 through 30 days ago
 
 type Page = { url: string; referrer: string | null; time: number };
 type Session = { duration: number; ua: string; pages: Page[] };
@@ -41,7 +38,7 @@ export type LogAggregate = { [key: number]: { [key: number]: number } };
 
 export async function overview(
 	appID: App['id'],
-	timeRange: number = defaultRealtimeRange,
+	timePeriod: number,
 ): Promise<Overview | null> {
 	const userSets: { [key: string]: Set<string> } = {};
 	const views: Overview['views'] = {};
@@ -49,16 +46,16 @@ export async function overview(
 	const clientLogs: Overview['clientLogs'] = {};
 
 	const now = Date.now();
-	const startTime = Date.now() - timeRange;
+	const startTime = now - timePeriod;
 
 	const app = await App.getByID(appID);
 	if (!app) {
 		return null;
 	}
 
-	const hits = await app.getHits(startTime);
-	const serverLogsRaw = await app.getServerLogs(startTime);
-	const clientLogsRaw = await app.getClientLogs(startTime);
+	const hits = await app.getHits(startTime, now);
+	const serverLogsRaw = await app.getServerLogs(startTime, now);
+	const clientLogsRaw = await app.getClientLogs(startTime, now);
 
 	for (const hit of hits) {
 		const timeSlot = now -
@@ -113,20 +110,19 @@ export async function overview(
 
 export async function realtimeAudience(
 	appID: App['id'],
-	length: number = defaultRealtimeRange,
+	timePeriod: number,
 ): Promise<RealtimeAudience | null> {
 	const userSets: { [key: string]: Set<string> } = {};
 	const views: RealtimeAudience['views'] = {};
 
-	const now = Date.now();
 	const app = await App.getByID(appID);
 	if (!app) {
 		return null;
 	}
 
-	const hits = await app.getHits(
-		Date.now() - length,
-	);
+	const now = Date.now();
+	const startTime = now - timePeriod;
+	const hits = await app.getHits(startTime, now);
 
 	for (const hit of hits) {
 		const timeSlot = now -
@@ -153,7 +149,7 @@ export async function realtimeAudience(
 
 export async function todayAudience(
 	appID: App['id'],
-	sessionLength: number = defaultSessionLength,
+	sessionLength: number,
 ): Promise<DayAudience | null> {
 	const today = new Date();
 	today.setHours(0);
@@ -173,9 +169,8 @@ export async function todayAudience(
 		return null;
 	}
 
-	const hits = await app.getHits(
-		today.getTime(),
-	);
+	const now = Date.now();
+	const hits = await app.getHits(today.getTime(), now);
 
 	for (const hit of hits) {
 		if (!clients.has(hit.clientID)) {
@@ -249,7 +244,7 @@ export async function todayAudience(
 
 export async function audienceAggregate(
 	appID: App['id'],
-	timeRange: number = defaultHistoryRange,
+	startTime: number,
 	endTime: number = Date.now(),
 ): Promise<AudienceAggregate | null> {
 	const users: AudienceAggregate['users'] = {};
@@ -260,10 +255,7 @@ export async function audienceAggregate(
 		return null;
 	}
 
-	const aggregates = await app.getHitAggregate(
-		endTime - timeRange,
-		endTime,
-	);
+	const aggregates = await app.getHitAggregate(startTime, endTime);
 
 	for (const aggregate of aggregates) {
 		users[aggregate.time] = aggregate.clients;
@@ -279,7 +271,7 @@ export async function audienceAggregate(
 export async function logAggregate(
 	appID: App['id'],
 	type: 'server' | 'client',
-	timeRange: number = defaultHistoryRange,
+	startTime: number,
 	endTime: number = Date.now(),
 ): Promise<LogAggregate | null> {
 	const logs: LogAggregate = {};
@@ -290,14 +282,8 @@ export async function logAggregate(
 	}
 
 	const logAggregates = type === 'server'
-		? await app.getServerLogAggregate(
-			endTime - timeRange,
-			endTime,
-		)
-		: await app.getClientLogAggregate(
-			endTime - timeRange,
-			endTime,
-		);
+		? await app.getServerLogAggregate(startTime, endTime)
+		: await app.getClientLogAggregate(startTime, endTime);
 
 	for (const aggregate of logAggregates) {
 		if (!logs[aggregate.level]) {

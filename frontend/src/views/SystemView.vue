@@ -1,6 +1,13 @@
 <template lang="pug">
 #system
 	h1 System
+	.row.py-3.sticky.top-0.glass
+		.input
+			label(for="date-start") Starting from
+			DatePicker#date-start.w-full(type="datetime" v-model="startTime" @change="loadMetrics()")
+		.input
+			label(for="level-end") Ending on
+			DatePicker#date-end.w-full(type="datetime" v-model="endTime" @change="loadMetrics()")
 	.row
 		.card.m-4
 			h2 CPU usage
@@ -14,7 +21,8 @@
 				:data="[chartDatasets.up, chartDatasets.down]"
 				type="line"
 				:min="0"
-				:suggestedMax="0.25")
+				:suggestedMax="0.25"
+				:step-size="1000 * 60")
 		.card.m-4
 			h2 Disk usage
 			TimedChart(:data="[chartDatasets.disk]" type="line" :min="0" :max="100")
@@ -27,6 +35,7 @@ import TimedChart from '../components/TimedChart.vue';
 import type {Metrics} from '../scripts/types';
 import Api from '../scripts/api';
 import {alert, PopupColor} from '../scripts/popups';
+import DatePicker from '../components/DatePicker.vue';
 
 type Dataset = {label: string; color: string; data: {[key: string]: number}};
 
@@ -35,6 +44,10 @@ window.document.title = 'System | Crash Course';
 const mb = 1024 * 1024;
 const route = useRoute();
 const metrics = ref<Metrics[]>([]);
+const sessionLength = 1000 * 60 * 30;
+const initialTime = new Date(Date.now() - sessionLength);
+const startTime = ref<Date>(initialTime);
+const endTime = ref<Date>(new Date());
 const datasetOptions: {name: string; val(m: Metrics): number; label: string; color: string}[] = [
 	{
 		name: 'cpu',
@@ -95,7 +108,9 @@ const chartDatasets = computed(() => {
 });
 
 function loadMetrics() {
-	return Api.apps.getMetrics(+route.params.id).then((m) => (metrics.value = m));
+	return Api.apps
+		.getMetrics(+route.params.id, startTime.value.getTime(), endTime.value.getTime())
+		.then((m) => (metrics.value = m));
 }
 
 loadMetrics().catch((err) => alert('Failed to load metrics', PopupColor.Red, err.message));

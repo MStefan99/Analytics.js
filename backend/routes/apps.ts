@@ -9,7 +9,9 @@ import rateLimiter from '../lib/rateLimiter.ts';
 
 const sessionLength = 1000 * 60 * 30;
 const dayLength = 1000 * 60 * 60 * 24;
-const defaultHistoryLength = dayLength * 30;
+const defaultSessionLength = 1000 * 60 * 30;
+const defaultRealtimeLength = 1000 * 60 * 31; // 0 through 30 minutes ago
+const defaultHistoryLength = dayLength * 31; // 0 through 30 days ago
 
 const router = new Router({
 	prefix: '/apps',
@@ -166,7 +168,13 @@ router.get(
 	async (ctx) => {
 		const app = await getApp(ctx, +ctx.params.id);
 
-		app && (ctx.response.body = await analyzer.overview(app.id));
+		const params = new URLSearchParams(ctx.request.url.search);
+
+		const period = params.has('period')
+			? +(params?.get('period') as string) // Safe because of the check
+			: defaultRealtimeLength;
+
+		app && (ctx.response.body = await analyzer.overview(app.id, period));
 	},
 );
 
@@ -180,7 +188,17 @@ router.get(
 	async (ctx) => {
 		const app = await getApp(ctx, +ctx.params.id);
 
-		app && (ctx.response.body = await analyzer.realtimeAudience(app.id));
+		const params = new URLSearchParams(ctx.request.url.search);
+
+		const period = params.has('period')
+			? +(params?.get('period') as string) // Safe because of the check
+			: defaultRealtimeLength;
+
+		app &&
+			(ctx.response.body = await analyzer.realtimeAudience(
+				app.id,
+				period,
+			));
 	},
 );
 
@@ -194,7 +212,11 @@ router.get(
 	async (ctx) => {
 		const app = await getApp(ctx, +ctx.params.id);
 
-		app && (ctx.response.body = await analyzer.todayAudience(app.id));
+		app &&
+			(ctx.response.body = await analyzer.todayAudience(
+				app.id,
+				defaultSessionLength,
+			));
 	},
 );
 
@@ -208,7 +230,22 @@ router.get(
 	async (ctx) => {
 		const app = await getApp(ctx, +ctx.params.id);
 
-		app && (ctx.response.body = await analyzer.audienceAggregate(app.id));
+		const now = Date.now();
+		const params = new URLSearchParams(ctx.request.url.search);
+
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
+			: now - defaultHistoryLength;
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
+			: now;
+
+		app &&
+			(ctx.response.body = await analyzer.audienceAggregate(
+				app.id,
+				startTime,
+				endTime,
+			));
 	},
 );
 
@@ -228,11 +265,11 @@ router.get(
 		const now = Date.now();
 		const params = new URLSearchParams(ctx.request.url.search);
 
-		const startTime = params.has('startTime')
-			? +(params?.get('startTime') as string) // Safe because of the check
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
 			: now - defaultHistoryLength;
-		const endTime = params.has('endTime')
-			? +(params?.get('endTime') as string) // Safe because of the check
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
 			: now;
 
 		ctx.response.body = await app.getPageAggregate(startTime, endTime);
@@ -255,14 +292,18 @@ router.get(
 		const now = Date.now();
 		const params = new URLSearchParams(ctx.request.url.search);
 
-		const startTime = params.has('startTime')
-			? +(params?.get('startTime') as string) // Safe because of the check
-			: now - dayLength;
 		const level = params.has('level')
 			? +(params.get('level') as string)
 			: 0; // Safe because of the check
 
-		ctx.response.body = await app.getServerLogs(startTime, level);
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
+			: now - defaultHistoryLength;
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
+			: now;
+
+		ctx.response.body = await app.getServerLogs(startTime, endTime, level);
 	},
 );
 
@@ -282,14 +323,18 @@ router.get(
 		const now = Date.now();
 		const params = new URLSearchParams(ctx.request.url.search);
 
-		const startTime = params.has('startTime')
-			? +(params?.get('startTime') as string) // Safe because of the check
-			: now - dayLength;
 		const level = params.has('level')
 			? +(params.get('level') as string)
 			: 0; // Safe because of the check
 
-		ctx.response.body = await app.getClientLogs(startTime, level);
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
+			: now - defaultHistoryLength;
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
+			: now;
+
+		ctx.response.body = await app.getClientLogs(startTime, endTime, level);
 	},
 );
 
@@ -303,8 +348,23 @@ router.get(
 	async (ctx) => {
 		const app = await getApp(ctx, +ctx.params.id);
 
+		const now = Date.now();
+		const params = new URLSearchParams(ctx.request.url.search);
+
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
+			: now - defaultHistoryLength;
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
+			: now;
+
 		app &&
-			(ctx.response.body = await analyzer.logAggregate(app.id, 'server'));
+			(ctx.response.body = await analyzer.logAggregate(
+				app.id,
+				'server',
+				startTime,
+				endTime,
+			));
 	},
 );
 
@@ -318,8 +378,23 @@ router.get(
 	async (ctx) => {
 		const app = await getApp(ctx, +ctx.params.id);
 
+		const now = Date.now();
+		const params = new URLSearchParams(ctx.request.url.search);
+
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
+			: now - defaultHistoryLength;
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
+			: now;
+
 		app &&
-			(ctx.response.body = await analyzer.logAggregate(app.id, 'client'));
+			(ctx.response.body = await analyzer.logAggregate(
+				app.id,
+				'client',
+				startTime,
+				endTime,
+			));
 	},
 );
 
@@ -339,11 +414,14 @@ router.get(
 		const now = Date.now();
 		const params = new URLSearchParams(ctx.request.url.search);
 
-		const startTime = params.has('startTime')
-			? +(params?.get('startTime') as string) // Safe because of the check
-			: now - dayLength;
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
+			: now - defaultHistoryLength;
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
+			: now;
 
-		ctx.response.body = await app.getFeedback(startTime);
+		ctx.response.body = await app.getFeedback(startTime, endTime);
 	},
 );
 
@@ -363,11 +441,14 @@ router.get(
 		const now = Date.now();
 		const params = new URLSearchParams(ctx.request.url.search);
 
-		const startTime = params.has('startTime')
-			? +(params?.get('startTime') as string) // Safe because of the check
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
 			: now - sessionLength;
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
+			: now;
 
-		ctx.response.body = await app.getMetrics(startTime);
+		ctx.response.body = await app.getMetrics(startTime, endTime);
 	},
 );
 

@@ -1,15 +1,18 @@
 <template lang="pug">
 #logs
 	h1 {{app?.name}} {{$route.params.type === 'client' ? 'client' : 'server'}} logs
-	div(v-if="historicalLogs")
-		TimedChart.history-chart(:data="chartData" :step-size="1000 * 60 * 60 * 24")
 	.row.py-3.sticky.top-0.glass
 		.input
 			label(for="date-input") Starting from
-			DatePicker#date-input.w-full(type="date" v-model="startTime" @change="loadLogs()")
+			DatePicker#date-input.w-full(v-model="startTime" @change="loadLogs()")
+		.input
+			label(for="date-input") Ending on
+			DatePicker#date-input.w-full(v-model="endTime" @change="loadLogs()")
 		.input
 			label(for="level-input") Minimum level
 			DropdownSelect#level-input.w-full(:options="levels" v-model="level" @change="loadLogs()")
+	div(v-if="historicalLogs")
+		TimedChart.history-chart(:data="chartData" end="data")
 	table.cells.w-full
 		thead
 			tr
@@ -42,10 +45,12 @@ const app = ref<App | null>(null);
 const logs = ref<Log[]>([]);
 const historicalLogs = ref<LogAggregate | null>(null);
 const dayLength = 1000 * 60 * 60 * 24;
-const initialDate = new Date(Date.now() - dayLength);
+const now = new Date();
+const initialTime = new Date(now.getTime() - dayLength);
 const levels = ['Debug', 'Information', 'Warning', 'Error', 'Critical'];
 
-const startTime = ref<Date>(initialDate);
+const startTime = ref<Date>(initialTime);
+const endTime = ref<Date>(now);
 const level = ref<number>(1);
 
 const colors = {
@@ -93,11 +98,19 @@ Api.apps
 		window.document.title = a.name + ' logs | Crash Course';
 	})
 	.catch((err) => alert('Failed to load logs', PopupColor.Red, err.message));
-Api.apps.getLogAggregate(+route.params.id, type).then((l) => (historicalLogs.value = l));
 
 function loadLogs() {
 	Api.apps
-		.getLogs(+route.params.id, type, startTime.value.getTime(), level.value)
+		.getLogAggregate(+route.params.id, type, startTime.value.getTime(), endTime.value.getTime())
+		.then((l) => (historicalLogs.value = l));
+	Api.apps
+		.getLogs(
+			+route.params.id,
+			type,
+			level.value,
+			startTime.value.getTime(),
+			endTime.value.getTime()
+		)
 		.then((l) => (logs.value = l));
 }
 

@@ -11,6 +11,8 @@
 	},
 	"dependencies": {
 		"chart.js": "^4.3.0",
+		"chartjs-adapter-date-fns": "^3.0.0",
+		"date-fns": "^2.30.0",
 		"pug": "^3.0.2",
 		"vue": "^3.3.4",
 		"vue-chartjs": "^5.2.0",

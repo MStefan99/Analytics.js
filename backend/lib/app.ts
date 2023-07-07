@@ -288,16 +288,16 @@ class App {
 		};
 	}
 
-	async getHits(startTime: number): Promise<ClientHit[]> {
+	async getHits(startTime: number, endTime: number): Promise<ClientHit[]> {
 		const db = await openDB(this.id);
 
 		return await db.queryEntries<ClientHit>(
 			`select clients.id as clientID, url, referrer, time, ua, lang
        from hits
                 join clients on client_id = clients.id
-       where hits.time > ?
+       where hits.time between ? and ?
        limit 5000`,
-			[Math.floor(startTime / 1000)],
+			[Math.floor(startTime / 1000), Math.floor(endTime / 1000)],
 		).map((hit) => ({ ...hit, time: hit.time * 1000 }));
 	}
 
@@ -333,6 +333,7 @@ class App {
 	async #getLogs(
 		type: 'server' | 'client',
 		startTime: number,
+		endTime: number,
 		level = 0,
 	): Promise<Log[]> {
 		const db = await openDB(this.id);
@@ -340,10 +341,10 @@ class App {
 		return await db.queryEntries<Log>(
 			`select *
        from ${type}_logs
-       where time >= ?
+       where time between ? and ?
          and level >= ?
        limit 5000`,
-			[Math.floor(startTime / 1000), level],
+			[Math.floor(startTime / 1000), Math.floor(endTime / 1000), level],
 		).map((log) => ({ ...log, time: log.time * 1000 }));
 	}
 
@@ -378,16 +379,20 @@ class App {
 		return await this.#createLog('client', message, level, tag);
 	}
 
-	async getClientLogs(startTime: number, level = 0) {
-		return await this.#getLogs('client', startTime, level);
-	}
-
 	async createServerLog(message: string, level: number, tag?: string) {
 		return await this.#createLog('server', message, level, tag);
 	}
 
-	async getServerLogs(startTime: number, level = 0): Promise<Log[]> {
-		return await this.#getLogs('server', startTime, level);
+	async getClientLogs(startTime: number, endTime: number, level = 0) {
+		return await this.#getLogs('client', startTime, endTime, level);
+	}
+
+	async getServerLogs(
+		startTime: number,
+		endTime: number,
+		level = 0,
+	): Promise<Log[]> {
+		return await this.#getLogs('server', startTime, endTime, level);
 	}
 
 	async createFeedback(feedback: NewFeedback): Promise<Feedback> {
@@ -403,15 +408,15 @@ class App {
 		return { id: db.lastInsertRowId, time, ...feedback };
 	}
 
-	async getFeedback(startTime: number): Promise<Feedback[]> {
+	async getFeedback(startTime: number, endTime: number): Promise<Feedback[]> {
 		const db = await openDB(this.id);
 
 		return await db.queryEntries<Feedback>(
 			`select *
        from feedback
-       where time > ?
+       where time between ? and ?
        limit 1000`,
-			[Math.floor(startTime / 1000)],
+			[Math.floor(startTime / 1000), Math.floor(endTime / 1000)],
 		).map((feedback) => ({ ...feedback, time: feedback.time * 1000 }));
 	}
 
@@ -438,7 +443,7 @@ class App {
 		return { id: db.lastInsertRowId, time, ...metrics };
 	}
 
-	async getMetrics(startTime: number): Promise<Metrics[]> {
+	async getMetrics(startTime: number, endTime: number): Promise<Metrics[]> {
 		const db = await openDB(this.id);
 
 		return await db.queryEntries<Metrics>(
@@ -452,9 +457,9 @@ class App {
               disk_used  as diskUsed,
               disk_total as diskTotal
        from metrics
-       where time > ?
+       where time between ? and ?
        limit 500`,
-			[Math.floor(startTime / 1000)],
+			[Math.floor(startTime / 1000), Math.floor(endTime / 1000)],
 		).map((metrics) => ({ ...metrics, time: metrics.time * 1000 }));
 	}
 
@@ -474,7 +479,7 @@ class App {
        group by day
        order by day
        limit 3650`,
-			[startTime / 1000, endTime / 1000],
+			[Math.floor(startTime / 1000), Math.floor(endTime / 1000)],
 		)
 			.map((a) => {
 				const date = new Date(a.time * 1000);
@@ -497,7 +502,7 @@ class App {
        group by url
        order by hits desc
        limit 1000`,
-			[startTime / 1000, endTime / 1000],
+			[Math.floor(startTime / 1000), Math.floor(endTime / 1000)],
 		);
 	}
 

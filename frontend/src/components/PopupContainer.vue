@@ -54,7 +54,7 @@ function rejectPrompt() {
 .alerts {
 	position: absolute;
 	right: 10vw;
-	padding: 2em;
+	margin: 2em;
 }
 
 .confirm,
