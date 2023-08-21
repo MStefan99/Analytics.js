@@ -20,11 +20,12 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {ref} from 'vue';
+import {computed, ref} from 'vue';
 import type {App, Feedback} from '../scripts/types';
 import DatePicker from '../components/DatePicker.vue';
 import Api from '../scripts/api';
 import {alert, PopupColor} from '../scripts/popups';
+import {useQuery} from '../scripts/composables';
 
 const route = useRoute();
 const app = ref<App | null>(null);
@@ -33,6 +34,15 @@ const dayLength = 1000 * 60 * 60 * 24;
 const initialDate = new Date(Date.now() - dayLength);
 
 const startTime = ref<Date>(initialDate);
+
+const {query} = useQuery(
+	computed(() => ({
+		startTime: startTime.value.toISOString()
+	}))
+);
+startTime.value = new Date(
+	Array.isArray(query.value.startTime) ? query.value.startTime[0] : query.value.startTime
+);
 
 Api.apps.getByID(+route.params.id).then((a) => {
 	app.value = a;

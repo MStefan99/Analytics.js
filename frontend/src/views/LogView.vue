@@ -39,6 +39,7 @@ import DatePicker from '../components/DatePicker.vue';
 import TimedChart from '../components/TimedChart.vue';
 import {alert, PopupColor} from '../scripts/popups';
 import Api from '../scripts/api';
+import {useQuery} from '../scripts/composables';
 
 const route = useRoute();
 const app = ref<App | null>(null);
@@ -52,6 +53,21 @@ const levels = ['Debug', 'Information', 'Warning', 'Error', 'Critical'];
 const startTime = ref<Date>(initialTime);
 const endTime = ref<Date>(now);
 const level = ref<number>(1);
+
+const {query} = useQuery(
+	computed(() => ({
+		startTime: startTime.value.toISOString(),
+		endTime: endTime.value.toISOString(),
+		level: level.value.toString()
+	}))
+);
+startTime.value = new Date(
+	Array.isArray(query.value.startTime) ? query.value.startTime[0] : query.value.startTime
+);
+endTime.value = new Date(
+	Array.isArray(query.value.endTime) ? query.value.endTime[0] : query.value.endTime
+);
+level.value = Array.isArray(query.value.level) ? +query.value.level[0] : +query.value.level;
 
 const colors = {
 	debug: '#4f46e5',

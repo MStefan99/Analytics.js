@@ -35,6 +35,7 @@ import type {Metrics} from '../scripts/types';
 import Api from '../scripts/api';
 import {alert, PopupColor} from '../scripts/popups';
 import DatePicker from '../components/DatePicker.vue';
+import {useQuery} from '../scripts/composables';
 
 type Dataset = {label: string; color: string; data: {[key: string]: number}};
 
@@ -89,6 +90,19 @@ const datasetOptions: {name: string; val(m: Metrics): number; label: string; col
 		color: '#772'
 	}
 ];
+
+const {query} = useQuery(
+	computed(() => ({
+		startTime: startTime.value.toISOString(),
+		endTime: endTime.value.toISOString()
+	}))
+);
+startTime.value = new Date(
+	Array.isArray(query.value.startTime) ? query.value.startTime[0] : query.value.startTime
+);
+endTime.value = new Date(
+	Array.isArray(query.value.endTime) ? query.value.endTime[0] : query.value.endTime
+);
 
 const chartDatasets = computed(() => {
 	const data: {[key: string]: Dataset} = {};

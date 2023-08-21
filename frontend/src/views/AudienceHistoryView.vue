@@ -36,6 +36,7 @@ import type {App, AudienceAggregate, PageAggregate} from '../scripts/types';
 import DatePicker from '../components/DatePicker.vue';
 import TimedChart from '../components/TimedChart.vue';
 import {alert, PopupColor} from '../scripts/popups';
+import {useQuery} from '../scripts/composables';
 
 const route = useRoute();
 const app = ref<App | null>(null);
@@ -45,6 +46,19 @@ const monthLength = 1000 * 60 * 60 * 24 * 30;
 const initialTime = new Date(Date.now() - monthLength);
 const startTime = ref<Date>(initialTime);
 const endTime = ref<Date>(new Date());
+
+const {query} = useQuery(
+	computed(() => ({
+		startTime: startTime.value.toISOString(),
+		endTime: endTime.value.toISOString()
+	}))
+);
+startTime.value = new Date(
+	Array.isArray(query.value.startTime) ? query.value.startTime[0] : query.value.startTime
+);
+endTime.value = new Date(
+	Array.isArray(query.value.endTime) ? query.value.endTime[0] : query.value.endTime
+);
 
 const audienceAggregate = computed(() => [
 	{
