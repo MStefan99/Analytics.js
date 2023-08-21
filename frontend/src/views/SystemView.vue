@@ -21,8 +21,7 @@
 				:data="[chartDatasets.up, chartDatasets.down]"
 				type="line"
 				:min="0"
-				:suggestedMax="0.25"
-				:step-size="1000 * 60")
+				:suggestedMax="0.25")
 		.card.m-4
 			h2 Disk usage
 			TimedChart(:data="[chartDatasets.disk]" type="line" :min="0" :max="100")
