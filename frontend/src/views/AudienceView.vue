@@ -31,8 +31,8 @@
 			table.cells(v-if="pages")
 				thead
 					tr
-						td Page
-						td Views
+						th Page
+						th Views
 				tbody
 					tr(v-for="page of pages" :key="page.url")
 						td
@@ -42,8 +42,8 @@
 			table.cells(v-if="referrers")
 				thead
 					tr
-						td Source
-						td Count
+						th Source
+						th Count
 				tbody
 					tr(v-for="referrer of referrers" :key="referrer.url")
 						td

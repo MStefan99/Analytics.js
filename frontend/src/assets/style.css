@@ -166,6 +166,14 @@ table {
 	@apply mb-2;
 }
 
+table td {
+	@apply break-all;
+}
+
+table th {
+	text-align: left;
+}
+
 table.cells td,
 table.cells th {
 	@apply border;

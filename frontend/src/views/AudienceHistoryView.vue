@@ -18,8 +18,8 @@
 			table.cells(v-if="pages")
 				thead
 					tr
-						td Page
-						td Views
+						th Page
+						th Views
 				tbody
 					tr(v-for="page of pages" :key="page.url")
 						td
