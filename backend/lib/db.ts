@@ -1,7 +1,13 @@
-import { DB } from '../deps.ts';
+import { DB, path } from '../deps.ts';
 
 const dbs = new Map<string, DB>();
 const dbTimeout = 1000 * 60 * 5;
+const dbDirectory = path.join(
+	path.fromFileUrl(import.meta.url),
+	'..',
+	'..',
+	'db',
+);
 
 export async function openDB(name?: string | number): Promise<DB> {
 	const nameString = name?.toString() ?? '';
@@ -11,8 +17,8 @@ export async function openDB(name?: string | number): Promise<DB> {
 	} else {
 		const db = new DB(
 			nameString.length
-				? `./db/apps/${nameString}.sqlite`
-				: './db/db.sqlite',
+				? path.join(dbDirectory, 'apps', nameString + '.sqlite')
+				: path.join(dbDirectory, 'db.sqlite'),
 		);
 		await db.execute('pragma foreign_keys = on');
 
@@ -29,7 +35,10 @@ export async function openDB(name?: string | number): Promise<DB> {
 export async function deleteDB(name: string | number) {
 	const nameString = name?.toString() ?? '';
 
-	nameString.length && await Deno.remove(`./db/apps/${nameString}.sqlite`);
+	nameString.length &&
+		await Deno.remove(
+			path.join(dbDirectory, 'apps', nameString + '.sqlite'),
+		);
 }
 
 export default openDB;

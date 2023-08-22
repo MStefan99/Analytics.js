@@ -520,7 +520,7 @@ class App {
 		return await this.#getLogAggregate('client', startTime, endTime);
 	}
 
-	async delete(keepDB = false): Promise<void> {
+	async delete(keepDB = true): Promise<void> {
 		const db = await openDB();
 		await db.queryEntries(
 			`delete
