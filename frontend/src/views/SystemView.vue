@@ -45,8 +45,7 @@ const mb = 1024 * 1024;
 const route = useRoute();
 const metrics = ref<Metrics[]>([]);
 const sessionLength = 1000 * 60 * 30;
-const initialTime = new Date(Date.now() - sessionLength);
-const startTime = ref<Date>(initialTime);
+const startTime = ref<Date>(new Date(Date.now() - sessionLength));
 const endTime = ref<Date>(new Date());
 const datasetOptions: {name: string; val(m: Metrics): number; label: string; color: string}[] = [
 	{
@@ -121,6 +120,11 @@ const chartDatasets = computed(() => {
 });
 
 function loadMetrics() {
+	if (Date.now() - endTime.value.getTime() < 1000 * 60) {
+		endTime.value = new Date();
+		startTime.value = new Date(Date.now() - sessionLength);
+	}
+
 	return Api.apps
 		.getMetrics(+route.params.id, startTime.value.getTime(), endTime.value.getTime())
 		.then((m) => (metrics.value = m));

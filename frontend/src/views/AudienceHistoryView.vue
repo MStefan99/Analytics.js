@@ -22,7 +22,7 @@
 						th Views
 				tbody
 					tr(v-for="page of pages" :key="page.url")
-						td
+						td.break-all
 							a.underline(:href="page.url") {{page.url}}
 						td {{page.hits}}
 </template>

@@ -166,10 +166,6 @@ table {
 	@apply mb-2;
 }
 
-table td {
-	@apply break-all;
-}
-
 table th {
 	text-align: left;
 }

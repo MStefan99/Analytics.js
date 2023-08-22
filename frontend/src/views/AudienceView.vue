@@ -35,7 +35,7 @@
 						th Views
 				tbody
 					tr(v-for="page of pages" :key="page.url")
-						td
+						td.break-all
 							a.underline(:href="page.url") {{page.url}}
 						td {{page.hits}}
 			h3 Top referrals
@@ -46,7 +46,7 @@
 						th Count
 				tbody
 					tr(v-for="referrer of referrers" :key="referrer.url")
-						td
+						td.break-all
 							a.underline(:href="referrer.url || undefined") {{referrer.url || 'Unknown'}}
 						td {{referrer.count}}
 </template>

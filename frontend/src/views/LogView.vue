@@ -47,10 +47,9 @@ const logs = ref<Log[]>([]);
 const historicalLogs = ref<LogAggregate | null>(null);
 const dayLength = 1000 * 60 * 60 * 24;
 const now = new Date();
-const initialTime = new Date(now.getTime() - dayLength);
 const levels = ['Debug', 'Information', 'Warning', 'Error', 'Critical'];
 
-const startTime = ref<Date>(initialTime);
+const startTime = ref<Date>(new Date(now.getTime() - dayLength));
 const endTime = ref<Date>(now);
 const level = ref<number>(1);
 
@@ -116,6 +115,10 @@ Api.apps
 	.catch((err) => alert('Failed to load logs', PopupColor.Red, err.message));
 
 function loadLogs() {
+	if (Date.now() - endTime.value.getTime() < 1000 * 60) {
+		endTime.value = new Date();
+	}
+
 	Api.apps
 		.getLogAggregate(+route.params.id, type, startTime.value.getTime(), endTime.value.getTime())
 		.then((l) => (historicalLogs.value = l));
