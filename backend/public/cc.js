@@ -18,19 +18,25 @@ export function sendHit() {
 			url: window.location.href,
 		}),
 	})
-		.then((res) => res.json())
+		.then((res) => {
+			if (!res.ok) {
+				return res.json().then((json) => Promise.reject(json));
+			}
+
+			return res.json();
+		})
 		.then((data) => {
 			if (data.session) {
 				localStorage.setItem('crash-course-session', data.session);
 			}
-			return true;
 		})
 		.catch((err) => {
-			console.warn(
-				'Failed to send a hit to Crash Course! More details:',
-				err,
+			sendLog(
+				'Failed to send a hit to Crash Course! ' + err?.stack ??
+					JSON.stringify(err),
+				3,
 			);
-			throw err;
+			return err;
 		});
 }
 
@@ -50,13 +56,17 @@ export function sendLog(message, level = 0, tag = null) {
 		},
 		body: JSON.stringify({ message, level, tag }),
 	})
-		.then(() => true)
+		.then((res) => {
+			if (!res.ok) {
+				return res.json().then((json) => Promise.reject(json));
+			}
+		})
 		.catch((err) => {
 			console.warn(
 				'Failed to send a log to Crash Course! More details:',
 				err,
 			);
-			throw err;
+			return err;
 		});
 }
 
@@ -73,13 +83,17 @@ export function sendFeedback(message) {
 		},
 		body: JSON.stringify({ message }),
 	})
-		.then(() => true)
+		.then((res) => {
+			if (!res.ok) {
+				return res.json().then((json) => Promise.reject(json));
+			}
+		})
 		.catch((err) => {
 			console.warn(
-				'Failed to send feedback to Crash Course! More details:',
-				err,
+				'Failed to send feedback to Crash Course! ',
+				err?.stack ?? JSON.stringify(err),
 			);
-			throw err;
+			return err;
 		});
 }
 
