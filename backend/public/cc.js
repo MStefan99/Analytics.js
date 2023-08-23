@@ -30,7 +30,7 @@ export function sendHit() {
 				'Failed to send a hit to Crash Course! More details:',
 				err,
 			);
-			return err;
+			throw err;
 		});
 }
 
@@ -56,7 +56,7 @@ export function sendLog(message, level = 0, tag = null) {
 				'Failed to send a log to Crash Course! More details:',
 				err,
 			);
-			return err;
+			throw err;
 		});
 }
 
@@ -79,7 +79,7 @@ export function sendFeedback(message) {
 				'Failed to send feedback to Crash Course! More details:',
 				err,
 			);
-			return err;
+			throw err;
 		});
 }
 
