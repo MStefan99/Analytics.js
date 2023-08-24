@@ -120,8 +120,11 @@ const chartDatasets = computed(() => {
 });
 
 function loadMetrics() {
-	if (Date.now() - endTime.value.getTime() < 1000 * 60) {
+	const now = Date.now();
+	if (Math.abs(now - endTime.value.getTime()) < 1000 * 60) {
 		endTime.value = new Date();
+	}
+	if (Math.abs(now - sessionLength - startTime.value.getTime()) < 1000 * 60) {
 		startTime.value = new Date(Date.now() - sessionLength);
 	}
 
