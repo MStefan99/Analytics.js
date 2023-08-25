@@ -3,7 +3,8 @@
 const scriptLocation = new URL(import.meta.url);
 const serverURL = scriptLocation.origin +
 	scriptLocation.pathname.replace(/\/cc$/, '');
-const audienceKey = new URLSearchParams(scriptLocation.search).get('k');
+const params = new URLSearchParams(scriptLocation.search);
+const audienceKey = params.get('k');
 
 export function sendHit() {
 	return fetch(serverURL + '/audience/hits', {
@@ -95,6 +96,28 @@ export function sendFeedback(message) {
 			);
 			return err;
 		});
+}
+
+const log = [
+	console.debug,
+	console.log,
+	console.warn,
+	console.error,
+];
+
+function wrapLog(level) {
+	return function (...data) {
+		sendLog(data.map((d) => String(d)).join(' '), level);
+
+		log[level](data);
+	};
+}
+
+if (params.has('verbose')) {
+	console.debug = wrapLog(0);
+	console.log = wrapLog(1);
+	console.warn = wrapLog(2);
+	console.error = wrapLog(3);
 }
 
 addEventListener('error', (e) => {
