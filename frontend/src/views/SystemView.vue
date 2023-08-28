@@ -20,6 +20,7 @@
 			TimedChart(
 				:data="[chartDatasets.up, chartDatasets.down]"
 				type="line"
+				:yStacked="false"
 				:min="0"
 				:suggestedMax="0.25")
 		.card.m-4
