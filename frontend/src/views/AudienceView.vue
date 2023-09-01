@@ -38,17 +38,39 @@
 						td.break-all
 							a.underline(:href="page.url") {{page.url}}
 						td {{page.hits}}
-			h3 Top referrals
+			h3 Top referrers
 			table.cells(v-if="referrers")
 				thead
 					tr
 						th Source
 						th Count
 				tbody
-					tr(v-for="referrer of referrers" :key="referrer.url")
+					tr(v-for="referrer of referrers.filter(r => r.url.length)" :key="referrer.url")
 						td.break-all
-							a.underline(:href="referrer.url || undefined") {{referrer.url || 'Unknown'}}
+							a.underline(:href="referrer.url") {{referrer.url}}
 						td {{referrer.count}}
+		.card.m-0(v-if="todayAudience")
+			h2 Sessions
+			.row
+				.session(v-for="(session, i) in todayAudience.sessions" :key="session.id")
+					h3 Session {{i + 1}}
+					p Device: {{parseUA(session.ua)}}
+					b(v-if="session.pages.length < 2") Bounced
+					p(v-else) Duration: {{formatTime(session.duration)}}
+					p Referrer:
+						|
+						|
+						a.underline(:href="session.pages[0].referrer || undefined") {{session.pages[0].referrer || 'Unknown'}}
+					h4 Pages
+					table.cells
+						thead
+							th URL
+							th(v-if="session.pages.length > 1") Viewed for
+						tbody
+							tr(v-for="(page, p) in session.pages" :key="p")
+								td.break-all
+									a.underline(:href="page.url") {{page.url}}
+								td(v-if="p < session.pages.length - 1") {{formatTime(session.pages[p + 1].time - page.time)}}
 </template>
 
 <script setup lang="ts">
@@ -59,6 +81,7 @@ import Api from '../scripts/api';
 import type {App, DayAudience, RealtimeAudience} from '../scripts/types';
 import TimedChart from '../components/TimedChart.vue';
 import {alert, PopupColor} from '../scripts/popups';
+import {parseUA} from '../scripts/util';
 
 const route = useRoute();
 const app = ref<App | null>(null);
@@ -115,7 +138,7 @@ Api.apps
 
 function loadAudience() {
 	Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
-	Api.apps.getTodayAudience(+route.params.id).then((a) => (todayAudience.value = a));
+	Api.apps.getDayAudience(+route.params.id).then((a) => (todayAudience.value = a));
 }
 
 loadAudience();
@@ -137,5 +160,11 @@ onUnmounted(() => clearInterval(refreshInterval));
 
 .audience-section {
 	min-width: 40%;
+}
+
+.session {
+	border: 1px solid var(--color-shadow);
+	padding: 8px;
+	border-radius: 8px;
 }
 </style>

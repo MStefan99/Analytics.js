@@ -51,6 +51,7 @@ export type DayAudience = {
 	users: number;
 	sessions: [
 		{
+			id: string;
 			duration: number;
 			ua: string;
 			pages: {url: string; referrer: string | null; time: number}[];

@@ -201,8 +201,8 @@ export const AppAPI = {
 		}),
 	getRealtimeAudience: (id: App['id'], period?: number) =>
 		request<RealtimeAudience>('/apps/' + id + '/audience/now', {auth: true, query: {period}}),
-	getTodayAudience: (id: App['id']) =>
-		request<DayAudience>('/apps/' + id + '/audience/today', {auth: true}),
+	getDayAudience: (id: App['id'], start?: number) =>
+		request<DayAudience>('/apps/' + id + '/audience/day', {auth: true, query: {start}}),
 	getAudienceAggregate: (id: App['id'], start?: number, end?: number) =>
 		request<AudienceAggregate>('/apps/' + id + '/audience/aggregate', {
 			auth: true,

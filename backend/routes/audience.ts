@@ -36,10 +36,19 @@ router.post('/hits', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 			ctx.request.headers.get('accept-language') ?? undefined,
 		);
 
+	let referrer = null;
+	try {
+		if (new URL(body.url).hostname !== new URL(body.referrer).hostname) {
+			referrer = body.referrer?.toString().trim();
+		}
+	} catch {
+		// Nothing to do, referrer stays null
+	}
+
 	await app.createHit(
 		client,
 		body.url.toString().trim(),
-		body.referrer?.toString().trim() ?? null,
+		referrer,
 	);
 
 	ctx.response.status = 201;

@@ -203,7 +203,7 @@ router.get(
 );
 
 router.get(
-	'/:id/audience/today',
+	'/:id/audience/day',
 	auth.authenticated(),
 	rateLimiter({
 		tag: 'user',
@@ -212,10 +212,18 @@ router.get(
 	async (ctx) => {
 		const app = await getApp(ctx, +ctx.params.id);
 
+		const now = Date.now();
+		const params = new URLSearchParams(ctx.request.url.search);
+
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
+			: now;
+
 		app &&
-			(ctx.response.body = await analyzer.todayAudience(
+			(ctx.response.body = await analyzer.dayAudience(
 				app.id,
 				defaultSessionLength,
+				startTime,
 			));
 	},
 );

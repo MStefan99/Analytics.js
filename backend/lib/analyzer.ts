@@ -5,7 +5,7 @@ import App from './app.ts';
 const divisionLength = 1000 * 60;
 
 type Page = { url: string; referrer: string | null; time: number };
-type Session = { duration: number; ua: string; pages: Page[] };
+type Session = { id: string; duration: number; ua: string; pages: Page[] };
 
 export type Overview = {
 	users: { [key: string]: number };
@@ -147,15 +147,16 @@ export async function realtimeAudience(
 	};
 }
 
-export async function todayAudience(
+export async function dayAudience(
 	appID: App['id'],
 	sessionLength: number,
+	startTime: number = Date.now(),
 ): Promise<DayAudience | null> {
-	const today = new Date();
-	today.setHours(0);
-	today.setMinutes(0);
-	today.setSeconds(0);
-	today.setMilliseconds(0);
+	const startDate = new Date(startTime);
+	startDate.setHours(0);
+	startDate.setMinutes(0);
+	startDate.setSeconds(0);
+	startDate.setMilliseconds(0);
 
 	const sessionSets = new Map<string, Session[]>();
 	const clients = new Set<string>();
@@ -170,7 +171,7 @@ export async function todayAudience(
 	}
 
 	const now = Date.now();
-	const hits = await app.getHits(today.getTime(), now);
+	const hits = await app.getHits(startDate.getTime(), now);
 
 	for (const hit of hits) {
 		if (!clients.has(hit.clientID)) {
@@ -184,6 +185,7 @@ export async function todayAudience(
 		if (!sessionSets.has(hit.clientID)) {
 			sessionSets.set(hit.clientID, [
 				{
+					id: hit.clientID.slice(0, 6),
 					duration: 0,
 					ua: hit.ua,
 					pages: [{
@@ -202,6 +204,7 @@ export async function todayAudience(
 
 			if (hit.time - lastHit > sessionLength) {
 				set.push({
+					id: hit.clientID.slice(0, 6),
 					duration: 0,
 					ua: hit.ua,
 					pages: [{
@@ -299,7 +302,7 @@ export async function logAggregate(
 export default {
 	overview,
 	realtimeAudience,
-	todayAudience,
+	dayAudience,
 	audienceAggregate,
 	logAggregate,
 };
