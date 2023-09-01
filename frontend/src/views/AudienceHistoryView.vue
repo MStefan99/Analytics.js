@@ -9,10 +9,10 @@
 			label(for="level-end") Ending on
 			DatePicker#date-end.w-full(v-model="endTime" @change="load()")
 	.row
-		.card.m-4
+		.card
 			h2 Audience history
 			TimedChart(:data="audienceAggregate" :yStacked="false")
-		.card.m-4
+		.card
 			h2 Traffic history
 			h3 Most popular pages
 			table.cells(v-if="pages")

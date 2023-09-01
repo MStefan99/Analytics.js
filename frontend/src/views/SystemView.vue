@@ -9,13 +9,13 @@
 			label(for="level-end") Ending on
 			DatePicker#date-end.w-full(type="datetime" v-model="endTime" @change="loadMetrics()")
 	.row
-		.card.m-4
+		.card
 			h2 CPU usage
 			TimedChart(:data="[chartDatasets.cpu]" type="line" :min="0" :max="100")
-		.card.m-4
+		.card
 			h2 Memory usage
 			TimedChart(:data="[chartDatasets.mem]" type="line" :min="0" :max="100")
-		.card.m-4
+		.card
 			h2 Network usage
 			TimedChart(
 				:data="[chartDatasets.up, chartDatasets.down]"
@@ -23,7 +23,7 @@
 				:yStacked="false"
 				:min="0"
 				:suggestedMax="0.25")
-		.card.m-4
+		.card
 			h2 Disk usage
 			TimedChart(:data="[chartDatasets.disk]" type="line" :min="0" :max="100")
 </template>

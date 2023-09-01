@@ -2,7 +2,7 @@
 #status(v-if="!!app")
 	h1 {{app.name}} status
 	.row(v-if="overview")
-		.card.accent.m-4
+		.card.accent
 			h2 Overview
 			.row
 				.mx-4
@@ -14,21 +14,21 @@
 				.mx-4
 					h2 Client errors
 					span.large {{(logCount.client['3'] || 0) + (logCount.client['4'] || 0)}}
-			.m-4
+			div
 				RouterLink.btn(:to="{name: 'feedback', params: {id: $route.params.id}}") Feedback
 				RouterLink.btn(:to="{name: 'system', params: {id: $route.params.id}}") System
 				RouterLink.btn(:to="{name: 'settings', params: {id: $route.params.id}}") Settings
-		.card.m-4
+		.card
 			h2 Audience
 			TimedChart(:data="audienceDataset" :y-stacked="false" :step-size="1000 * 60")
 			.flex.gap-2
 				RouterLink.btn.grow(:to="{name: 'audience-today', params: {id: $route.params.id}}") View audience today
 				RouterLink.btn.grow(:to="{name: 'audience-history', params: {id: $route.params.id}}") View audience history
-		.card.m-4
+		.card
 			h2 Server logs
 			TimedChart(:data="serverLogsDataset" :step-size="1000 * 60")
 			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'server'}}") View server logs
-		.card.m-4
+		.card
 			h2 Client logs
 			TimedChart(:data="clientLogsDataset" :step-size="1000 * 60")
 			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'client'}}") View client logs

@@ -49,7 +49,7 @@ nav span a:not(:last-child) {
 }
 
 main {
-	margin: 1rem auto;
+	margin: 2rem auto;
 	flex-grow: 1;
 	max-width: min(90vw, 1440px);
 }
@@ -72,7 +72,7 @@ a {
 }
 
 .row {
-	@apply flex flex-wrap justify-between gap-2;
+	@apply flex flex-wrap justify-between gap-4;
 }
 
 .row > * {
@@ -97,6 +97,10 @@ a {
 
 .clickable {
 	cursor: pointer;
+}
+
+.filter-panel {
+	position: absolute;
 }
 
 .glass {

@@ -2,12 +2,12 @@
 #audience(v-if="app")
 	h1 {{app.name}} audience
 	.row
-		.card.accent.m-4(v-if="realtimeAudience")
+		.card.accent.m-0(v-if="realtimeAudience")
 			h2 Audience now
 			TimedChart(:data="realtimeDataset" color="#ffffff" :y-stacked="false" :step-size="1000 * 60")
 			h3 Active users
 			p#active-users.large {{currentUsers}}
-		.card.m-4(v-if="todayAudience")
+		.card.m-0(v-if="todayAudience")
 			h2 Audience today
 			.today-audience
 				.audience-section
@@ -25,7 +25,7 @@
 				.audience-section
 					p Average session
 					p#session-duration.large {{formatTime(todayAudience.avgDuration)}}
-		.card.m-4
+		.card.m-0
 			h2 Traffic today
 			h3 Most popular pages
 			table.cells(v-if="pages")

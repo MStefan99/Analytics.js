@@ -2,7 +2,7 @@
 #settings(v-if="app")
 	h1 {{app.name}} settings
 	.row
-		.card.accent.m-4
+		.card.accent
 			h2 Audience
 			p.mb-4 To start collecting audience data, please add the following script to every page of your website:
 			pre.code.snippet.mb-4.
@@ -16,7 +16,7 @@
 				in your code like this:
 			pre.code.snippet.
 				import crashCourse from '{{appState.backendURL + '/cc?k=' + app.audienceKey}}';
-		.card.m-4
+		.card
 			h2 Keys
 			h3 Audience Key
 			p.mb-2.
@@ -31,7 +31,7 @@
 				and so on. This key is best kept private so that the data coming back can be fully trusted.
 				Here is your telemetry key:
 			.code.snippet.border.mb-4 {{app.telemetryKey}}
-		.card.m-4
+		.card
 			h2 Edit app
 			form(@submit.prevent="saveChanges()")
 				.mb-3
