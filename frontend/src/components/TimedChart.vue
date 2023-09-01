@@ -1,7 +1,7 @@
 <template lang="pug">
-.chart.relative(ref="chart")
-	Bar(v-if="type === 'bar'" :data="chartData" :options="options")
-	Line(v-else :data="chartData" :options="options")
+.chart.relative(ref="container")
+	Bar(v-if="type === 'bar'" :data="chartData" :options="options" ref="chart")
+	Line(v-else :data="chartData" :options="options" ref="chart")
 </template>
 
 <script setup lang="ts">
@@ -9,18 +9,18 @@
 import {Bar, Line} from 'vue-chartjs';
 
 import {
-	Chart as ChartJS,
-	Title,
-	Tooltip,
-	Legend,
 	BarElement,
 	CategoryScale,
+	Chart as ChartJS,
+	Filler,
+	Legend,
 	LinearScale,
-	PointElement,
 	LineElement,
+	PointElement,
 	TimeScale,
-	Filler
-	//@ts-ignore
+	Title,
+	Tooltip
+	// @ts-ignore
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import {computed, onUnmounted, ref} from 'vue';
@@ -45,6 +45,8 @@ const props = withDefaults(
 	}
 );
 
+const emit = defineEmits<{(e: 'click', value: number): void}>();
+
 ChartJS.register(
 	Title,
 	Tooltip,
@@ -65,6 +67,7 @@ const units = [
 	{length: 1000 * 60 * 60 * 24, name: 'days'},
 	{length: 1000 * 60 * 60 * 24 * 30, name: 'months'}
 ];
+const container = ref(null);
 const chart = ref(null);
 const steps = computed(() => {
 	const now = Date.now();
@@ -116,22 +119,25 @@ const options = ref({
 			return; // Regular window resize
 		}
 
-		if (chart.value.parentNode.clientWidth > size.width) {
+		if (container.value.parentNode.clientWidth > size.width) {
 			return; // Size is probably already fine
 		}
 
 		console.log('Chart resize loop detected, attempting to fix');
-		const computedStyle = window.getComputedStyle(chart.value.parentNode);
-		chart.value.parentNode.style.width =
-			chart.value.parentNode.clientWidth -
+		const computedStyle = window.getComputedStyle(container.value.parentNode);
+		container.value.parentNode.style.width =
+			container.value.parentNode.clientWidth -
 			parseFloat(computedStyle.paddingLeft) -
 			parseFloat(computedStyle.paddingRight) +
 			'px';
 
 		// Attempting again if everything else failed
-		chart.value.parentNode.clientWidth < size.width &&
+		container.value.parentNode.clientWidth < size.width &&
 			setTimeout(() => {
-				options.value.onResize(c, {width: chart.value.parentNode.clientWidth, height: size.height});
+				options.value.onResize(c, {
+					width: container.value.parentNode.clientWidth,
+					height: size.height
+				});
 			});
 	},
 	scales: {
@@ -163,6 +169,22 @@ const options = ref({
 			suggestedMin: props.suggestedMin,
 			suggestedMax: props.suggestedMax
 		}
+	},
+	onClick(e: unknown, elements: {index: number; datasetIndex: number}[]) {
+		if (!elements.length) {
+			return;
+		}
+
+		const time = props.stepSize
+			? Date.now() - (labels.value.length - 1 - elements[0].index) * props.stepSize
+			: (
+					chartData.value.datasets[elements[0].datasetIndex].data[elements[0].index] as {
+						x: number;
+						y: number;
+					}
+			  ).x;
+
+		elements.length && emit('click', time);
 	},
 	plugins: {
 		legend: {labels: {color: props.color ?? '#000'}},

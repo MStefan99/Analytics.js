@@ -28,8 +28,8 @@ const routes: Array<RouteRecordRaw> = [
 		component: StatusView
 	},
 	{
-		path: '/apps/:id/audience/today',
-		name: 'audience-today',
+		path: '/apps/:id/audience/day',
+		name: 'audience-day',
 		component: AudienceView
 	},
 	{

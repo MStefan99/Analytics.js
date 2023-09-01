@@ -108,7 +108,7 @@ export async function overview(
 	};
 }
 
-export async function realtimeAudience(
+export async function audienceRealtime(
 	appID: App['id'],
 	timePeriod: number,
 ): Promise<RealtimeAudience | null> {
@@ -147,17 +147,12 @@ export async function realtimeAudience(
 	};
 }
 
-export async function dayAudience(
+export async function audienceDetailed(
 	appID: App['id'],
 	sessionLength: number,
-	startTime: number = Date.now(),
+	startTime: number,
+	endTime: number = Date.now(),
 ): Promise<DayAudience | null> {
-	const startDate = new Date(startTime);
-	startDate.setHours(0);
-	startDate.setMinutes(0);
-	startDate.setSeconds(0);
-	startDate.setMilliseconds(0);
-
 	const sessionSets = new Map<string, Session[]>();
 	const clients = new Set<string>();
 	let sessionCount = 0;
@@ -170,8 +165,7 @@ export async function dayAudience(
 		return null;
 	}
 
-	const now = Date.now();
-	const hits = await app.getHits(startDate.getTime(), now);
+	const hits = await app.getHits(startTime, endTime);
 
 	for (const hit of hits) {
 		if (!clients.has(hit.clientID)) {
@@ -185,7 +179,7 @@ export async function dayAudience(
 		if (!sessionSets.has(hit.clientID)) {
 			sessionSets.set(hit.clientID, [
 				{
-					id: hit.clientID.slice(0, 6),
+					id: hit.clientID.slice(0, 6) + sessionCount.toString(16),
 					duration: 0,
 					ua: hit.ua,
 					pages: [{
@@ -204,7 +198,7 @@ export async function dayAudience(
 
 			if (hit.time - lastHit > sessionLength) {
 				set.push({
-					id: hit.clientID.slice(0, 6),
+					id: hit.clientID.slice(0, 6) + sessionCount.toString(16),
 					duration: 0,
 					ua: hit.ua,
 					pages: [{
@@ -236,7 +230,7 @@ export async function dayAudience(
 		sessions,
 		bounceRate: sessionCount ? bounced / sessionCount : 0,
 		avgDuration: sessions.reduce(
-			(avg, curr, i) => (avg + curr.duration) / (i + 1),
+			(avg, curr, i) => avg + (curr.duration - avg) / (i + 1),
 			0,
 		),
 		views: hits.length,
@@ -301,8 +295,8 @@ export async function logAggregate(
 
 export default {
 	overview,
-	realtimeAudience,
-	dayAudience,
+	audienceRealtime,
+	audienceDetailed,
 	audienceAggregate,
 	logAggregate,
 };

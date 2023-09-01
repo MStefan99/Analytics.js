@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
 import {computed, onUnmounted, ref} from 'vue';
-import type {App, LogAggregate, Log} from '../scripts/types';
+import type {App, Log, LogAggregate} from '../scripts/types';
 import DropdownSelect from '../components/DropdownSelect.vue';
 import DatePicker from '../components/DatePicker.vue';
 import TimedChart from '../components/TimedChart.vue';

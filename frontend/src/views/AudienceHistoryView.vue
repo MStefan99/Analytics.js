@@ -11,7 +11,7 @@
 	.row
 		.card
 			h2 Audience history
-			TimedChart(:data="audienceAggregate" :yStacked="false")
+			TimedChart(:data="audienceAggregate" :yStacked="false" @click="(time) => openDayView(time)")
 		.card
 			h2 Traffic history
 			h3 Most popular pages
@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import {computed, ref} from 'vue';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 
 import Api from '../scripts/api';
 import type {App, AudienceAggregate, PageAggregate} from '../scripts/types';
@@ -38,6 +38,7 @@ import TimedChart from '../components/TimedChart.vue';
 import {alert, PopupColor} from '../scripts/popups';
 import {useQuery} from '../scripts/composables';
 
+const router = useRouter();
 const route = useRoute();
 const app = ref<App | null>(null);
 const historicalAudience = ref<AudienceAggregate | null>(null);
@@ -91,6 +92,10 @@ function load() {
 }
 
 load();
+
+function openDayView(time: number) {
+	router.push({name: 'audience-day', query: {start: new Date(time).toISOString()}});
+}
 </script>
 
 <style scoped>

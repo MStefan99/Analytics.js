@@ -195,7 +195,7 @@ router.get(
 			: defaultRealtimeLength;
 
 		app &&
-			(ctx.response.body = await analyzer.realtimeAudience(
+			(ctx.response.body = await analyzer.audienceRealtime(
 				app.id,
 				period,
 			));
@@ -212,18 +212,21 @@ router.get(
 	async (ctx) => {
 		const app = await getApp(ctx, +ctx.params.id);
 
-		const now = Date.now();
 		const params = new URLSearchParams(ctx.request.url.search);
 
 		const startTime = params.has('start')
 			? +(params?.get('start') as string) // Safe because of the check
-			: now;
+			: new Date().setUTCHours(0, 0, 0, 0);
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
+			: startTime + dayLength;
 
 		app &&
-			(ctx.response.body = await analyzer.dayAudience(
+			(ctx.response.body = await analyzer.audienceDetailed(
 				app.id,
 				defaultSessionLength,
 				startTime,
+				endTime,
 			));
 	},
 );

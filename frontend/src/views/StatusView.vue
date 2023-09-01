@@ -22,7 +22,7 @@
 			h2 Audience
 			TimedChart(:data="audienceDataset" :y-stacked="false" :step-size="1000 * 60")
 			.flex.gap-2
-				RouterLink.btn.grow(:to="{name: 'audience-today', params: {id: $route.params.id}}") View audience today
+				RouterLink.btn.grow(:to="{name: 'audience-day', params: {id: $route.params.id}}") View audience today
 				RouterLink.btn.grow(:to="{name: 'audience-history', params: {id: $route.params.id}}") View audience history
 		.card
 			h2 Server logs
