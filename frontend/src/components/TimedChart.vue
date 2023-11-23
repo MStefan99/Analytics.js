@@ -140,6 +140,10 @@ const options = ref({
 				});
 			});
 	},
+	interaction: {
+		intersect: true,
+		mode: 'index'
+	},
 	scales: {
 		x: {
 			stacked: props.xStacked,

@@ -109,6 +109,16 @@ class App {
 		this.ownerID = props.ownerID;
 	}
 
+	toJSON() {
+		return {
+			id: this.id,
+			name: this.name,
+			description: this.description,
+			audienceKey: this.audienceKey,
+			telemetryKey: this.telemetryKey,
+		};
+	}
+
 	async save(): Promise<void> {
 		const db = await openDB();
 		await db

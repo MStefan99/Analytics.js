@@ -31,7 +31,7 @@ router.post(
 	'/register',
 	accountsEnabled(),
 	hasCredentials(),
-	rateLimiter(),
+	rateLimiter({ tag: 'auth', rate: 2, initial: 10, max: 10 }),
 	async (ctx) => {
 		const body = await ctx.request.body({ type: 'json' }).value;
 
@@ -54,7 +54,7 @@ router.post(
 router.post(
 	'/login',
 	hasCredentials(),
-	rateLimiter({ tag: 'login', rate: 2, initial: 10, max: 10 }),
+	rateLimiter({ tag: 'auth', rate: 2, initial: 10, max: 10 }),
 	async (ctx) => {
 		const body = await ctx.request.body({ type: 'json' }).value;
 		const user = await User.getByUsername(body.username.toString().trim());

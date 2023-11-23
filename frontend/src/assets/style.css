@@ -104,7 +104,9 @@ a {
 }
 
 .glass {
-	@apply bg-white/80 backdrop-blur-md z-10;
+	@apply bg-white/80 z-10;
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
 }
 
 .footer-logo {

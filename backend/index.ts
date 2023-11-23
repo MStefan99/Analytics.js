@@ -8,7 +8,7 @@ import audienceRouter from './routes/audience.ts';
 import { init } from './lib/init.ts';
 import rateLimiter from './lib/rateLimiter.ts';
 
-const defaultPort = 3001;
+const defaultPort = 3010;
 const parsedPort = Deno.env.has('PORT')
 	? +(Deno.env.get('PORT') as string) // Safe because of the check above
 	: defaultPort;
