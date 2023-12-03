@@ -114,20 +114,22 @@ a {
 }
 
 .popup-wrapper {
+	@apply glass;
 	position: fixed;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
 	left: 0;
 	top: 0;
 	right: 0;
-	bottom: 0;
+	min-height: 100vh;
 	background-color: var(--color-overlay);
+	overflow-y: scroll;
 }
 
 .popup-wrapper .popup {
-	position: relative;
-	left: 50%;
-	top: 50%;
-	max-width: min(768px, 90vw);
-	transform: translate(-50%, -50%);
+	width: min(768px, 90vw);
 	border-radius: 1rem;
 	color: var(--color-foreground);
 	background-color: var(--color-overlay);

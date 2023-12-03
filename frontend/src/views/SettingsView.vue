@@ -3,7 +3,7 @@
 	h1 {{app.name}} settings
 	.row
 		.card.accent
-			h2 Audience
+			h2 Scripts
 			p.mb-4 To start collecting audience data, please add the following script to every page of your website:
 			pre.code.snippet.mb-4.
 				&lt;script async type="module"&gt;
@@ -17,7 +17,12 @@
 			pre.code.snippet.
 				import crashCourse from '{{appState.backendURL + '/cc?k=' + app.audienceKey}}';
 		.card
-			h2 Keys
+			h2 Configuration
+			h3 Host
+			p.mb-2.
+				When setting up an app, you will need to provide a URL for your app to find Crash Course.
+				Here is the URL you are using to access Crash Course:
+			.code.snippet.border.mb-4 {{appState.backendURL}}
 			h3 Audience Key
 			p.mb-2.
 				You will use this key to collect audience data, such as page views, logs, feedback, etc.
