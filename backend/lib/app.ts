@@ -366,11 +366,11 @@ class App {
 		const db = await openDB(this.id);
 
 		return await db.queryEntries<LogAggregate>(
-			`select time                    as t,
-              min(time)               as time,
-              date(time, 'unixepoch') as day,
+			`select time                                 as t,
+              min(time)                            as time,
+              date(time, 'unixepoch', 'localtime') as day,
               level,
-              count(level)            as count
+              count(level)                         as count
        from ${type}_logs
        where t between ? and ?
        group by day, level
@@ -480,10 +480,10 @@ class App {
 		const db = await openDB(this.id);
 
 		return await db.queryEntries<HitAggregate>(
-			`select time                      as time,
-              date(time, 'unixepoch')   as day,
-              count(distinct client_id) as clients,
-              count(*)                  as views
+			`select time                                 as time,
+              date(time, 'unixepoch', 'localtime') as day,
+              count(distinct client_id)            as clients,
+              count(*)                             as views
        from hits
        where time between ? and ?
        group by day
