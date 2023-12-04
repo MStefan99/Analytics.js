@@ -20,11 +20,9 @@ echo "Installing dependencies..."
 npm i
 echo "Dependencies installed!"
 
-echo "Creating data directories..."
-mkdir data
-mkdir data/hits
-mkdir data/archive
-echo "Data directories created!"
+echo "Building..."
+npm run build
+echo "Build complete!"
 
-echo "Installed successfully! Run \"node index.js\" to start Analytics.js"
+echo "Installed successfully! Run \"node index.js\" to start Crash Course"
 

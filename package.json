@@ -1,11 +1,39 @@
 {
+  "name": "crash-course",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "run-p install:* && husky install",
+    "install:frontend": "cd ./frontend && npm install",
+    "dev": "run-p dev:*",
+    "dev:frontend": "cd ./frontend && npm run dev",
+    "dev:backend": "cd ./backend && deno task dev",
+    "build": "run-p build:*",
+    "build:frontend": "cd ./frontend && npm run build",
+    "build:backend": "cd ./backend && deno task build",
+    "preview": "cd ./frontend && npm run preview",
+    "start": "cd ./backend && deno task start",
+    "lint:frontend": "cd ./frontend && npm run lint",
+    "lint:backend": "cd ./backend && deno task lint",
+    "lint": "run-p lint:*",
+    "fmt:frontend": "cd ./frontend && npm run fmt",
+    "fmt:backend": "cd ./backend && deno task fmt",
+    "fmt": "run-p fmt:*",
+    "precommit": "npm run lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "npm-run-all": "^4.1.5"
+  },
   "dependencies": {
-    "@mstefan99/configurer": "^1.0.2",
-    "@mstefan99/smart-config": "^1.0.1",
-    "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "pug": "^3.0.2"
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
+    "@typescript-eslint/parser": "^5.59.11",
+    "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1"
   }
 }

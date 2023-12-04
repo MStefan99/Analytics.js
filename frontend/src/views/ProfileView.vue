@@ -1,0 +1,129 @@
+<template lang="pug">
+#profile
+	h1 Profile
+	h2 Username and password
+	.mb-2
+		span You are logged in as
+			|
+			|
+			b {{appState.user.username}}
+	form(@submit.prevent="updatePassword()")
+		input(:value="appState.user.username" hidden autocomplete="username")
+		label(for="password-input") Password
+		input#password-input.block.my-2(
+			type="password"
+			v-model="updateUser.password"
+			autocomplete="new-password")
+		label(for="password-repeat-input") Repeat password
+		input#password-repeat-input.block.my-2(
+			type="password"
+			v-model="passwordRepeat"
+			autocomplete="new-password")
+		p.mb-2.text-red(v-if="(updateUser.password ?? '') !== passwordRepeat") Passwords do not match
+		button(type="submit" :disabled="!passwordsMatch") Save
+	.sessions
+		h2 Active sessions
+		table.w-full
+			thead
+				tr
+					th Location
+					th Device
+					th Created at
+			tbody
+				tr(v-for="session in sessions" :key="session.id")
+					td {{session.ip}}
+					td {{parseUA(session.ua)}}
+					td {{new Date(session.time).toLocaleString()}}
+					td
+						button(@click="logout(session)") Sign out
+			button(@click="logoutAll()") Sign out everywhere
+			button.red(@click="deleteAccount()") Delete your account
+</template>
+
+<script setup lang="ts">
+import {computed, onMounted, ref} from 'vue';
+
+import appState from '../scripts/store';
+import Api from '../scripts/api';
+import type {Session, UpdateUser} from '../scripts/types';
+import {alert, confirm, PopupColor} from '../scripts/popups';
+import {parseUA} from '../scripts/util';
+
+const sessions = ref<Session[]>([]);
+const updateUser = ref<UpdateUser>({id: appState.user.id});
+const passwordRepeat = ref<string>('');
+const passwordsMatch = computed<boolean>(
+	() =>
+		updateUser.value.password?.length &&
+		passwordRepeat.value.length &&
+		updateUser.value.password === passwordRepeat.value
+);
+
+window.document.title = 'Profile | Crash Course';
+
+function updatePassword() {
+	if (!updateUser.value.password?.length || !passwordRepeat.value.length) {
+		alert('Password cannot be empty', PopupColor.Red, 'Please type in a new password');
+		return;
+	}
+
+	if (!passwordsMatch.value) {
+		alert(
+			'Passwords do not match',
+			PopupColor.Red,
+			'Please check that both passwords are the same'
+		);
+		return;
+	}
+
+	Api.auth
+		.edit(updateUser.value)
+		.then(() => {
+			alert(
+				'Password changed',
+				PopupColor.Green,
+				'Your password was successfully changed. Consider signing out your active sessions'
+			);
+			updateUser.value.password = passwordRepeat.value = '';
+		})
+		.catch((err) => alert('Could not change your password', PopupColor.Red, err.message));
+}
+
+function logout(session: Session) {
+	Api.sessions
+		.logout(session.id)
+		.catch((err) => alert('Failed to sign out', PopupColor.Red, err.message));
+	sessions.value.splice(sessions.value.indexOf(session), 1);
+}
+
+function logoutAll() {
+	Api.sessions.logoutAll().catch((err) => alert('Failed to sign out', PopupColor.Red, err.message));
+}
+
+async function deleteAccount() {
+	if (
+		!(await confirm(
+			'Are you sure you want to delete your account?',
+			PopupColor.Red,
+			'Warning, your account and all application data will be deleted. Please confirm to proceed.'
+		))
+	) {
+		return;
+	}
+
+	Api.auth.delete().catch((err) => alert('Failed to delete account', PopupColor.Red, err.message));
+}
+
+onMounted(() =>
+	Api.sessions
+		.getAll()
+		.then((s) => (sessions.value = s))
+		.catch((err) => alert('Could not load sessions', PopupColor.Red, err.message))
+);
+</script>
+
+<style scoped>
+th {
+	text-align: left;
+}
+</style>

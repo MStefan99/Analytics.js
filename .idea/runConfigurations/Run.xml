@@ -1,8 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run" type="NodeJSConfigurationType" node-parameters="--trace-warnings" path-to-js-file="index.js" working-dir="$PROJECT_DIR$">
-    <envs>
-      <env name="PORT" value="3001" />
-    </envs>
-    <method v="2" />
-  </configuration>
-</component>
