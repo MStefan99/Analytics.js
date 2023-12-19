@@ -136,6 +136,30 @@ addEventListener('unhandledrejection', (e) => {
 	return false;
 });
 
+window.document.body.addEventListener('click', (e) => {
+	if (
+		e.target.tagName !== 'A' ||
+		window.location.hostname ===
+			new URL(e.target.href, window.location.href).hostname
+	) {
+		return; // Not an outbound link
+	}
+
+	fetch(serverURL + '/audience/hits', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Audience-Key': audienceKey,
+		},
+		body: JSON.stringify({
+			ccs: localStorage.getItem('crash-course-session'),
+			referrer: 'Outbound',
+			url: e.target.href,
+		}),
+		keepalive: true,
+	});
+});
+
 export default {
 	sendHit,
 	sendLog,

@@ -36,7 +36,8 @@ async function getAppByAudienceKey(ctx: Context): Promise<App | null> {
 		return ctx.state.app;
 	}
 
-	const key = ctx.request.headers.get('audience-key');
+	const key = ctx.request.headers.get('audience-key') ||
+		ctx.request.url.searchParams.get('audience-key');
 
 	if (key === null || key === undefined) {
 		return null;
@@ -50,7 +51,8 @@ async function getAppByTelemetryKey(ctx: Context): Promise<App | null> {
 		return ctx.state.app;
 	}
 
-	const key = ctx.request.headers.get('telemetry-key');
+	const key = ctx.request.headers.get('telemetry-key') ||
+		ctx.request.url.searchParams.get('telemetry-key');
 
 	if (key === null || key === undefined) {
 		return null;
