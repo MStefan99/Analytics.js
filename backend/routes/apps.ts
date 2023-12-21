@@ -149,7 +149,7 @@ router.patch(
 			app.name = body.name.toString().trim();
 		}
 
-		if (body.description) {
+		if (body.description !== undefined) {
 			app.description = body.description.toString().trim();
 		}
 

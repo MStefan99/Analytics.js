@@ -131,7 +131,7 @@ class App {
 				[
 					this.name,
 					this.description,
-					this.ownerID,
+					this.id,
 				],
 			);
 	}
