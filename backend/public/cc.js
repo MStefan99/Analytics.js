@@ -109,7 +109,7 @@ function wrapLog(level) {
 	return function (...data) {
 		sendLog(data.map((d) => String(d)).join(' '), level);
 
-		log[level](data);
+		log[level](data.join(' '));
 	};
 }
 
@@ -137,12 +137,16 @@ addEventListener('unhandledrejection', (e) => {
 });
 
 window.document.body.addEventListener('click', (e) => {
+	const element = e.target.closest('a');
+	if (!element) {
+		return; // Element is not a link
+	}
 	if (
-		e.target.tagName !== 'A' ||
+		!element.classList?.contains('outbound') &&
 		window.location.hostname ===
-			new URL(e.target.href, window.location.href).hostname
+			new URL(element.href, window.location.href).hostname
 	) {
-		return; // Not an outbound link
+		return; // Element is not an outbound link
 	}
 
 	fetch(serverURL + '/audience/hits', {
@@ -154,7 +158,7 @@ window.document.body.addEventListener('click', (e) => {
 		body: JSON.stringify({
 			ccs: localStorage.getItem('crash-course-session'),
 			referrer: 'Outbound',
-			url: e.target.href,
+			url: element.href,
 		}),
 		keepalive: true,
 	});
