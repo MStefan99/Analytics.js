@@ -101,3 +101,5 @@ export type Metrics = {
 	diskUsed?: number;
 	diskTotal?: number;
 };
+
+export type ChartData = {label: string; color: string; data: {[key: string]: number}}[];

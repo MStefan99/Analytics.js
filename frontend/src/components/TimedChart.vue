@@ -20,14 +20,14 @@ import {
 	TimeScale,
 	Title,
 	Tooltip
-	// @ts-ignore
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import {computed, onUnmounted, ref} from 'vue';
+import type {ChartData} from '../scripts/types.ts';
 
 const props = withDefaults(
 	defineProps<{
-		data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
+		data: ChartData | undefined;
 		type?: 'bar' | 'line';
 		xStacked?: boolean;
 		yStacked?: boolean;
@@ -37,6 +37,7 @@ const props = withDefaults(
 		suggestedMin?: number;
 		suggestedMax?: number;
 		color?: string;
+		overview?: boolean;
 	}>(),
 	{
 		type: 'bar',
@@ -146,6 +147,7 @@ const options = ref({
 	},
 	scales: {
 		x: {
+			ticks: {color: props.color ?? '#000'},
 			stacked: props.xStacked,
 			...(props.stepSize === undefined && {
 				type: 'time',
@@ -163,15 +165,16 @@ const options = ref({
 					}
 				}
 			}),
-			ticks: {color: props.color ?? '#000'}
+			...(props.overview && {grid: {display: false}, ticks: {display: false}})
 		},
 		y: {
-			stacked: props.yStacked,
 			ticks: {color: props.color ?? '#000'},
+			stacked: props.yStacked,
 			min: props.min,
 			max: props.max,
 			suggestedMin: props.suggestedMin,
-			suggestedMax: props.suggestedMax
+			suggestedMax: props.suggestedMax,
+			...(props.overview && {grid: {display: false}})
 		}
 	},
 	onClick(e: unknown, elements: {index: number; datasetIndex: number}[]) {
@@ -191,7 +194,7 @@ const options = ref({
 		elements.length && emit('click', time);
 	},
 	plugins: {
-		legend: {labels: {color: props.color ?? '#000'}},
+		legend: {labels: {color: props.color ?? '#000'}, ...(props.overview && {display: false})},
 		...(props.type === 'line' && {tooltip: {mode: 'index', intersect: false, position: 'nearest'}})
 	}
 });

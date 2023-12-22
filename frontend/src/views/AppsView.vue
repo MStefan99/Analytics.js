@@ -6,8 +6,10 @@
 			v-for="app in apps"
 			:key="app.id"
 			:to="{name: 'status', params: {id: app.id}}")
-			h2 {{app.name}}
-			p {{app.description}}
+			.mb-4
+				h2 {{app.name}}
+				p {{app.description}}
+			TimedChart(v-if="dataset[app.id]" :data="dataset[app.id]" :y-stacked="false" overview)
 		.d-flex
 			button.mt-4(@click="newApp = emptyApp") Add an app
 	div(v-else)
@@ -34,13 +36,15 @@
 
 <script setup lang="ts">
 import {ref} from 'vue';
-import type {App, NewApp} from '../scripts/types';
+import type {App, ChartData, NewApp} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRouter} from 'vue-router';
 import {alert, PopupColor} from '../scripts/popups';
+import TimedChart from '../components/TimedChart.vue';
 
 const apps = ref<App[]>([]);
 const newApp = ref<NewApp | null>(null);
+const dataset = ref<{[key: App['id']]: ChartData}>({});
 const emptyApp: NewApp = {name: '', description: ''};
 const router = useRouter();
 
@@ -48,7 +52,26 @@ window.document.title = 'Apps | Crash Course';
 
 Api.apps
 	.getAll()
-	.then((a) => (apps.value = a))
+	.then((a) => {
+		apps.value = a;
+		apps.value.forEach((app) => {
+			Api.apps.getAudienceAggregate(app.id).then(
+				(agg) =>
+					(dataset.value[app.id] = [
+						{
+							label: app.name + ' users',
+							color: '#ef8105',
+							data: agg.users
+						},
+						{
+							label: app.name + ' views',
+							color: '#44c40c',
+							data: agg.views
+						}
+					])
+			);
+		});
+	})
 	.catch((err) => alert('Failed to load apps', PopupColor.Red, err.message));
 
 function addApp() {
@@ -61,4 +84,13 @@ function addApp() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+#apps {
+	width: 80vw;
+	@apply max-w-screen-md;
+}
+
+:deep(.chart) {
+	@apply h-32 mb-0;
+}
+</style>
