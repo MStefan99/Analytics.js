@@ -145,7 +145,11 @@ router.patch(
 			return;
 		}
 
-		if (body.password.toString()?.length) {
+		if (body.username?.toString()?.length) {
+			user.username = body.username.toString().trim();
+		}
+
+		if (body.password?.toString()?.length) {
 			await user.setPassword(body.password.toString());
 		}
 

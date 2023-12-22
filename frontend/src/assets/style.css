@@ -247,6 +247,13 @@ button:hover,
 	background-color: var(--color-accent);
 }
 
+button.disabled,
+.btn.disabled {
+	color: var(--color-muted);
+	border: 0.1rem solid var(--color-muted);
+	background-color: var(--color-background);
+}
+
 input:not([type='checkbox']).red,
 textarea.red,
 select.red,

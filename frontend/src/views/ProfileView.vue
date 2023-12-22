@@ -7,20 +7,20 @@
 			|
 			|
 			b {{appState.user.username}}
-	form(@submit.prevent="updatePassword()")
-		input(:value="appState.user.username" hidden autocomplete="username")
+	form(@submit.prevent="updateUser()")
+		input(v-model="newUser.username" hidden autocomplete="username")
 		label(for="password-input") Password
 		input#password-input.block.my-2(
 			type="password"
-			v-model="updateUser.password"
+			v-model="newUser.password"
 			autocomplete="new-password")
 		label(for="password-repeat-input") Repeat password
 		input#password-repeat-input.block.my-2(
 			type="password"
 			v-model="passwordRepeat"
 			autocomplete="new-password")
-		p.mb-2.text-red(v-if="(updateUser.password ?? '') !== passwordRepeat") Passwords do not match
-		button(type="submit" :disabled="!passwordsMatch") Save
+		p.mb-2.text-red(v-if="(newUser.password ?? '') !== passwordRepeat") Passwords do not match
+		button(type="submit" :class="{disabled: !formValid}" :disabled="!formValid") Save
 	.sessions
 		h2 Active sessions
 		table.w-full
@@ -44,30 +44,31 @@
 import {computed, onMounted, ref} from 'vue';
 
 import appState from '../scripts/store';
+import store from '../scripts/store';
 import Api from '../scripts/api';
 import type {Session, UpdateUser} from '../scripts/types';
 import {alert, confirm, PopupColor} from '../scripts/popups';
 import {parseUA} from '../scripts/util';
 
 const sessions = ref<Session[]>([]);
-const updateUser = ref<UpdateUser>({id: appState.user.id});
+const newUser = ref<UpdateUser>({id: appState.user.id});
 const passwordRepeat = ref<string>('');
-const passwordsMatch = computed<boolean>(
+const formValid = computed<boolean>(
 	() =>
-		updateUser.value.password?.length &&
-		passwordRepeat.value.length &&
-		updateUser.value.password === passwordRepeat.value
+		!!newUser.value.username?.length &&
+		(newUser.value.password?.length
+			? passwordRepeat.value.length && newUser.value.password === passwordRepeat.value
+			: true)
 );
 
 window.document.title = 'Profile | Crash Course';
 
-function updatePassword() {
-	if (!updateUser.value.password?.length || !passwordRepeat.value.length) {
-		alert('Password cannot be empty', PopupColor.Red, 'Please type in a new password');
-		return;
-	}
-
-	if (!passwordsMatch.value) {
+function updateUser() {
+	if (
+		newUser.value.password?.length &&
+		passwordRepeat.value.length &&
+		newUser.value.password !== passwordRepeat.value
+	) {
 		alert(
 			'Passwords do not match',
 			PopupColor.Red,
@@ -77,14 +78,15 @@ function updatePassword() {
 	}
 
 	Api.auth
-		.edit(updateUser.value)
+		.edit(newUser.value)
 		.then(() => {
 			alert(
-				'Password changed',
+				'Information changed',
 				PopupColor.Green,
-				'Your password was successfully changed. Consider signing out your active sessions'
+				'Your user info was successfully changed. Consider signing out your active sessions'
 			);
-			updateUser.value.password = passwordRepeat.value = '';
+			store.user.username = newUser.value.username;
+			newUser.value.username = newUser.value.password = passwordRepeat.value = '';
 		})
 		.catch((err) => alert('Could not change your password', PopupColor.Red, err.message));
 }
