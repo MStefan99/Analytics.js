@@ -1,17 +1,22 @@
 <template lang="pug">
 #apps
 	h1 Your apps
-	#apps-container(v-if="apps.length")
-		RouterLink.block.card.my-4(
+	#apps-container
+		RouterLink.app.block.card.mb-4(
 			v-for="app in apps"
 			:key="app.id"
 			:to="{name: 'status', params: {id: app.id}}")
 			.mb-4
 				h2 {{app.name}}
 				p {{app.description}}
-			TimedChart(v-if="dataset[app.id]" :data="dataset[app.id]" :y-stacked="false" overview)
-		.d-flex
-			button.mt-4(@click="newApp = emptyApp") Add an app
+			TimedChart(
+				v-if="dataset[app.id]"
+				:data="dataset[app.id]"
+				:y-stacked="false"
+				:step-size="dayLength"
+				overview)
+	div(v-if="apps.length")
+		button(@click="newApp = emptyApp") Add an app
 	div(v-else)
 		h2 No apps yet
 		p Add an app to start
@@ -47,6 +52,7 @@ const newApp = ref<NewApp | null>(null);
 const dataset = ref<{[key: App['id']]: ChartData}>({});
 const emptyApp: NewApp = {name: '', description: ''};
 const router = useRouter();
+const dayLength = 1000 * 60 * 60 * 24;
 
 window.document.title = 'Apps | Crash Course';
 
@@ -54,8 +60,9 @@ Api.apps
 	.getAll()
 	.then((a) => {
 		apps.value = a;
+		const start = new Date().setHours(0, 0, 0, 0) - dayLength * 7;
 		apps.value.forEach((app) => {
-			Api.apps.getAudienceAggregate(app.id).then(
+			Api.apps.getAudienceAggregate(app.id, start).then(
 				(agg) =>
 					(dataset.value[app.id] = [
 						{
@@ -85,12 +92,15 @@ function addApp() {
 </script>
 
 <style scoped>
-#apps {
-	width: 80vw;
-	@apply max-w-screen-md;
+#apps-container {
+	@apply md:flex flex-wrap gap-x-4 justify-between max-w-max;
+}
+
+.app {
+	@apply flex flex-col flex-nowrap justify-between grow md:w-1/4;
 }
 
 :deep(.chart) {
-	@apply h-32 mb-0;
+	@apply h-24 mb-0;
 }
 </style>
