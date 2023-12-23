@@ -40,8 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
-import type {App, ChartData, NewApp} from '../scripts/types';
+import {computed, ref} from 'vue';
+import type {App, NewApp} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRouter} from 'vue-router';
 import {alert, PopupColor} from '../scripts/popups';
@@ -49,7 +49,25 @@ import TimedChart from '../components/TimedChart.vue';
 
 const apps = ref<App[]>([]);
 const newApp = ref<NewApp | null>(null);
-const dataset = ref<{[key: App['id']]: ChartData}>({});
+const dataset = computed(() =>
+	Object.fromEntries(
+		apps.value.map((app) => [
+			app.id,
+			[
+				{
+					label: app.name + ' users',
+					color: '#ef8105',
+					data: app.audience.users
+				},
+				{
+					label: app.name + ' views',
+					color: '#44c40c',
+					data: app.audience.views
+				}
+			]
+		])
+	)
+);
 const emptyApp: NewApp = {name: '', description: ''};
 const router = useRouter();
 const dayLength = 1000 * 60 * 60 * 24;
@@ -60,24 +78,6 @@ Api.apps
 	.getAll()
 	.then((a) => {
 		apps.value = a;
-		const start = new Date().setHours(0, 0, 0, 0) - dayLength * 7;
-		apps.value.forEach((app) => {
-			Api.apps.getAudienceAggregate(app.id, start).then(
-				(agg) =>
-					(dataset.value[app.id] = [
-						{
-							label: app.name + ' users',
-							color: '#ef8105',
-							data: agg.users
-						},
-						{
-							label: app.name + ' views',
-							color: '#44c40c',
-							data: agg.views
-						}
-					])
-			);
-		});
 	})
 	.catch((err) => alert('Failed to load apps', PopupColor.Red, err.message));
 

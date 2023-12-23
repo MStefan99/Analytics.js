@@ -23,11 +23,10 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import {computed, onUnmounted, ref} from 'vue';
-import type {ChartData} from '../scripts/types.ts';
 
 const props = withDefaults(
 	defineProps<{
-		data: ChartData | undefined;
+		data: {label: string; color: string; data: {[key: string]: number}}[] | undefined;
 		type?: 'bar' | 'line';
 		xStacked?: boolean;
 		yStacked?: boolean;

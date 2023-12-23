@@ -33,6 +33,7 @@ export type App = NewApp & {
 	audienceKey: string;
 	telemetryKey: string;
 	ownerID: number;
+	audience: {users: {[key: string]: number}; views: {[key: string]: number}};
 };
 
 export type Overview = {
@@ -101,5 +102,3 @@ export type Metrics = {
 	diskUsed?: number;
 	diskTotal?: number;
 };
-
-export type ChartData = {label: string; color: string; data: {[key: string]: number}}[];

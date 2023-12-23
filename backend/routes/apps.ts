@@ -69,7 +69,13 @@ router.get(
 			return;
 		}
 
-		ctx.response.body = await App.getByUser(user);
+		const start = new Date().setHours(0, 0, 0, 0) - dayLength * 7;
+		ctx.response.body = await Promise.all(
+			(await App.getByUser(user)).map(async (app) => ({
+				...app,
+				audience: await analyzer.audienceAggregate(app.id, start),
+			})),
+		);
 	},
 );
 
