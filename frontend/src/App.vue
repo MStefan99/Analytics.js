@@ -8,6 +8,10 @@ main
 		p.text-red.text-xl Please sign in to use the app
 	PopupContainer
 
+b.block.text-rose-500.mx-4.mb-4.text-center(v-if="appState.backendURL === 'demo'").
+	Crash Course is running in demo mode. Data shown is not representative of real use.
+	Some features may not be fully functional. For the full experience, please install Crash Course.
+
 footer
 	img.footer-logo.mx-auto(src="/logo.svg" alt="Crash Course logo")
 </template>

@@ -55,10 +55,9 @@ const newUser = ref<UpdateUser>({id: appState.user.id});
 const passwordRepeat = ref<string>('');
 const formValid = computed<boolean>(
 	() =>
-		!!newUser.value.username?.length &&
 		(newUser.value.password?.length
 			? passwordRepeat.value.length && newUser.value.password === passwordRepeat.value
-			: true)
+			: false) || !!newUser.value.username?.length
 );
 
 window.document.title = 'Profile | Crash Course';

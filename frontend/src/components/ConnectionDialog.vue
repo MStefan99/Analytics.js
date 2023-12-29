@@ -7,8 +7,12 @@
 				.mb-3
 					label(for="url-input") URL
 					input#url-input.w-full(v-model="url" type="text" placeholder="https://example.com")
-				.mb-3
-					button.w-full(type="submit" :disabled="connectionState === ConnectionState.TESTING") Connect
+				.mb-3.row.w-full
+					button(type="submit" :disabled="connectionState === ConnectionState.TESTING") Connect
+					button(
+						type="submit"
+						:disabled="connectionState === ConnectionState.TESTING"
+						@click.prevent="demo()") Demo
 			form(v-if="connectionState === ConnectionState.CONNECTED" @submit.prevent="login()")
 				.mb-3
 					label(for="username-input") Username
@@ -93,7 +97,7 @@ function getAuthenticationState() {
 function connect() {
 	connectionState.value = ConnectionState.TESTING;
 
-	Api.connection
+	return Api.connection
 		.testURL(url.value)
 		.then((connected) => {
 			if (connected) {
@@ -109,7 +113,7 @@ function connect() {
 function login() {
 	connectionState.value = ConnectionState.TESTING;
 
-	Api.auth
+	return Api.auth
 		.login(username.value, password.value)
 		.then(() => {
 			connectionState.value = ConnectionState.AUTHENTICATED;
@@ -124,7 +128,7 @@ function login() {
 function register() {
 	connectionState.value = ConnectionState.TESTING;
 
-	Api.auth
+	return Api.auth
 		.register(username.value, password.value)
 		.then(() => {
 			connectionState.value = ConnectionState.AUTHENTICATED;
@@ -134,6 +138,11 @@ function register() {
 			connectionState.value = ConnectionState.CONNECTED;
 			authError.value = err.message;
 		});
+}
+
+function demo() {
+	url.value = 'demo';
+	return connect().then(login);
 }
 </script>
 

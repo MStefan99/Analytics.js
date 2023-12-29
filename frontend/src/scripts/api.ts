@@ -1,19 +1,21 @@
 import appState from './store';
+import demoData from '../assets/demo-data.json';
+
 import type {
-	NewApp,
 	App,
-	Overview,
+	AudienceAggregate,
 	DayAudience,
+	Log,
+	LogAggregate,
+	Metrics,
+	NewApp,
 	NewUser,
+	Overview,
+	PageAggregate,
 	RealtimeAudience,
 	Session,
 	UpdateUser,
-	User,
-	Log,
-	Metrics,
-	LogAggregate,
-	AudienceAggregate,
-	PageAggregate
+	User
 } from './types';
 
 type MessageResponse = {
@@ -38,6 +40,10 @@ const notAuthenticated: ErrorResponse = {
 	message: 'You must sign in to do this'
 };
 const requestFailed: ErrorResponse = {error: 'REQ_FAILED', message: 'Request failed'};
+const notFound: ErrorResponse = {error: 'NOT_FOUND', message: 'Route not found'};
+
+const now = Date.now();
+const dayLength = 1000 * 60 * 60 * 24;
 
 enum RequestMethod {
 	GET = 'GET',
@@ -54,51 +60,111 @@ type RequestParams = {
 	query?: Record<string, string | number | null | undefined>;
 };
 
-function request<T>(path: string, params?: RequestParams): Promise<T> {
-	return new Promise((resolve, reject) => {
-		if (!appState.backendURL) {
-			reject(notConfigured);
-			return;
+function resolveReferences<T>(data: T, params?: RequestParams): T {
+	if (typeof data === 'string') {
+		if (data.startsWith('@')) {
+			data = resolveReferences<T>(getDemoData<T>(data.substring(1)), params);
+		} else if (data.startsWith('-')) {
+			data = (now + +data) as T;
 		}
-
-		if (params?.auth && !appState.apiKey) {
-			reject(notAuthenticated);
-			return;
-		}
-
-		const query =
-			params?.query &&
-			Object.keys(params?.query).reduce<Record<string, string>>((q, key) => {
-				params.query?.[key] !== null &&
-					params.query?.[key] !== undefined &&
-					(q[key] = params.query[key].toString());
-				return q;
-			}, {});
-		const queryString =
-			query && Object.keys(query).length ? '?' + new URLSearchParams(query).toString() : '';
-
-		fetch(appState.backendURL + apiPrefix + path + queryString, {
-			method: params?.method ?? 'GET',
-			headers: {
-				...(!!params?.auth && {
-					'API-Key': appState.apiKey
-				}),
-				...(params?.method !== RequestMethod.GET && {
-					'Content-Type': 'application/json'
-				})
-			},
-			...(!!params?.body && {body: JSON.stringify(params.body)})
-		})
-			.then((res) => {
-				if (res.ok) {
-					return res.json();
-				} else {
-					return res.json().then((err) => reject(err));
+	} else if (Array.isArray(data)) {
+		(data as T[]) = data.map(
+			(value, index) => ((data as T[])[index] = resolveReferences<T>(value, params))
+		);
+	} else {
+		for (const key in data) {
+			if (typeof data[key] === 'object' || Array.isArray(data[key])) {
+				(data as Record<string, T>)[key] = resolveReferences<T>(data[key] as T, params);
+			} else if (key.startsWith('-')) {
+				const newKey = now + +key;
+				if (
+					(params?.query?.start ? +params.query.start < newKey : +key > -dayLength * 7) &&
+					(params?.query?.end ? newKey < +params.query.end : true)
+				) {
+					(data as Record<string, T>)[newKey] = resolveReferences<T>(data[key] as T, params);
 				}
+				delete data[key];
+			} else {
+				(data as Record<string, T>)[key] = resolveReferences<T>(data[key] as T, params);
+			}
+		}
+	}
+
+	return data as T;
+}
+
+function getDemoData<T>(path: string): T {
+	let obj = structuredClone(demoData) as T;
+
+	for (const prop of path.split('/').filter((v) => v.length)) {
+		if (typeof obj !== 'object') {
+			throw new Error('Cannot read property ' + prop + ' of ' + obj);
+		}
+
+		if (!(prop in obj)) {
+			throw notFound;
+		}
+
+		obj = (obj as {[key: string]: T})[prop];
+	}
+
+	if (typeof obj === 'object' && '_root' in obj) {
+		obj = obj._root as T;
+	}
+
+	return obj as T;
+}
+
+function request<T>(path: string, params?: RequestParams): Promise<T> {
+	if (appState.backendURL !== 'demo') {
+		return new Promise((resolve, reject) => {
+			if (!appState.backendURL) {
+				reject(notConfigured);
+				return;
+			}
+
+			if (params?.auth && !appState.apiKey) {
+				reject(notAuthenticated);
+				return;
+			}
+
+			const query =
+				params?.query &&
+				Object.keys(params?.query).reduce<Record<string, string>>((q, key) => {
+					params.query?.[key] !== null &&
+						params.query?.[key] !== undefined &&
+						(q[key] = params.query[key].toString());
+					return q;
+				}, {});
+			const queryString =
+				query && Object.keys(query).length ? '?' + new URLSearchParams(query).toString() : '';
+
+			fetch(appState.backendURL + apiPrefix + path + queryString, {
+				method: params?.method ?? 'GET',
+				headers: {
+					...(!!params?.auth && {
+						'API-Key': appState.apiKey
+					}),
+					...(params?.method !== RequestMethod.GET && {
+						'Content-Type': 'application/json'
+					})
+				},
+				...(!!params?.body && {body: JSON.stringify(params.body)})
 			})
-			.then((data) => resolve(data as T))
-			.catch((err) => reject(err));
-	});
+				.then((res) => {
+					if (res.ok) {
+						return res.json();
+					} else {
+						return res.json().then((err) => reject(err));
+					}
+				})
+				.then((data) => resolve(data as T))
+				.catch((err) => reject(err));
+		});
+	} else {
+		const res = resolveReferences<T>(getDemoData<T>(path), params);
+		return Promise.resolve(res);
+	}
 }
 
 function connect(host: string | null): Promise<boolean> {
@@ -106,6 +172,8 @@ function connect(host: string | null): Promise<boolean> {
 		if (!host) {
 			reject(notConfigured);
 			return;
+		} else if (host === 'demo') {
+			resolve(true);
 		}
 
 		fetch(host + apiPrefix)
