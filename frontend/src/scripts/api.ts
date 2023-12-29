@@ -30,9 +30,6 @@ const notAuthenticated: ErrorResponse = {
 const requestFailed: ErrorResponse = {error: 'REQ_FAILED', message: 'Request failed'};
 const notFound: ErrorResponse = {error: 'NOT_FOUND', message: 'Route not found'};
 
-const now = Date.now();
-const dayLength = 1000 * 60 * 60 * 24;
-
 enum RequestMethod {
 	GET = 'GET',
 	POST = 'POST',
@@ -49,6 +46,8 @@ type RequestParams = {
 };
 
 function resolveReferences<T>(data: T, params?: RequestParams): T {
+	const now = Date.now();
+
 	if (typeof data === 'string') {
 		if (data.startsWith('@')) {
 			data = resolveReferences<T>(getDemoData<T>(data.substring(1)), params);
@@ -66,7 +65,7 @@ function resolveReferences<T>(data: T, params?: RequestParams): T {
 			} else if (key.startsWith('-')) {
 				const newKey = now + +key;
 				if (
-					(params?.query?.start ? +params.query.start < newKey : +key > -dayLength * 7) &&
+					(params?.query?.start ? +params.query.start < newKey : +key > -1000 * 60 * 60 * 24 * 7) &&
 					(params?.query?.end ? newKey < +params.query.end : true)
 				) {
 					(data as Record<string, T>)[newKey] = resolveReferences<T>(data[key] as T, params);

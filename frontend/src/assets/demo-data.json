@@ -442,443 +442,443 @@
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -92770000
+									"time": "-92770000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -92769000
+									"time": "-92769000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -92767000
+									"time": "-92767000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-2.com/",
-									"time": -92584000
+									"time": "-92584000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -91112000
+									"time": "-91112000"
 								},
 								{
 									"url": "https://example.com/items/2",
 									"referrer": "https://referrer-1.com/",
-									"time": -91091000
+									"time": "-91091000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -91090000
+									"time": "-91090000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -91072000
+									"time": "-91072000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -91071000
+									"time": "-91071000"
 								},
 								{
 									"url": "https://example.com/items/2",
 									"referrer": "https://referrer-1.com/",
-									"time": -90922000
+									"time": "-90922000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -90921000
+									"time": "-90921000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -90913000
+									"time": "-90913000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -90911000
+									"time": "-90911000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -90777000
+									"time": "-90777000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -90759000
+									"time": "-90759000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -90701000
+									"time": "-90701000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -90650000
+									"time": "-90650000"
 								},
 								{
 									"url": "https://example.com/users",
 									"referrer": "https://referrer-1.com/",
-									"time": -90647000
+									"time": "-90647000"
 								},
 								{
 									"url": "https://example.com/users/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -90645000
+									"time": "-90645000"
 								},
 								{
 									"url": "https://example.com/settings",
 									"referrer": "https://referrer-1.com/",
-									"time": -90638000
+									"time": "-90638000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -90634000
+									"time": "-90634000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "",
-									"time": -90391000
+									"time": "-90391000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -90191000
+									"time": "-90191000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -90189000
+									"time": "-90189000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -90188000
+									"time": "-90188000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -90187000
+									"time": "-90187000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -89736000
+									"time": "-89736000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -89687000
+									"time": "-89687000"
 								},
 								{
 									"url": "https://example.com/items/2",
 									"referrer": "https://referrer-1.com/",
-									"time": -89686000
+									"time": "-89686000"
 								}
 							]
 						},
 						{
 							"id": "b40de31",
 							"duration": 2565000,
-							"ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.48",
+							"ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
 							"pages": [
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -87123000
+									"time": "-87123000"
 								},
 								{
 									"url": "https://example.com/items/2",
 									"referrer": "https://referrer-1.com/",
-									"time": -87103000
+									"time": "-87103000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -87076000
+									"time": "-87076000"
 								},
 								{
 									"url": "https://example.com/settings",
 									"referrer": "https://referrer-1.com/",
-									"time": -87075000
+									"time": "-87075000"
 								},
 								{
 									"url": "https://example.com/settings",
 									"referrer": "https://referrer-1.com/",
-									"time": -86681000
+									"time": "-86681000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -86661000
+									"time": "-86661000"
 								},
 								{
 									"url": "https://example.com/users",
 									"referrer": "https://referrer-1.com/",
-									"time": -86659000
+									"time": "-86659000"
 								},
 								{
 									"url": "https://example.com/users/5",
 									"referrer": "",
-									"time": -86657000
+									"time": "-86657000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "",
-									"time": -86643000
+									"time": "-86643000"
 								},
 								{
 									"url": "https://example.com/settings",
 									"referrer": "",
-									"time": -86639000
+									"time": "-86639000"
 								},
 								{
 									"url": "https://example.com/users",
 									"referrer": "",
-									"time": -86638000
+									"time": "-86638000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "",
-									"time": -86573000
+									"time": "-86573000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "",
-									"time": -86385000
+									"time": "-86385000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "",
-									"time": -86155000
+									"time": "-86155000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -85917000
+									"time": "-85917000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -85914000
+									"time": "-85914000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -85909000
+									"time": "-85909000"
 								},
 								{
 									"url": "https://example.com/items/1",
 									"referrer": "https://referrer-1.com/",
-									"time": -85626000
+									"time": "-85626000"
 								},
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "https://referrer-1.com/",
-									"time": -84558000
+									"time": "-84558000"
 								}
 							]
 						},
 						{
 							"id": "c1f9db2",
 							"duration": 0,
-							"ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58",
+							"ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 EdgA/120.0.0.0",
 							"pages": [
 								{
 									"url": "https://example.com/inventory",
 									"referrer": "",
-									"time": -87080000
+									"time": "-87080000"
 								}
 							]
 						},
 						{
 							"id": "81d0c93",
 							"duration": 1688000,
-							"ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.46",
+							"ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/117.0.5938.88 Safari/537.36",
 							"pages": [
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -86347000
+									"time": "-86347000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -86339000
+									"time": "-86339000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -86110000
+									"time": "-86110000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -86042000
+									"time": "-86042000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -86000000
+									"time": "-86000000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -85955000
+									"time": "-85955000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
+									"url": "https://other.example.com/items/1",
 									"referrer": "",
-									"time": -85953000
+									"time": "-85953000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -85613000
+									"time": "-85613000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
+									"url": "https://other.example.com/items/1",
 									"referrer": "",
-									"time": -85610000
+									"time": "-85610000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85559000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85559000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85559000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85559000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85557000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85557000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85552000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85552000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85537000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85537000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85524000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85524000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85329000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85329000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85236000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85236000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85229000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85229000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85227000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85227000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85225000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85225000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85165000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85165000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85147000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85147000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -85139000
+									"url": "https://other.example.com/inventory",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-85139000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -85137000
+									"time": "-85137000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
+									"url": "https://other.example.com/items/1",
 									"referrer": "",
-									"time": -85135000
+									"time": "-85135000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -85110000
+									"time": "-85110000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -85109000
+									"time": "-85109000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
+									"url": "https://other.example.com/items/1",
 									"referrer": "",
-									"time": -85108000
+									"time": "-85108000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -85105000
+									"time": "-85105000"
 								},
 								{
-									"url": "https://referrer-3.com/inventory",
+									"url": "https://other.example.com/inventory",
 									"referrer": "",
-									"time": -85102000
+									"time": "-85102000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
+									"url": "https://other.example.com/items/1",
 									"referrer": "",
-									"time": -85096000
+									"time": "-85096000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -84976000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-84976000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -84861000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-84861000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -84757000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-84757000"
 								},
 								{
-									"url": "https://referrer-3.com/items/1",
-									"referrer": "https://referrer-3.com/items/1",
-									"time": -84659000
+									"url": "https://other.example.com/items/1",
+									"referrer": "https://other.example.com/items/1",
+									"time": "-84659000"
 								}
 							]
 						}
@@ -894,14 +894,14 @@
 						"https://example.com/users/1": 1,
 						"https://example.com/settings": 4,
 						"https://example.com/users/5": 1,
-						"https://referrer-3.com/inventory": 13,
-						"https://referrer-3.com/items/1": 22
+						"https://other.example.com/inventory": 13,
+						"https://other.example.com/items/1": 22
 					},
 					"referrers": {
 						"https://referrer-1.com/": 39,
 						"https://referrer-2.com/": 1,
 						"": 26,
-						"https://referrer-3.com/items/1": 18
+						"https://other.example.com/items/1": 18
 					}
 				},
 				"aggregate": {
@@ -1050,11 +1050,11 @@
 						"hits": 1
 					},
 					{
-						"url": "https://referrer-3.com/inventory",
+						"url": "https://other.example.com/inventory",
 						"hits": 13
 					},
 					{
-						"url": "https://referrer-3.com/items/1",
+						"url": "https://other.example.com/items/1",
 						"hits": 22
 					}
 				]
@@ -2069,7 +2069,7 @@
 			},
 			"metrics": [
 				{
-					"time": 1703866123000,
+					"time": "-870000",
 					"device": "Demo",
 					"cpu": 0.41890080428954424,
 					"memUsed": 527724544,
@@ -2080,7 +2080,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866183000,
+					"time": "-840000",
 					"device": "Demo",
 					"cpu": 0.41816509157815507,
 					"memUsed": 528850944,
@@ -2091,7 +2091,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866243000,
+					"time": "-810000",
 					"device": "Demo",
 					"cpu": 0.42702838482793265,
 					"memUsed": 526897152,
@@ -2102,7 +2102,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866303000,
+					"time": "-780000",
 					"device": "Demo",
 					"cpu": 0.45097711708702193,
 					"memUsed": 528171008,
@@ -2113,7 +2113,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866363000,
+					"time": "-750000",
 					"device": "Demo",
 					"cpu": 0.41841004184100417,
 					"memUsed": 528158720,
@@ -2124,7 +2124,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866423000,
+					"time": "-720000",
 					"device": "Demo",
 					"cpu": 0.45998160073597055,
 					"memUsed": 527650816,
@@ -2135,7 +2135,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866483000,
+					"time": "-690000",
 					"device": "Demo",
 					"cpu": 0.45195848677602946,
 					"memUsed": 529698816,
@@ -2146,7 +2146,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866543000,
+					"time": "-660000",
 					"device": "Demo",
 					"cpu": 0.4512786227644994,
 					"memUsed": 527450112,
@@ -2157,7 +2157,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866603000,
+					"time": "-630000",
 					"device": "Demo",
 					"cpu": 0.4261363636363636,
 					"memUsed": 528723968,
@@ -2168,7 +2168,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866663000,
+					"time": "-600000",
 					"device": "Demo",
 					"cpu": 0.4780275075478027,
 					"memUsed": 531001344,
@@ -2179,7 +2179,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866723000,
+					"time": "-570000",
 					"device": "Demo",
 					"cpu": 0.7712297761757063,
 					"memUsed": 528130048,
@@ -2190,7 +2190,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866783000,
+					"time": "-540000",
 					"device": "Demo",
 					"cpu": 0.7963118189438391,
 					"memUsed": 530395136,
@@ -2201,7 +2201,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866843000,
+					"time": "-510000",
 					"device": "Demo",
 					"cpu": 0.6056018168054504,
 					"memUsed": 528191488,
@@ -2212,7 +2212,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866904000,
+					"time": "-480000",
 					"device": "Demo",
 					"cpu": 0.5549482889094426,
 					"memUsed": 527732736,
@@ -2223,7 +2223,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703866964000,
+					"time": "-450000",
 					"device": "Demo",
 					"cpu": 0.4510524557300367,
 					"memUsed": 529158144,
@@ -2234,7 +2234,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867024000,
+					"time": "-420000",
 					"device": "Demo",
 					"cpu": 0.5517933283170303,
 					"memUsed": 526589952,
@@ -2245,7 +2245,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867084000,
+					"time": "-390000",
 					"device": "Demo",
 					"cpu": 0.5763929496282684,
 					"memUsed": 527884288,
@@ -2256,7 +2256,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867144000,
+					"time": "-360000",
 					"device": "Demo",
 					"cpu": 0.4846256684491979,
 					"memUsed": 527732736,
@@ -2267,7 +2267,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867204000,
+					"time": "-330000",
 					"device": "Demo",
 					"cpu": 0.5450733752620545,
 					"memUsed": 528470016,
@@ -2278,7 +2278,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867264000,
+					"time": "-300000",
 					"device": "Demo",
 					"cpu": 0.5093945720250522,
 					"memUsed": 525500416,
@@ -2289,7 +2289,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867324000,
+					"time": "-270000",
 					"device": "Demo",
 					"cpu": 0.5264917265585827,
 					"memUsed": 527196160,
@@ -2300,7 +2300,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867384000,
+					"time": "-240000",
 					"device": "Demo",
 					"cpu": 0.47599164926931103,
 					"memUsed": 522485760,
@@ -2311,7 +2311,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867444000,
+					"time": "-210000",
 					"device": "Demo",
 					"cpu": 0.43478260869565216,
 					"memUsed": 526561280,
@@ -2322,7 +2322,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867504000,
+					"time": "-180000",
 					"device": "Demo",
 					"cpu": 0.4846256684491979,
 					"memUsed": 528650240,
@@ -2333,7 +2333,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867564000,
+					"time": "-150000",
 					"device": "Demo",
 					"cpu": 0.509990803444528,
 					"memUsed": 529137664,
@@ -2344,7 +2344,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867624000,
+					"time": "-120000",
 					"device": "Demo",
 					"cpu": 0.5512863347811561,
 					"memUsed": 526295040,
@@ -2355,7 +2355,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867684000,
+					"time": "-90000",
 					"device": "Demo",
 					"cpu": 0.45097711708702193,
 					"memUsed": 526348288,
@@ -2366,7 +2366,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867744000,
+					"time": "-60000",
 					"device": "Demo",
 					"cpu": 0.5043712172158709,
 					"memUsed": 527478784,
@@ -2377,7 +2377,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867804000,
+					"time": "-30000",
 					"device": "Demo",
 					"cpu": 0.4680317592979524,
 					"memUsed": 527474688,
@@ -2388,7 +2388,7 @@
 					"diskTotal": 62138249216
 				},
 				{
-					"time": 1703867864000,
+					"time": "-0",
 					"device": "Demo",
 					"cpu": 0.45971247074557003,
 					"memUsed": 528220160,
