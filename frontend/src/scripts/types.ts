@@ -1,3 +1,18 @@
+export type MessageResponse = {
+	code: string;
+	message: string;
+};
+
+export type ErrorResponse = {
+	error: string;
+	message: string;
+};
+
+export type AuthResponse = {
+	user: User;
+	key: string;
+};
+
 type BaseUser = {
 	username: string;
 };

@@ -9,7 +9,7 @@ main
 	PopupContainer
 
 b.block.text-rose-500.mx-4.mb-4.text-center(v-if="appState.backendURL === 'demo'").
-	Crash Course is running in demo mode. Data shown is not representative of real use.
+	Crash Course is running in demo mode. Data shown is only a demonstration and is not representative of real use.
 	Some features may not be fully functional. For the full experience, please install Crash Course.
 
 footer

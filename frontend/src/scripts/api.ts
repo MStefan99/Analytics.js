@@ -4,9 +4,12 @@ import demoData from '../assets/demo-data.json';
 import type {
 	App,
 	AudienceAggregate,
+	AuthResponse,
 	DayAudience,
+	ErrorResponse,
 	Log,
 	LogAggregate,
+	MessageResponse,
 	Metrics,
 	NewApp,
 	NewUser,
@@ -17,21 +20,6 @@ import type {
 	UpdateUser,
 	User
 } from './types';
-
-type MessageResponse = {
-	code: string;
-	message: string;
-};
-
-type ErrorResponse = {
-	error: string;
-	message: string;
-};
-
-type AuthResult = {
-	user: User;
-	key: string;
-};
 
 const apiPrefix = import.meta.env.VITE_API_PREFIX ?? '';
 const notConfigured: ErrorResponse = {error: 'NOT_CONFIGURED', message: 'Not configured'};
@@ -198,7 +186,7 @@ export const ConnectionAPI = {
 export const AuthAPI = {
 	login: (username: User['username'], password: NewUser['password']) =>
 		new Promise<User>((resolve, reject) => {
-			request<AuthResult>('/login', {method: RequestMethod.POST, body: {username, password}})
+			request<AuthResponse>('/login', {method: RequestMethod.POST, body: {username, password}})
 				.then((data) => {
 					appState.setApiKey(data.key);
 					appState.setUser(data.user);
@@ -208,7 +196,7 @@ export const AuthAPI = {
 		}),
 	register: (username: User['username'], password: NewUser['password']) =>
 		new Promise<User>((resolve, reject) => {
-			request<AuthResult>('/register', {method: RequestMethod.POST, body: {username, password}})
+			request<AuthResponse>('/register', {method: RequestMethod.POST, body: {username, password}})
 				.then((data) => {
 					appState.setApiKey(data.key);
 					appState.setUser(data.user);

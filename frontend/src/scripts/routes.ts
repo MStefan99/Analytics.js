@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
+import {createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw} from 'vue-router';
 import AppsView from '../views/AppsView.vue';
 import StatusView from '../views/StatusView.vue';
 import AudienceView from '../views/AudienceView.vue';
@@ -8,6 +8,7 @@ import SystemView from '../views/SystemView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import AudienceHistoryView from '../views/AudienceHistoryView.vue';
+import {crashCourse} from './analytics';
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -67,8 +68,10 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-	history: createWebHistory('/'),
+	history: import.meta.env.VITE_ROUTER === 'hash' ? createWebHashHistory() : createWebHistory('/'),
 	routes
 });
+
+router.afterEach(() => crashCourse.value?.sendHit());
 
 export default router;
