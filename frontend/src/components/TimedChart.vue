@@ -188,7 +188,7 @@ const options = ref({
 						x: number;
 						y: number;
 					}
-			  ).x;
+				).x;
 
 		elements.length && emit('click', time);
 	},
