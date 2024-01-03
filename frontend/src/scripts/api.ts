@@ -50,7 +50,7 @@ function resolveReferences<T>(data: T, params?: RequestParams): T {
 
 	if (typeof data === 'string') {
 		if (data.startsWith('@')) {
-			data = resolveReferences<T>(getDemoData<T>(data.substring(1)), params);
+			data = resolveReferences<T>(getDemoData<T>(data.substring(1), {}), params);
 		} else if (data.startsWith('-')) {
 			data = (now + +data) as T;
 		}
@@ -80,7 +80,7 @@ function resolveReferences<T>(data: T, params?: RequestParams): T {
 	return data as T;
 }
 
-function getDemoData<T>(path: string): T {
+function getDemoData<T>(path: string, params: RequestParams): T {
 	let obj = structuredClone(demoData) as T;
 
 	for (const prop of path.split('/').filter((v) => v.length)) {
@@ -95,11 +95,12 @@ function getDemoData<T>(path: string): T {
 		obj = (obj as {[key: string]: T})[prop];
 	}
 
-	if (typeof obj === 'object' && '_root' in obj) {
-		obj = obj._root as T;
+	const rootProp = '_' + (params?.method?.toLowerCase() ?? 'get');
+	if (typeof obj === 'object' && rootProp in obj) {
+		obj = (obj as {[key: string]: T})[rootProp];
 	}
 
-	return obj as T;
+	return obj;
 }
 
 function request<T>(path: string, params?: RequestParams): Promise<T> {
@@ -149,7 +150,7 @@ function request<T>(path: string, params?: RequestParams): Promise<T> {
 				.catch((err) => reject(err));
 		});
 	} else {
-		const res = resolveReferences<T>(getDemoData<T>(path), params);
+		const res = resolveReferences<T>(getDemoData<T>(path, params), params);
 		return Promise.resolve(res);
 	}
 }

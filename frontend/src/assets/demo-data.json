@@ -3,10 +3,7 @@
 		"message": "OK"
 	},
 	"login": {
-		"user": {
-			"id": 1,
-			"username": "Demo"
-		},
+		"user": "@me",
 		"key": "demo-key"
 	},
 	"me": {
@@ -14,7 +11,7 @@
 		"username": "Demo"
 	},
 	"sessions": {
-		"_root": [
+		"_get": [
 			{
 				"id": "demo-session",
 				"ip": "127.0.0.1",
@@ -22,13 +19,18 @@
 				"time": "-1800000"
 			}
 		],
-		"demo-id": "@_ok"
+		"_delete": "@_ok",
+		"demo-session": {
+			"_delete": "@sessions"
+		}
 	},
 	"logout": "@_ok",
 	"apps": {
-		"_root": ["@apps/1", "@apps/2"],
+		"_get": ["@apps/1", "@apps/2"],
+		"_post": "@apps/1",
+		"_delete": "@apps/1",
 		"1": {
-			"_root": {
+			"_get": {
 				"id": 1,
 				"name": "Demo app",
 				"description": "App for demo purposes",
@@ -36,6 +38,7 @@
 				"telemetryKey": "demo-telemetry-key",
 				"audience": "@apps/1/audience/aggregate"
 			},
+			"_patch": "@apps/1",
 			"overview": {
 				"users": "@apps/1/audience/now/users",
 				"views": "@apps/1/audience/now/views",
@@ -1061,7 +1064,7 @@
 			},
 			"logs": {
 				"server": {
-					"_root": [
+					"_get": [
 						{
 							"id": 4408,
 							"time": "-0",
@@ -1627,7 +1630,7 @@
 					}
 				},
 				"client": {
-					"_root": [
+					"_get": [
 						{
 							"id": 1,
 							"time": "-0",
@@ -2418,7 +2421,7 @@
 			]
 		},
 		"2": {
-			"_root": {
+			"_get": {
 				"id": 2,
 				"name": "Demo app 2",
 				"description": "Another demo app",
@@ -2426,6 +2429,8 @@
 				"telemetryKey": "demo-telemetry-key-2",
 				"audience": "@apps/2/audience/aggregate"
 			},
+			"_patch": "@apps/2",
+			"_delete": "@apps/2",
 			"overview": {
 				"users": "@apps/1/audience/now/users",
 				"views": "@apps/1/audience/now/views",
@@ -2527,11 +2532,11 @@
 			},
 			"logs": {
 				"server": {
-					"_root": "@apps/1/logs/server",
+					"_get": "@apps/1/logs/server",
 					"aggregate": "@apps/1/logs/server/aggregate"
 				},
 				"client": {
-					"_root": "@apps/1/logs/client",
+					"_get": "@apps/1/logs/client",
 					"aggregate": "@apps/1/logs/client/aggregate"
 				}
 			},
