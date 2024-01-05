@@ -80,7 +80,9 @@ router.post('/logs', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 	}
 
 	await app.createClientLog(
-		body.message.toString().trim(),
+		typeof body.message !== 'string'
+			? JSON.stringify(body.message)
+			: body.message.trim(),
 		+body.level,
 		body.tag?.toString()?.trim(),
 	);
