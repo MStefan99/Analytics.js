@@ -3,7 +3,7 @@
 	h1 Profile
 	h2 Username and password
 	.mb-2
-		span You are logged in as
+		span You are signed in as
 			|
 			|
 			b {{appState.user.username}}

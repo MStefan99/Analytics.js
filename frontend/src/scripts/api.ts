@@ -246,7 +246,11 @@ export const SessionAPI = {
 
 export const AppAPI = {
 	add: (app: NewApp) => request<App>('/apps', {auth: true, method: RequestMethod.POST, body: app}),
-	getAll: () => request<App[]>('/apps', {auth: true}),
+	getAll: (audience: boolean = false) =>
+		request<App[]>('/apps', {
+			auth: true,
+			query: {audience: audience ? 'true' : undefined}
+		}),
 	getByID: (id: App['id']) => request<App>('/apps/' + id, {auth: true}),
 	edit: (app: App) =>
 		request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.PATCH, body: app}),

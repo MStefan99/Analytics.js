@@ -75,7 +75,7 @@ const dayLength = 1000 * 60 * 60 * 24;
 window.document.title = 'Apps | Crash Course';
 
 Api.apps
-	.getAll()
+	.getAll(true)
 	.then((a) => {
 		apps.value = a;
 	})

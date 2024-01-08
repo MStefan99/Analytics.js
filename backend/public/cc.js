@@ -107,9 +107,9 @@ const log = [
 
 function wrapLog(level) {
 	return function (...data) {
-		sendLog(data.map((d) => String(d)).join(' '), level);
+		log[level](...data);
 
-		log[level](data.join(' '));
+		return sendLog(data.map((d) => String(d)).join(' '), level);
 	};
 }
 
