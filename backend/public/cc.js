@@ -109,7 +109,12 @@ function wrapLog(level) {
 	return function (...data) {
 		log[level](...data);
 
-		return sendLog(data.map((d) => String(d)).join(' '), level);
+		return sendLog(
+			data.map((d) => typeof d === 'string' ? d : JSON.stringify(d)).join(
+				' ',
+			),
+			level,
+		);
 	};
 }
 
