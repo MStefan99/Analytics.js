@@ -3,6 +3,7 @@ import demoData from '../assets/demo-data.json';
 
 import type {
 	App,
+	AppPermissions,
 	AppWithAudience,
 	AudienceAggregate,
 	AuthResponse,
@@ -255,6 +256,23 @@ export const AppAPI = {
 	getByID: (id: App['id']) => request<App>('/apps/' + id, {auth: true}),
 	edit: (app: App) =>
 		request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.PATCH, body: app}),
+	getPermissions: (id: App['id']) =>
+		request<AppPermissions[]>('/apps/' + id + '/permissions', {auth: true}),
+	setPermissions: (
+		id: App['id'],
+		username: User['username'],
+		permissions: AppPermissions['permissions']
+	) =>
+		request<AppPermissions[]>('/apps/' + id + '/permissions/' + username, {
+			auth: true,
+			method: RequestMethod.PUT,
+			body: {permissions}
+		}),
+	revokePermissions: (id: App['id'], username: User['username']) =>
+		request<AppPermissions[]>('/apps/' + id + '/permissions/' + username, {
+			auth: true,
+			method: RequestMethod.DELETE
+		}),
 	getOverview: (id: App['id'], period?: number) =>
 		request<Overview>('/apps/' + id + '/overview', {
 			auth: true,

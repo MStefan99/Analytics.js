@@ -58,12 +58,6 @@ async function getApp(
 	}
 
 	const app = await App.getByID(id, user);
-	console.log(
-		'permissions',
-		permissions,
-		parsePermissions(app?.permissions),
-		hasPermissions(permissions ?? [], app?.permissions ?? [], any),
-	);
 	if (!app || !hasPermissions(permissions ?? [], app.permissions, any)) {
 		ctx.response.status = 403;
 		ctx.response.body = {

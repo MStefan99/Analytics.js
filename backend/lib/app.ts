@@ -102,12 +102,6 @@ type AppPermissions = {
 	userID: User['id'];
 	appID: App['id'];
 	permissions: number;
-};
-
-type AppPermissionsWithUsername = {
-	userID: User['id'];
-	appID: App['id'];
-	permissions: number;
 	username: User['username'];
 };
 
@@ -228,7 +222,7 @@ class App {
               name,
               description,
               audience_key  as audienceKey,
-              telemetry_key as telemetryKey,
+              telemetry_key as telemetryKey
        from apps
        where audience_key = ?`,
 			[key],
@@ -244,7 +238,7 @@ class App {
               name,
               description,
               audience_key  as audienceKey,
-              telemetry_key as telemetryKey,
+              telemetry_key as telemetryKey
        from apps
        where telemetry_key = ?`,
 			[id],
@@ -277,10 +271,10 @@ class App {
 		).map<App>((r) => new App(r));
 	}
 
-	async getPermissions(): Promise<AppPermissionsWithUsername[]> {
+	async getPermissions(): Promise<AppPermissions[]> {
 		const db = await openDB();
 
-		return await db.queryEntries<AppPermissionsWithUsername>(
+		return await db.queryEntries<AppPermissions>(
 			`select user_id as userID,
               app_id  as appID,
               permissions,

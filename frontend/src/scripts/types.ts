@@ -54,6 +54,13 @@ export type AppWithAudience = App & {
 	audience?: {users: {[key: string]: number}; views: {[key: string]: number}};
 };
 
+export type AppPermissions = {
+	userID: User['id'];
+	appID: App['id'];
+	permissions: number;
+	username: User['username'];
+};
+
 export type Overview = {
 	users: {[key: string]: number};
 	views: {[key: string]: number};

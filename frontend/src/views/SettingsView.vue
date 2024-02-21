@@ -2,7 +2,7 @@
 #settings(v-if="app")
 	h1 {{app.name}} settings
 	.row
-		.card.accent
+		.card.accent(v-if="hasPermissions([PERMISSIONS.VIEW_SETTINGS], app.permissions)")
 			h2 Scripts
 			p.mb-4 To start collecting audience data, please add the following script to every page of your website:
 			pre.code.snippet.mb-4.
@@ -21,22 +21,25 @@
 			h3 Host
 			p.mb-2.
 				When setting up an app, you will need to provide a URL for your app to find Crash Course.
-				Here is the URL you are using to access Crash Course:
+			span Here is the URL you are using to access Crash Course:
 			.code.snippet.border.mb-4 {{appState.backendURL}}
 			h3 Audience Key
 			p.mb-2.
 				You will use this key to collect audience data, such as page views, logs, feedback, etc.
 				It is also used in the audience script you will need to add to your website. Please note that this key must be
 				publicly available for your app to be able to send information. However, this also means that your users
-				might be able to retrieve this key and use it to send arbitrary information. Here is your audience key:
-			.code.snippet.border.mb-4 {{app.audienceKey}}
+				might be able to retrieve this key and use it to send arbitrary information.
+			div(v-if="hasPermissions([PERMISSIONS.VIEW_SETTINGS], app.permissions)")
+				span Here is your audience key:
+				.code.snippet.border.mb-4 {{app.audienceKey}}
 			h3 Telemetry key
 			p.mb-2.
 				You will use this key to collect telemetry data from your server, such as logs and crash reports, hardware load
 				and so on. This key is best kept private so that the data coming back can be fully trusted.
-				Here is your telemetry key:
-			.code.snippet.border.mb-4 {{app.telemetryKey}}
-		.card(v-if="hasPermissions([PERMISSIONS.EDIT_SETTINGS], app.permissions)")
+			div(v-if="hasPermissions([PERMISSIONS.VIEW_SETTINGS], app.permissions)")
+				span Here is your telemetry key:
+				.code.snippet.border.mb-4 {{app.telemetryKey}}
+		.card.full(v-if="hasPermissions([PERMISSIONS.EDIT_SETTINGS], app.permissions)")
 			h2 Edit app
 			form(@submit.prevent="saveChanges()")
 				.mb-3
@@ -48,6 +51,18 @@
 				button.w-full(
 					type="submit"
 					v-if="hasPermissions([PERMISSIONS.EDIT_SETTINGS], app.permissions)") Save changes
+		.card(v-if="hasPermissions([PERMISSIONS.EDIT_PERMISSIONS], app.permissions)")
+			h2 Permissions
+			.flex.flex-row.flex-wrap.gap-2
+				.card(v-for="p in permissions" :key="p.userID")
+					h3 {{p.username}}
+					PermissionSelector(v-model="p.permissions" :allowed="app.permissions")
+					button.w-full.green(type="button" @click="setPermissions(p)") Save
+					button.w-full.red(type="button" @click="revokePermissions(p)") Remove
+				.card
+					input(type="text" placeholder="Username" v-model="newPermissions.username")
+					PermissionSelector(v-model="newPermissions.permissions" :allowed="app.permissions")
+					button.w-full.green(type="button" @click="addPermissions()") Add
 			.mt-4
 				button.w-full.red(
 					type="button"
@@ -58,16 +73,22 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
-import type {App} from '../scripts/types';
+import type {App, AppPermissions} from '../scripts/types';
 import Api from '../scripts/api';
 import appState from '../scripts/store';
 import {alert, confirm, PopupColor} from '../scripts/popups';
 import {hasPermissions, PERMISSIONS} from '../../../common/permissions';
+import PermissionSelector from '../components/PermissionSelector.vue';
 
 const router = useRouter();
 const route = useRoute();
 const app = ref<App | null>(null);
+const permissions = ref<AppPermissions[] | null>(null);
 const newName = ref<string>('');
+const newPermissions = ref<{username: string; permissions: number}>({
+	username: '',
+	permissions: 0
+});
 
 Api.apps
 	.getByID(+route.params.id)
@@ -77,6 +98,10 @@ Api.apps
 		window.document.title = a.name + ' settings | Crash Course';
 	})
 	.catch((err) => alert('Failed to load app', PopupColor.Red, err.message));
+
+Api.apps.getPermissions(+route.params.id).then((p) => {
+	permissions.value = p;
+});
 
 function saveChanges() {
 	app.value.name = newName.value;
@@ -88,6 +113,71 @@ function saveChanges() {
 			alert('Changes saved', PopupColor.Green, 'Changes saved successfully!');
 		})
 		.catch((err) => alert('Failed to save app', PopupColor.Red, err.message));
+}
+
+async function addPermissions() {
+	Api.apps
+		.setPermissions(app.value.id, newPermissions.value.username, newPermissions.value.permissions)
+		.then((p) => {
+			permissions.value = p;
+			newPermissions.value.username = '';
+			newPermissions.value.permissions = 0;
+			alert('Permissions saved', PopupColor.Green, 'Permissions were saved');
+		})
+		.catch((err) => alert('Failed to add a user', PopupColor.Red, err.message));
+}
+
+async function setPermissions(p: AppPermissions) {
+	if (
+		p.userID === appState.user.id &&
+		!hasPermissions([PERMISSIONS.EDIT_PERMISSIONS], p.permissions) &&
+		!(await confirm(
+			'You are about to revoke permissions from yourself!',
+			PopupColor.Red,
+			'If you proceed, you will lose the ability to edit permissions for this app! Do you still wish to proceed?'
+		))
+	) {
+		return;
+	}
+
+	Api.apps
+		.setPermissions(app.value.id, p.username, p.permissions)
+		.then((p) => {
+			permissions.value = p;
+			alert('Permissions saved', PopupColor.Green, 'Permissions were saved');
+		})
+		.catch((err) => alert('Failed to add a user', PopupColor.Red, err.message));
+}
+
+async function revokePermissions(p: AppPermissions) {
+	if (p.userID === appState.user.id) {
+		if (
+			!(await confirm(
+				'You are about to lose access to this app!',
+				PopupColor.Red,
+				'If you proceed, you will lose access to this app! Do you still wish to proceed?'
+			))
+		) {
+			return;
+		}
+	} else {
+		if (
+			!(await confirm(
+				'Are you sure?',
+				PopupColor.Red,
+				'Are you sure you want to revoke ' + p.username + "'s access to this app?"
+			))
+		) {
+			return;
+		}
+	}
+	Api.apps
+		.revokePermissions(app.value.id, p.username)
+		.then((p) => {
+			permissions.value = p;
+			alert('Permissions saved', PopupColor.Green, 'Permissions were saved');
+		})
+		.catch((err) => alert('Failed to add a user', PopupColor.Red, err.message));
 }
 
 async function deleteApp() {
@@ -112,7 +202,11 @@ async function deleteApp() {
 </script>
 
 <style scoped>
-.row .card {
+.row > .card {
 	flex-basis: 500px;
+}
+
+.row > .card.full {
+	flex-basis: 100%;
 }
 </style>

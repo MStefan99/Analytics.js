@@ -5,24 +5,35 @@ div
 			type="checkbox"
 			:id="'permission-' + permission"
 			:value="permission"
-			v-model="permissions")
+			v-model="permissions"
+			:disabled="allowed && !hasPermissions([permission], allowed)")
 		label.inline(:for="'permission-' + permission") {{permissionDescriptions[permission]}}
 </template>
 
 <script setup lang="ts">
 import {
+	applyPermissions,
 	encodePermissions,
+	hasPermissions,
 	parsePermissions,
-	PERMISSIONS,
-	permissionDescriptions
+	permissionDescriptions,
+	PERMISSIONS
 } from '../../../common/permissions';
 import {computed, ref, watch} from 'vue';
 
-const props = defineProps<{modelValue: number}>();
+const props = defineProps<{modelValue: number; allowed?: number}>();
 const emit = defineEmits<{(e: 'update:modelValue', permissions: number): void}>();
 
-const permissions = ref<PERMISSIONS[]>(parsePermissions(props.modelValue));
-const permissionKeys = computed<string[]>(() => Object.keys(PERMISSIONS).filter((k) => !isNaN(+k)));
+const permissions = ref<PERMISSIONS[]>(
+	props.allowed
+		? applyPermissions(parsePermissions(props.modelValue), props.allowed)
+		: parsePermissions(props.modelValue)
+);
+const permissionKeys = computed<PERMISSIONS[]>(() =>
+	Object.keys(PERMISSIONS)
+		.filter((k) => !isNaN(+k))
+		.map((k) => +k)
+);
 
 watch(
 	() => props.modelValue,

@@ -90,6 +90,7 @@ import DatePicker from '../components/DatePicker.vue';
 import TimedChart from '../components/TimedChart.vue';
 import {alert, PopupColor} from '../scripts/popups';
 import {useQuery} from '../scripts/composables';
+import {parseUA} from '../scripts/util';
 
 const dayLength = 1000 * 60 * 60 * 24;
 const route = useRoute();

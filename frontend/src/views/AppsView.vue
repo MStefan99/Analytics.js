@@ -101,6 +101,10 @@ function addApp() {
 	@apply flex flex-col flex-nowrap justify-between grow;
 }
 
+.card {
+	flex-basis: 300px;
+}
+
 :deep(.chart) {
 	@apply h-24 mb-0;
 }

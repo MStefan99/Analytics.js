@@ -4,7 +4,7 @@
 	.row.py-3.sticky.top-0.glass
 		.input
 			label(for="date-input") Starting from
-			DatePicker#date-input.w-full(v-model="startTime" @change="loadFeedbacks()")
+			DatePicker#date-input.w-full(v-model="start" @change="loadFeedbacks()")
 	table.cells.w-full
 		thead
 			tr
@@ -33,16 +33,14 @@ const feedbacks = ref<Feedback[]>([]);
 const dayLength = 1000 * 60 * 60 * 24;
 const initialDate = new Date(Date.now() - dayLength);
 
-const startTime = ref<Date>(initialDate);
+const start = ref<Date>(initialDate);
 
 const {query} = useQuery(
 	computed(() => ({
-		startTime: startTime.value.toISOString()
+		start: start.value.toISOString()
 	}))
 );
-startTime.value = new Date(
-	Array.isArray(query.value.startTime) ? query.value.startTime[0] : query.value.startTime
-);
+start.value = new Date(Array.isArray(query.value.start) ? query.value.start[0] : query.value.start);
 
 Api.apps.getByID(+route.params.id).then((a) => {
 	app.value = a;
@@ -51,7 +49,7 @@ Api.apps.getByID(+route.params.id).then((a) => {
 
 function loadFeedbacks() {
 	Api.apps
-		.getFeedbacks(+route.params.id, startTime.value.getTime())
+		.getFeedbacks(+route.params.id, start.value.getTime())
 		.then((f) => (feedbacks.value = f))
 		.catch((err) => alert('Failed to load feedback', PopupColor.Red, err.message));
 }

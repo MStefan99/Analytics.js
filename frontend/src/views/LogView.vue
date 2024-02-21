@@ -4,10 +4,10 @@
 	.row.py-3.sticky.top-0.glass
 		.input
 			label(for="date-input") Starting from
-			DatePicker#date-input.w-full(v-model="startTime" @change="loadLogs()")
+			DatePicker#date-input.w-full(v-model="start" @change="loadLogs()")
 		.input
 			label(for="date-input") Ending on
-			DatePicker#date-input.w-full(v-model="endTime" @change="loadLogs()")
+			DatePicker#date-input.w-full(v-model="end" @change="loadLogs()")
 		.input
 			label(for="level-input") Minimum level
 			DropdownSelect#level-input.w-full(:options="levels" v-model="level" @change="loadLogs()")
@@ -49,23 +49,19 @@ const dayLength = 1000 * 60 * 60 * 24;
 const now = new Date();
 const levels = ['Debug', 'Information', 'Warning', 'Error', 'Critical'];
 
-const startTime = ref<Date>(new Date(now.getTime() - dayLength));
-const endTime = ref<Date>(now);
+const start = ref<Date>(new Date(now.getTime() - dayLength));
+const end = ref<Date>(now);
 const level = ref<number>(1);
 
 const {query} = useQuery(
 	computed(() => ({
-		startTime: startTime.value.toISOString(),
-		endTime: endTime.value.toISOString(),
+		start: start.value.toISOString(),
+		end: end.value.toISOString(),
 		level: level.value.toString()
 	}))
 );
-startTime.value = new Date(
-	Array.isArray(query.value.startTime) ? query.value.startTime[0] : query.value.startTime
-);
-endTime.value = new Date(
-	Array.isArray(query.value.endTime) ? query.value.endTime[0] : query.value.endTime
-);
+start.value = new Date(Array.isArray(query.value.start) ? query.value.start[0] : query.value.start);
+end.value = new Date(Array.isArray(query.value.end) ? query.value.end[0] : query.value.end);
 level.value = Array.isArray(query.value.level) ? +query.value.level[0] : +query.value.level;
 
 const colors = {
@@ -112,21 +108,15 @@ Api.apps.getByID(+route.params.id).then((a) => {
 });
 
 function loadLogs() {
-	if (Date.now() - endTime.value.getTime() < 1000 * 60) {
-		endTime.value = new Date();
+	if (Date.now() - end.value.getTime() < 1000 * 60) {
+		end.value = new Date();
 	}
 
 	Api.apps
-		.getLogAggregate(+route.params.id, type, startTime.value.getTime(), endTime.value.getTime())
+		.getLogAggregate(+route.params.id, type, start.value.getTime(), end.value.getTime())
 		.then((l) => (historicalLogs.value = l));
 	Api.apps
-		.getLogs(
-			+route.params.id,
-			type,
-			level.value,
-			startTime.value.getTime(),
-			endTime.value.getTime()
-		)
+		.getLogs(+route.params.id, type, level.value, start.value.getTime(), end.value.getTime())
 		.then((l) => (logs.value = l))
 		.catch((err) => alert('Failed to load logs', PopupColor.Red, err.message));
 }

@@ -177,8 +177,8 @@ const refreshInterval = setInterval(loadOverview, 1000 * 10);
 onUnmounted(() => clearInterval(refreshInterval));
 </script>
 
-<style>
-.row .card {
+<style scoped>
+.row > .card {
 	flex-basis: 500px;
 }
 </style>
