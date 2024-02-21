@@ -76,7 +76,7 @@ import {useRoute, useRouter} from 'vue-router';
 import type {App, AppPermissions} from '../scripts/types';
 import Api from '../scripts/api';
 import appState from '../scripts/store';
-import {alert, confirm, PopupColor} from '../scripts/popups';
+import {alert, confirm, PopupColor, prompt} from '../scripts/popups';
 import {hasPermissions, PERMISSIONS} from '../../../common/permissions';
 import PermissionSelector from '../components/PermissionSelector.vue';
 
@@ -131,11 +131,11 @@ async function setPermissions(p: AppPermissions) {
 	if (
 		p.userID === appState.user.id &&
 		!hasPermissions([PERMISSIONS.EDIT_PERMISSIONS], p.permissions) &&
-		!(await confirm(
+		(await prompt(
 			'You are about to revoke permissions from yourself!',
 			PopupColor.Red,
-			'If you proceed, you will lose the ability to edit permissions for this app! Do you still wish to proceed?'
-		))
+			'If you proceed, you will lose the ability to edit permissions for this app! Type "Revoke my permissions" to proceed.'
+		)) !== 'Revoke my permissions'
 	) {
 		return;
 	}
@@ -152,11 +152,11 @@ async function setPermissions(p: AppPermissions) {
 async function revokePermissions(p: AppPermissions) {
 	if (p.userID === appState.user.id) {
 		if (
-			!(await confirm(
+			(await prompt(
 				'You are about to lose access to this app!',
 				PopupColor.Red,
-				'If you proceed, you will lose access to this app! Do you still wish to proceed?'
-			))
+				'If you proceed, you will lose access to this app! Type "Revoke my permissions" to proceed.'
+			)) !== 'Revoke my permissions'
 		) {
 			return;
 		}
@@ -171,6 +171,7 @@ async function revokePermissions(p: AppPermissions) {
 			return;
 		}
 	}
+
 	Api.apps
 		.revokePermissions(app.value.id, p.username)
 		.then((p) => {
@@ -182,11 +183,16 @@ async function revokePermissions(p: AppPermissions) {
 
 async function deleteApp() {
 	if (
-		!(await confirm(
+		(await prompt(
 			'Are you sure you want to delete ' + app.value.name + '?',
 			PopupColor.Red,
-			'Warning, all application data will be deleted. Please confirm to proceed.'
-		))
+			'The application and all its data will be deleted. Do you still wish to delete ' +
+				app.value.name +
+				'? Type "Delete ' +
+				app.value.name +
+				'" to proceed.'
+		)) !==
+		'Delete ' + app.value.name
 	) {
 		return;
 	}
