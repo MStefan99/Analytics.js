@@ -224,12 +224,12 @@ input,
 textarea,
 select,
 button,
-.btn {
+.btn,
+[type='button'] {
 	display: block;
 	padding: 0.5rem 1ch;
 	border-radius: 10px;
 	appearance: none;
-	color: var(--color-foreground);
 	background-color: var(--color-background);
 	border: 0.1rem solid var(--color-accent);
 	@apply my-2;

@@ -54,7 +54,10 @@
 		.card(v-if="hasPermissions([PERMISSIONS.EDIT_PERMISSIONS], app.permissions)")
 			h2 Permissions
 			.flex.flex-row.flex-wrap.gap-2
-				.card.grow(v-for="p in permissions" :key="p.userID")
+				.card.grow(
+					v-for="p in permissions"
+					:key="p.userID"
+					:class="{accent: p.userID === appState.user.id}")
 					h3 {{p.username}}
 					PermissionSelector(v-model="p.permissions" :allowed="app.permissions")
 					button.w-full.green(type="button" @click="setPermissions(p)") Save
@@ -98,7 +101,7 @@ Api.apps
 		window.document.title = a.name + ' settings | Crash Course';
 		if (hasPermissions([PERMISSIONS.EDIT_PERMISSIONS], a.permissions)) {
 			Api.apps.getPermissions(+route.params.id).then((p) => {
-				permissions.value = p;
+				permissions.value = p.sort((p1) => (p1.userID === appState.user.id ? -1 : 0));
 			});
 		}
 	})
@@ -125,7 +128,7 @@ async function addPermissions() {
 	Api.apps
 		.setPermissions(app.value.id, newPermissions.value.username, newPermissions.value.permissions)
 		.then((p) => {
-			permissions.value = p;
+			permissions.value = p.sort((p1) => (p1.userID === appState.user.id ? -1 : 0));
 			newPermissions.value.username = '';
 			newPermissions.value.permissions = 0;
 			alert('Permissions saved', PopupColor.Green, 'Permissions were saved');
@@ -149,7 +152,7 @@ async function setPermissions(p: AppPermissions) {
 	Api.apps
 		.setPermissions(app.value.id, p.username, p.permissions)
 		.then((p) => {
-			permissions.value = p;
+			permissions.value = p.sort((p1) => (p1.userID === appState.user.id ? -1 : 0));
 			alert('Permissions saved', PopupColor.Green, 'Permissions were saved');
 		})
 		.catch((err) => alert('Failed to save permissions', PopupColor.Red, err.message));
@@ -181,7 +184,7 @@ async function revokePermissions(p: AppPermissions) {
 	Api.apps
 		.revokePermissions(app.value.id, p.username)
 		.then((p) => {
-			permissions.value = p;
+			permissions.value = p.sort((p1) => (p1.userID === appState.user.id ? -1 : 0));
 			alert('Permissions saved', PopupColor.Green, 'Permissions were saved');
 		})
 		.catch((err) => alert('Failed to add a user', PopupColor.Red, err.message));
