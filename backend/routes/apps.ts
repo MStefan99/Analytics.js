@@ -12,6 +12,7 @@ import {
 	parsePermissions,
 	PERMISSIONS,
 } from '../../common/permissions.ts';
+import User from '../lib/user.ts';
 
 const sessionLength = 1000 * 60 * 30;
 const dayLength = 1000 * 60 * 60 * 24;
@@ -57,7 +58,12 @@ async function getApp(
 	}
 
 	const app = await App.getByID(id, user);
-	console.log('permissions', permissions, parsePermissions(app?.permissions));
+	console.log(
+		'permissions',
+		permissions,
+		parsePermissions(app?.permissions),
+		hasPermissions(permissions ?? [], app?.permissions ?? [], any),
+	);
 	if (!app || !hasPermissions(permissions ?? [], app.permissions, any)) {
 		ctx.response.status = 403;
 		ctx.response.body = {
@@ -205,6 +211,99 @@ router.patch(
 
 		app.save();
 		ctx.response.body = app;
+	},
+);
+
+router.get(
+	'/:id/permissions',
+	auth.authenticated(),
+	rateLimiter({
+		tag: 'user',
+		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
+	}),
+	async (ctx) => {
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.EDIT_PERMISSIONS,
+		]);
+
+		if (!app) {
+			return;
+		}
+
+		ctx.response.body = await app.getPermissions();
+	},
+);
+
+router.put(
+	'/:id/permissions/:username',
+	auth.authenticated(),
+	rateLimiter({
+		tag: 'user',
+		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
+	}),
+	async (ctx) => {
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.EDIT_PERMISSIONS,
+		]);
+
+		if (!app) {
+			return;
+		}
+
+		const user = await User.getByUsername(ctx.params.username);
+		if (!user) {
+			ctx.response.status = 400;
+			ctx.response.body = {
+				error: 'USER_NOT_FOUND',
+				message: 'User was not found',
+			};
+			return;
+		}
+
+		const body = await ctx.request.body({ type: 'json' }).value;
+		const permissions = +body.permissions;
+		if (isNaN(permissions) || permissions < 0) {
+			ctx.response.status = 400;
+			ctx.response.body = {
+				error: 'INVALID_PERMISSIONS',
+				message: 'Permission values must be a positive number',
+			};
+			return;
+		}
+
+		await app.setPermissions(user, permissions);
+		ctx.response.body = await app.getPermissions();
+	},
+);
+
+router.delete(
+	'/:id/permissions/:username',
+	auth.authenticated(),
+	rateLimiter({
+		tag: 'user',
+		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
+	}),
+	async (ctx) => {
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.EDIT_PERMISSIONS,
+		]);
+
+		if (!app) {
+			return;
+		}
+
+		const user = await User.getByUsername(ctx.params.username);
+		if (!user) {
+			ctx.response.status = 400;
+			ctx.response.body = {
+				error: 'USER_NOT_FOUND',
+				message: 'User was not found',
+			};
+			return;
+		}
+
+		await app.revokePermissions(user);
+		ctx.response.body = await app.getPermissions();
 	},
 );
 

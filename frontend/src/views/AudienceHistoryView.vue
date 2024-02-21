@@ -74,18 +74,16 @@ const audienceAggregate = computed(() => [
 	}
 ]);
 
-Api.apps
-	.getByID(+route.params.id)
-	.then((a) => {
-		app.value = a;
-		window.document.title = a.name + ' audience | Crash Course';
-	})
-	.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
+Api.apps.getByID(+route.params.id).then((a) => {
+	app.value = a;
+	window.document.title = a.name + ' audience | Crash Course';
+});
 
 function load() {
 	Api.apps
 		.getAudienceAggregate(+route.params.id, startTime.value.getTime(), endTime.value.getTime())
-		.then((a) => (historicalAudience.value = a));
+		.then((a) => (historicalAudience.value = a))
+		.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
 	Api.apps
 		.getPageAggregate(+route.params.id, startTime.value.getTime(), endTime.value.getTime())
 		.then((p) => (pages.value = p));

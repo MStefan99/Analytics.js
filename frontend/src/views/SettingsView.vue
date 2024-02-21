@@ -36,7 +36,7 @@
 				and so on. This key is best kept private so that the data coming back can be fully trusted.
 				Here is your telemetry key:
 			.code.snippet.border.mb-4 {{app.telemetryKey}}
-		.card
+		.card(v-if="hasPermissions([PERMISSIONS.EDIT_SETTINGS], app.permissions)")
 			h2 Edit app
 			form(@submit.prevent="saveChanges()")
 				.mb-3
@@ -45,9 +45,14 @@
 				.mb-3
 					label(for="description-input") App description
 					textarea#description-input.w-full(placeholder="Description" v-model="app.description")
-				button.w-full(type="submit") Save changes
+				button.w-full(
+					type="submit"
+					v-if="hasPermissions([PERMISSIONS.EDIT_SETTINGS], app.permissions)") Save changes
 			.mt-4
-				button.w-full.red(type="button" @click="deleteApp()") Delete app
+				button.w-full.red(
+					type="button"
+					v-if="hasPermissions([PERMISSIONS.EDIT_PERMISSIONS], app.permissions)"
+					@click="deleteApp()") Delete app
 </template>
 
 <script setup lang="ts">
@@ -57,6 +62,7 @@ import type {App} from '../scripts/types';
 import Api from '../scripts/api';
 import appState from '../scripts/store';
 import {alert, confirm, PopupColor} from '../scripts/popups';
+import {hasPermissions, PERMISSIONS} from '../../../common/permissions';
 
 const router = useRouter();
 const route = useRoute();

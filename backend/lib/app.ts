@@ -1,7 +1,12 @@
 import openDB, { deleteDB } from './db.ts';
 import User from './user.ts';
 import { encode as hexEncode } from '../deps.ts';
-import { hasPermissions, PERMISSIONS } from '../../common/permissions.ts';
+import {
+	applyPermissions,
+	encodePermissions,
+	hasPermissions,
+	PERMISSIONS,
+} from '../../common/permissions.ts';
 
 function getRandomString(byteCount: number): string {
 	const dec = new TextDecoder();
@@ -93,6 +98,19 @@ type AppProps = {
 	permissions: number;
 };
 
+type AppPermissions = {
+	userID: User['id'];
+	appID: App['id'];
+	permissions: number;
+};
+
+type AppPermissionsWithUsername = {
+	userID: User['id'];
+	appID: App['id'];
+	permissions: number;
+	username: User['username'];
+};
+
 class App {
 	id: number;
 	name: string;
@@ -145,6 +163,7 @@ class App {
 		user: User,
 		name: string,
 		description?: string,
+		permissions: number | PERMISSIONS[] = 0xffff,
 	): Promise<App> {
 		const audienceKey = getRandomString(8);
 		const telemetryKey = getRandomString(8);
@@ -161,16 +180,26 @@ class App {
 			],
 		);
 
-		// TODO: insert permissions
-
-		return new App({
+		const app = new App({
 			id: db.lastInsertRowId,
 			name,
 			description,
 			audienceKey,
 			telemetryKey,
-			permissions: ~0,
+			permissions: encodePermissions(permissions),
 		});
+
+		await db.queryEntries(
+			`insert into permissions(user_id, app_id, permissions)
+       values (?, ?, ?)`,
+			[
+				user.id,
+				app.id,
+				app.permissions,
+			],
+		);
+
+		return app;
 	}
 
 	static async getByID(id: number, user: User): Promise<App | null> {
@@ -246,6 +275,53 @@ class App {
 		return rows.filter((r) =>
 			hasPermissions(permissions, r.permissions, any)
 		).map<App>((r) => new App(r));
+	}
+
+	async getPermissions(): Promise<AppPermissionsWithUsername[]> {
+		const db = await openDB();
+
+		return await db.queryEntries<AppPermissionsWithUsername>(
+			`select user_id as userID,
+              app_id  as appID,
+              permissions,
+              username
+       from permissions
+                join main.users u on u.id = permissions.user_id
+       where app_id = ?`,
+			[this.id],
+		);
+	}
+
+	async setPermissions(
+		user: User,
+		permissions: number | PERMISSIONS[],
+	): Promise<void> {
+		const db = await openDB();
+		await db.queryEntries<Client>(
+			`insert into permissions(user_id, app_id, permissions)
+       values (?, ?, ?)
+       on conflict(user_id, app_id)
+           do update set permissions=excluded.permissions
+			`,
+			[
+				user.id,
+				this.id,
+				encodePermissions(
+					applyPermissions(permissions, this.permissions),
+				),
+			],
+		);
+	}
+
+	async revokePermissions(user: User): Promise<void> {
+		const db = await openDB();
+		await db.queryEntries<Client>(
+			`delete
+       from permissions
+       where user_id = ?
+         and app_id = ?`,
+			[user.id, this.id],
+		);
 	}
 
 	async createClient(ua?: string, lang?: string): Promise<Client> {

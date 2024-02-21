@@ -100,3 +100,16 @@ export function hasPermissions(
 		? !!(grantedValue & requestedValue)
 		: (grantedValue & requestedValue) === requestedValue;
 }
+
+export function applyPermissions(
+	requestedPermissions: number | PERMISSIONS[],
+	grantedPermissions: number | PERMISSIONS[],
+	any = false
+): PERMISSIONS[] {
+	const requestedValue = encodePermissions(requestedPermissions);
+	const grantedValue = encodePermissions(grantedPermissions);
+
+	return any
+		? parsePermissions(grantedValue | requestedValue)
+		: parsePermissions(grantedValue & requestedValue);
+}

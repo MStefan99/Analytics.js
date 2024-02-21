@@ -44,15 +44,15 @@ create table sessions
 
 create table permissions
 (
-	user_id     integer not null
+	user_id     integer          not null
 		constraint permissions_users_id_fk
 			references users
 			on update cascade on delete cascade,
-	app_id      integer not null
+	app_id      integer          not null
 		constraint permissions_apps_id_fk
 			references apps
 			on update cascade on delete cascade,
-	permissions integer not null,
+	permissions unsigned integer not null,
 	constraint permissions_pk
 		primary key (app_id, user_id)
 );
