@@ -5,30 +5,36 @@
 		.card.accent
 			h2 Overview
 			.row
-				.mx-4
+				.mx-4(v-if="hasPermissions([PERMISSIONS.VIEW_AUDIENCE], app.permissions)")
 					h2 Active users
 					span.large {{currentUsers}}
-				.mx-4
+				.mx-4(v-if="hasPermissions([PERMISSIONS.VIEW_SERVER_LOGS], app.permissions)")
 					h2 Server errors
 					span.large {{(logCount.server['3'] || 0) + (logCount.server['4'] || 0)}}
-				.mx-4
+				.mx-4(v-if="hasPermissions([PERMISSIONS.VIEW_CLIENT_LOGS], app.permissions)")
 					h2 Client errors
 					span.large {{(logCount.client['3'] || 0) + (logCount.client['4'] || 0)}}
 			div
-				RouterLink.btn(:to="{name: 'feedback', params: {id: $route.params.id}}") Feedback
-				RouterLink.btn(:to="{name: 'system', params: {id: $route.params.id}}") System
-				RouterLink.btn(:to="{name: 'settings', params: {id: $route.params.id}}") Settings
-		.card
+				RouterLink.btn(
+					:to="{name: 'feedback', params: {id: $route.params.id}}"
+					v-if="hasPermissions([PERMISSIONS.VIEW_FEEDBACK], app.permissions)") Feedback
+				RouterLink.btn(
+					:to="{name: 'system', params: {id: $route.params.id}}"
+					v-if="hasPermissions([PERMISSIONS.VIEW_METRICS], app.permissions)") System
+				RouterLink.btn(
+					:to="{name: 'settings', params: {id: $route.params.id}}"
+					v-if="hasPermissions([PERMISSIONS.VIEW_SETTINGS], app.permissions)") Settings
+		.card(v-if="hasPermissions([PERMISSIONS.VIEW_AUDIENCE], app.permissions)")
 			h2 Audience
 			TimedChart(:data="audienceDataset" :y-stacked="false" :step-size="1000 * 60")
 			.flex.gap-2
 				RouterLink.btn.grow(:to="{name: 'audience-day', params: {id: $route.params.id}}") View audience today
 				RouterLink.btn.grow(:to="{name: 'audience-history', params: {id: $route.params.id}}") View audience history
-		.card
+		.card(v-if="hasPermissions([PERMISSIONS.VIEW_SERVER_LOGS], app.permissions)")
 			h2 Server logs
 			TimedChart(:data="serverLogsDataset" :step-size="1000 * 60")
 			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'server'}}") View server logs
-		.card
+		.card(v-if="hasPermissions([PERMISSIONS.VIEW_CLIENT_LOGS], app.permissions)")
 			h2 Client logs
 			TimedChart(:data="clientLogsDataset" :step-size="1000 * 60")
 			RouterLink.btn(:to="{name: 'logs', params: {id: $route.params.id, type: 'client'}}") View client logs
@@ -40,6 +46,7 @@ import type {App, Overview} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRoute} from 'vue-router';
 import TimedChart from '../components/TimedChart.vue';
+import {hasPermissions, PERMISSIONS} from '../../../common/permissions';
 import {alert, PopupColor} from '../scripts/popups';
 
 const app = ref<App | null>(null);
@@ -123,20 +130,26 @@ const audienceDataset = computed(() => [
 
 const logCount = computed(() => {
 	return {
-		server: Object.keys(overview.value?.serverLogs).reduce<{[key: string]: number}>((prev, k) => {
-			prev[k] = Object.keys(overview.value.serverLogs[k]).reduce<number>(
-				(prev1, k1) => prev1 + overview.value.serverLogs[k][k1],
-				0
-			);
-			return prev;
-		}, {}),
-		client: Object.keys(overview.value?.clientLogs).reduce<{[key: string]: number}>((prev, k) => {
-			prev[k] = Object.keys(overview.value.clientLogs[k]).reduce<number>(
-				(prev1, k1) => prev1 + overview.value.clientLogs[k][k1],
-				0
-			);
-			return prev;
-		}, {})
+		server: Object.keys(overview.value?.serverLogs ?? {}).reduce<{[key: string]: number}>(
+			(prev, k) => {
+				prev[k] = Object.keys(overview.value.serverLogs[k]).reduce<number>(
+					(prev1, k1) => prev1 + overview.value.serverLogs[k][k1],
+					0
+				);
+				return prev;
+			},
+			{}
+		),
+		client: Object.keys(overview.value?.clientLogs ?? {}).reduce<{[key: string]: number}>(
+			(prev, k) => {
+				prev[k] = Object.keys(overview.value.clientLogs[k]).reduce<number>(
+					(prev1, k1) => prev1 + overview.value.clientLogs[k][k1],
+					0
+				);
+				return prev;
+			},
+			{}
+		)
 	};
 });
 const currentUsers = computed(() => {

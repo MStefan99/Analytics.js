@@ -106,13 +106,10 @@ const chartData = computed(() => [
 
 const type = route.params.type === 'client' ? 'client' : 'server';
 
-Api.apps
-	.getByID(+route.params.id)
-	.then((a) => {
-		app.value = a;
-		window.document.title = a.name + ' logs | Crash Course';
-	})
-	.catch((err) => alert('Failed to load logs', PopupColor.Red, err.message));
+Api.apps.getByID(+route.params.id).then((a) => {
+	app.value = a;
+	window.document.title = a.name + ' logs | Crash Course';
+});
 
 function loadLogs() {
 	if (Date.now() - endTime.value.getTime() < 1000 * 60) {
@@ -130,7 +127,8 @@ function loadLogs() {
 			startTime.value.getTime(),
 			endTime.value.getTime()
 		)
-		.then((l) => (logs.value = l));
+		.then((l) => (logs.value = l))
+		.catch((err) => alert('Failed to load logs', PopupColor.Red, err.message));
 }
 
 loadLogs();

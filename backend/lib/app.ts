@@ -1,6 +1,7 @@
 import openDB, { deleteDB } from './db.ts';
 import User from './user.ts';
 import { encode as hexEncode } from '../deps.ts';
+import { hasPermissions, PERMISSIONS } from '../../common/permissions.ts';
 
 function getRandomString(byteCount: number): string {
 	const dec = new TextDecoder();
@@ -89,16 +90,16 @@ type AppProps = {
 	description?: string;
 	audienceKey: string;
 	telemetryKey: string;
-	ownerID: number;
+	permissions: number;
 };
 
 class App {
 	id: number;
 	name: string;
 	description: string | null;
-	audienceKey: string;
-	telemetryKey: string;
-	ownerID: number;
+	audienceKey?: string;
+	telemetryKey?: string;
+	permissions: number;
 
 	constructor(props: AppProps) {
 		this.id = props.id;
@@ -106,7 +107,7 @@ class App {
 		this.description = props.description ?? null;
 		this.audienceKey = props.audienceKey;
 		this.telemetryKey = props.telemetryKey;
-		this.ownerID = props.ownerID;
+		this.permissions = props.permissions;
 	}
 
 	toJSON() {
@@ -114,8 +115,12 @@ class App {
 			id: this.id,
 			name: this.name,
 			description: this.description,
-			audienceKey: this.audienceKey,
-			telemetryKey: this.telemetryKey,
+			permissions: this.permissions,
+			...(hasPermissions([PERMISSIONS.VIEW_SETTINGS], this.permissions) &&
+				{
+					audienceKey: this.audienceKey,
+					telemetryKey: this.telemetryKey,
+				}),
 		};
 	}
 
@@ -146,16 +151,17 @@ class App {
 
 		const db = await openDB();
 		await db.queryEntries(
-			`insert into apps(name, description, audience_key, telemetry_key, owner_id)
-       values (?, ?, ?, ?, ?)`,
+			`insert into apps(name, description, audience_key, telemetry_key)
+       values (?, ?, ?, ?)`,
 			[
 				name,
 				description,
 				audienceKey,
 				telemetryKey,
-				user.id,
 			],
 		);
+
+		// TODO: insert permissions
 
 		return new App({
 			id: db.lastInsertRowId,
@@ -163,11 +169,11 @@ class App {
 			description,
 			audienceKey,
 			telemetryKey,
-			ownerID: user.id,
+			permissions: ~0,
 		});
 	}
 
-	static async getByID(id: number): Promise<App | null> {
+	static async getByID(id: number, user: User): Promise<App | null> {
 		const db = await openDB();
 		const rows = await db.queryEntries<AppProps>(
 			`select id,
@@ -175,10 +181,12 @@ class App {
               description,
               audience_key  as audienceKey,
               telemetry_key as telemetryKey,
-              owner_id      as ownerID
+              permissions
        from apps
-       where id = ?`,
-			[id],
+                join main.permissions p on apps.id = p.app_id
+       where id = ?
+         and user_id = ?`,
+			[id, user.id],
 		);
 
 		return rows.length ? new App(rows[0]) : null;
@@ -192,7 +200,6 @@ class App {
               description,
               audience_key  as audienceKey,
               telemetry_key as telemetryKey,
-              owner_id      as ownerID
        from apps
        where audience_key = ?`,
 			[key],
@@ -209,7 +216,6 @@ class App {
               description,
               audience_key  as audienceKey,
               telemetry_key as telemetryKey,
-              owner_id      as ownerID
        from apps
        where telemetry_key = ?`,
 			[id],
@@ -218,7 +224,11 @@ class App {
 		return rows.length ? new App(rows[0]) : null;
 	}
 
-	static async getByUser(user: User): Promise<App[]> {
+	static async getByUser(
+		user: User,
+		permissions: number | PERMISSIONS[] = [],
+		any = false,
+	): Promise<App[]> {
 		const db = await openDB();
 		const rows = await db.queryEntries<AppProps>(
 			`select id,
@@ -226,13 +236,16 @@ class App {
               description,
               audience_key  as audienceKey,
               telemetry_key as telemetryKey,
-              owner_id      as ownerID
+              permissions
        from apps
-       where owner_id = ?`,
+                join main.permissions p on apps.id = p.app_id
+       where user_id = ?`,
 			[user.id],
 		);
 
-		return rows.map<App>((r) => new App(r));
+		return rows.filter((r) =>
+			hasPermissions(permissions, r.permissions, any)
+		).map<App>((r) => new App(r));
 	}
 
 	async createClient(ua?: string, lang?: string): Promise<Client> {

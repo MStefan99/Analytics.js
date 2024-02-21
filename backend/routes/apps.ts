@@ -6,6 +6,12 @@ import { hasBody } from './middleware.ts';
 import { initApp } from '../lib/init.ts';
 import analyzer from '../lib/analyzer.ts';
 import rateLimiter from '../lib/rateLimiter.ts';
+import {
+	encodePermissions,
+	hasPermissions,
+	parsePermissions,
+	PERMISSIONS,
+} from '../../common/permissions.ts';
 
 const sessionLength = 1000 * 60 * 30;
 const dayLength = 1000 * 60 * 60 * 24;
@@ -13,11 +19,24 @@ const defaultSessionLength = 1000 * 60 * 30;
 const defaultRealtimeLength = 1000 * 60 * 31; // 0 through 30 minutes ago
 const defaultHistoryLength = dayLength * 31; // 0 through 30 days ago
 
+const viewPermissions = [
+	PERMISSIONS.VIEW_AUDIENCE,
+	PERMISSIONS.VIEW_SERVER_LOGS,
+	PERMISSIONS.VIEW_CLIENT_LOGS,
+	PERMISSIONS.VIEW_METRICS,
+	PERMISSIONS.VIEW_FEEDBACK,
+];
+
 const router = new Router({
 	prefix: '/apps',
 });
 
-async function getApp(ctx: Context, id: number): Promise<App | undefined> {
+async function getApp(
+	ctx: Context,
+	id: number,
+	permissions?: number | PERMISSIONS[],
+	any = false,
+): Promise<App | undefined> {
 	const user = await auth.methods.getUser(ctx);
 	if (user === null) {
 		ctx.response.status = 400;
@@ -37,12 +56,13 @@ async function getApp(ctx: Context, id: number): Promise<App | undefined> {
 		return;
 	}
 
-	const app = await App.getByID(id);
-	if (!app || app.ownerID !== user.id) {
-		ctx.response.status = 404;
+	const app = await App.getByID(id, user);
+	console.log('permissions', permissions, parsePermissions(app?.permissions));
+	if (!app || !hasPermissions(permissions ?? [], app.permissions, any)) {
+		ctx.response.status = 403;
 		ctx.response.body = {
-			error: 'APP_NOT_FOUND',
-			message: 'App was not found',
+			error: 'NOT_AUTHORIZED',
+			message: 'You are not allowed to do this',
 		};
 		return;
 	}
@@ -72,13 +92,31 @@ router.get(
 		if (ctx.request.url.searchParams.has('audience')) {
 			const start = new Date().setHours(0, 0, 0, 0) - dayLength * 7;
 			ctx.response.body = await Promise.all(
-				(await App.getByUser(user)).map(async (app) => ({
-					...app,
-					audience: await analyzer.audienceAggregate(app.id, start),
-				})),
+				(await App.getByUser(
+					user,
+					encodePermissions(viewPermissions),
+					true,
+				))
+					.map(async (app) => ({
+						...app.toJSON(),
+						...(hasPermissions(
+							[PERMISSIONS.VIEW_AUDIENCE],
+							app.permissions,
+						) &&
+							{
+								audience: await analyzer.audienceAggregate(
+									app,
+									start,
+								),
+							}),
+					})),
 			);
 		} else {
-			ctx.response.body = await App.getByUser(user);
+			ctx.response.body = await App.getByUser(
+				user,
+				encodePermissions(viewPermissions),
+				true,
+			);
 		}
 	},
 );
@@ -133,7 +171,7 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, viewPermissions, true);
 
 		app && (ctx.response.body = app);
 	},
@@ -148,7 +186,9 @@ router.patch(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.EDIT_SETTINGS,
+		]);
 
 		if (!app) {
 			return;
@@ -176,7 +216,7 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, viewPermissions, true);
 
 		const params = new URLSearchParams(ctx.request.url.search);
 
@@ -184,7 +224,7 @@ router.get(
 			? +(params?.get('period') as string) // Safe because of the check
 			: defaultRealtimeLength;
 
-		app && (ctx.response.body = await analyzer.overview(app.id, period));
+		app && (ctx.response.body = await analyzer.overview(app, period));
 	},
 );
 
@@ -196,7 +236,9 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_AUDIENCE,
+		]);
 
 		const params = new URLSearchParams(ctx.request.url.search);
 
@@ -206,7 +248,7 @@ router.get(
 
 		app &&
 			(ctx.response.body = await analyzer.audienceRealtime(
-				app.id,
+				app,
 				period,
 			));
 	},
@@ -220,7 +262,9 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_AUDIENCE,
+		]);
 
 		const params = new URLSearchParams(ctx.request.url.search);
 
@@ -233,7 +277,7 @@ router.get(
 
 		app &&
 			(ctx.response.body = await analyzer.audienceDetailed(
-				app.id,
+				app,
 				defaultSessionLength,
 				startTime,
 				endTime,
@@ -249,7 +293,9 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_AUDIENCE,
+		]);
 
 		const now = Date.now();
 		const params = new URLSearchParams(ctx.request.url.search);
@@ -263,7 +309,7 @@ router.get(
 
 		app &&
 			(ctx.response.body = await analyzer.audienceAggregate(
-				app.id,
+				app,
 				startTime,
 				endTime,
 			));
@@ -278,7 +324,9 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_AUDIENCE,
+		]);
 		if (!app) {
 			return;
 		}
@@ -305,7 +353,9 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_SERVER_LOGS,
+		]);
 		if (!app) {
 			return;
 		}
@@ -329,6 +379,38 @@ router.get(
 );
 
 router.get(
+	'/:id/logs/server/aggregate',
+	auth.authenticated(),
+	rateLimiter({
+		tag: 'user',
+		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
+	}),
+	async (ctx) => {
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_SERVER_LOGS,
+		]);
+
+		const now = Date.now();
+		const params = new URLSearchParams(ctx.request.url.search);
+
+		const startTime = params.has('start')
+			? +(params?.get('start') as string) // Safe because of the check
+			: now - defaultHistoryLength;
+		const endTime = params.has('end')
+			? +(params?.get('end') as string) // Safe because of the check
+			: now;
+
+		app &&
+			(ctx.response.body = await analyzer.logAggregate(
+				app,
+				'server',
+				startTime,
+				endTime,
+			));
+	},
+);
+
+router.get(
 	'/:id/logs/client',
 	auth.authenticated(),
 	rateLimiter({
@@ -336,7 +418,9 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_CLIENT_LOGS,
+		]);
 		if (!app) {
 			return;
 		}
@@ -360,36 +444,6 @@ router.get(
 );
 
 router.get(
-	'/:id/logs/server/aggregate',
-	auth.authenticated(),
-	rateLimiter({
-		tag: 'user',
-		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
-	}),
-	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
-
-		const now = Date.now();
-		const params = new URLSearchParams(ctx.request.url.search);
-
-		const startTime = params.has('start')
-			? +(params?.get('start') as string) // Safe because of the check
-			: now - defaultHistoryLength;
-		const endTime = params.has('end')
-			? +(params?.get('end') as string) // Safe because of the check
-			: now;
-
-		app &&
-			(ctx.response.body = await analyzer.logAggregate(
-				app.id,
-				'server',
-				startTime,
-				endTime,
-			));
-	},
-);
-
-router.get(
 	'/:id/logs/client/aggregate',
 	auth.authenticated(),
 	rateLimiter({
@@ -397,7 +451,9 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_CLIENT_LOGS,
+		]);
 
 		const now = Date.now();
 		const params = new URLSearchParams(ctx.request.url.search);
@@ -411,7 +467,7 @@ router.get(
 
 		app &&
 			(ctx.response.body = await analyzer.logAggregate(
-				app.id,
+				app,
 				'client',
 				startTime,
 				endTime,
@@ -427,7 +483,9 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_FEEDBACK,
+		]);
 		if (!app) {
 			return;
 		}
@@ -454,7 +512,9 @@ router.get(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.VIEW_METRICS,
+		]);
 		if (!app) {
 			return;
 		}
@@ -481,7 +541,9 @@ router.delete(
 		id: async (ctx) => (await auth.methods.getSession(ctx))?.id?.toString(),
 	}),
 	async (ctx) => {
-		const app = await getApp(ctx, +ctx.params.id);
+		const app = await getApp(ctx, +ctx.params.id, [
+			PERMISSIONS.EDIT_PERMISSIONS,
+		]);
 
 		if (!app) {
 			return;

@@ -3,6 +3,7 @@ import demoData from '../assets/demo-data.json';
 
 import type {
 	App,
+	AppWithAudience,
 	AudienceAggregate,
 	AuthResponse,
 	DayAudience,
@@ -247,7 +248,7 @@ export const SessionAPI = {
 export const AppAPI = {
 	add: (app: NewApp) => request<App>('/apps', {auth: true, method: RequestMethod.POST, body: app}),
 	getAll: (audience: boolean = false) =>
-		request<App[]>('/apps', {
+		request<AppWithAudience[]>('/apps', {
 			auth: true,
 			query: {audience: audience ? 'true' : undefined}
 		}),
