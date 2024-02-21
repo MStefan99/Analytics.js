@@ -12,7 +12,6 @@ div
 
 <script setup lang="ts">
 import {
-	applyPermissions,
 	encodePermissions,
 	hasPermissions,
 	parsePermissions,
@@ -24,11 +23,7 @@ import {computed, ref, watch} from 'vue';
 const props = defineProps<{modelValue: number; allowed?: number}>();
 const emit = defineEmits<{(e: 'update:modelValue', permissions: number): void}>();
 
-const permissions = ref<PERMISSIONS[]>(
-	props.allowed
-		? applyPermissions(parsePermissions(props.modelValue), props.allowed)
-		: parsePermissions(props.modelValue)
-);
+const permissions = ref<PERMISSIONS[]>(parsePermissions(props.modelValue));
 const permissionKeys = computed<PERMISSIONS[]>(() =>
 	Object.keys(PERMISSIONS)
 		.filter((k) => !isNaN(+k))

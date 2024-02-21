@@ -2,13 +2,17 @@
 	"_ok": {
 		"message": "OK"
 	},
+	"_user2": {
+		"id": 2,
+		"username": "other_user"
+	},
 	"login": {
 		"user": "@me",
 		"key": "demo-key"
 	},
 	"me": {
 		"id": 1,
-		"username": "Demo"
+		"username": "demo_user"
 	},
 	"sessions": {
 		"_get": [
@@ -28,7 +32,6 @@
 	"apps": {
 		"_get": ["@apps/1", "@apps/2"],
 		"_post": "@apps/1",
-		"_delete": "@apps/1",
 		"1": {
 			"_get": {
 				"id": 1,
@@ -36,9 +39,33 @@
 				"description": "App for demo purposes",
 				"audienceKey": "demo-audience-key",
 				"telemetryKey": "demo-telemetry-key",
-				"audience": "@apps/1/audience/aggregate"
+				"audience": "@apps/1/audience/aggregate",
+				"permissions": 255
 			},
 			"_patch": "@apps/1",
+			"_delete": "@apps/1",
+			"permissions": {
+				"_get": [
+					{
+						"userID": "@me/id",
+						"username": "@me/username",
+						"permissions": 255
+					},
+					{
+						"userID": "@_user2/id",
+						"username": "@_user2/username",
+						"permissions": 42
+					}
+				],
+				"demo_user": {
+					"_put": "@apps/1/permissions",
+					"_delete": "@apps/1/permissions"
+				},
+				"other_user": {
+					"_put": "@apps/1/permissions",
+					"_delete": "@apps/1/permissions"
+				}
+			},
 			"overview": {
 				"users": "@apps/1/audience/now/users",
 				"views": "@apps/1/audience/now/views",
@@ -2427,10 +2454,33 @@
 				"description": "Another demo app",
 				"audienceKey": "demo-audience-key-2",
 				"telemetryKey": "demo-telemetry-key-2",
-				"audience": "@apps/2/audience/aggregate"
+				"audience": "@apps/2/audience/aggregate",
+				"permissions": 181
 			},
 			"_patch": "@apps/2",
 			"_delete": "@apps/2",
+			"permissions": {
+				"_get": [
+					{
+						"userID": "@me/id",
+						"username": "@me/username",
+						"permissions": 181
+					},
+					{
+						"userID": "@_user2/id",
+						"username": "@_user2/username",
+						"permissions": 255
+					}
+				],
+				"demo_user": {
+					"_put": "@apps/2/permissions",
+					"_delete": "@apps/2/permissions"
+				},
+				"other_user": {
+					"_put": "@apps/2/permissions",
+					"_delete": "@apps/2/permissions"
+				}
+			},
 			"overview": {
 				"users": "@apps/1/audience/now/users",
 				"views": "@apps/1/audience/now/views",

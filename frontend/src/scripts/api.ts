@@ -91,6 +91,7 @@ function getDemoData<T>(path: string, params: RequestParams): T {
 		}
 
 		if (!(prop in obj)) {
+			console.error('Could not find route', path);
 			throw notFound;
 		}
 

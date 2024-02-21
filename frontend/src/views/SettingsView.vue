@@ -96,12 +96,13 @@ Api.apps
 		newName.value = a.name;
 		app.value = a;
 		window.document.title = a.name + ' settings | Crash Course';
+		if (hasPermissions([PERMISSIONS.EDIT_PERMISSIONS], a.permissions)) {
+			Api.apps.getPermissions(+route.params.id).then((p) => {
+				permissions.value = p;
+			});
+		}
 	})
 	.catch((err) => alert('Failed to load app', PopupColor.Red, err.message));
-
-Api.apps.getPermissions(+route.params.id).then((p) => {
-	permissions.value = p;
-});
 
 function saveChanges() {
 	app.value.name = newName.value;

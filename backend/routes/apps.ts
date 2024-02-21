@@ -94,7 +94,7 @@ router.get(
 			ctx.response.body = await Promise.all(
 				(await App.getByUser(
 					user,
-					encodePermissions(viewPermissions),
+					viewPermissions,
 					true,
 				))
 					.map(async (app) => ({
@@ -114,7 +114,7 @@ router.get(
 		} else {
 			ctx.response.body = await App.getByUser(
 				user,
-				encodePermissions(viewPermissions),
+				viewPermissions,
 				true,
 			);
 		}
