@@ -54,12 +54,12 @@
 		.card(v-if="hasPermissions([PERMISSIONS.EDIT_PERMISSIONS], app.permissions)")
 			h2 Permissions
 			.flex.flex-row.flex-wrap.gap-2
-				.card(v-for="p in permissions" :key="p.userID")
+				.card.grow(v-for="p in permissions" :key="p.userID")
 					h3 {{p.username}}
 					PermissionSelector(v-model="p.permissions" :allowed="app.permissions")
 					button.w-full.green(type="button" @click="setPermissions(p)") Save
 					button.w-full.red(type="button" @click="revokePermissions(p)") Remove
-				.card
+				.card.grow
 					input(type="text" placeholder="Username" v-model="newPermissions.username")
 					PermissionSelector(v-model="newPermissions.permissions" :allowed="app.permissions")
 					button.w-full.green(type="button" @click="addPermissions()") Add
@@ -116,6 +116,11 @@ function saveChanges() {
 }
 
 async function addPermissions() {
+	if (!newPermissions.value.username?.length) {
+		alert('No username', PopupColor.Red, 'Please provide a username');
+		return;
+	}
+
 	Api.apps
 		.setPermissions(app.value.id, newPermissions.value.username, newPermissions.value.permissions)
 		.then((p) => {
@@ -146,7 +151,7 @@ async function setPermissions(p: AppPermissions) {
 			permissions.value = p;
 			alert('Permissions saved', PopupColor.Green, 'Permissions were saved');
 		})
-		.catch((err) => alert('Failed to add a user', PopupColor.Red, err.message));
+		.catch((err) => alert('Failed to save permissions', PopupColor.Red, err.message));
 }
 
 async function revokePermissions(p: AppPermissions) {
