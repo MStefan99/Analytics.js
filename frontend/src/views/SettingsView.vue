@@ -2,7 +2,7 @@
 #settings(v-if="app")
 	h1 {{app.name}} settings
 	.row
-		.card.accent(v-if="hasPermissions([PERMISSIONS.VIEW_SETTINGS], app.permissions)")
+		.card.accent(v-if="hasPermissions([PERMISSIONS.VIEW_KEYS], app.permissions)")
 			h2 Scripts
 			p.mb-4 To start collecting audience data, please add the following script to every page of your website:
 			pre.code.snippet.mb-4.
@@ -29,14 +29,14 @@
 				It is also used in the audience script you will need to add to your website. Please note that this key must be
 				publicly available for your app to be able to send information. However, this also means that your users
 				might be able to retrieve this key and use it to send arbitrary information.
-			div(v-if="hasPermissions([PERMISSIONS.VIEW_SETTINGS], app.permissions)")
+			div(v-if="hasPermissions([PERMISSIONS.VIEW_KEYS], app.permissions)")
 				span Here is your audience key:
 				.code.snippet.border.mb-4 {{app.audienceKey}}
 			h3 Telemetry key
 			p.mb-2.
 				You will use this key to collect telemetry data from your server, such as logs and crash reports, hardware load
 				and so on. This key is best kept private so that the data coming back can be fully trusted.
-			div(v-if="hasPermissions([PERMISSIONS.VIEW_SETTINGS], app.permissions)")
+			div(v-if="hasPermissions([PERMISSIONS.VIEW_KEYS], app.permissions)")
 				span Here is your telemetry key:
 				.code.snippet.border.mb-4 {{app.telemetryKey}}
 		.card.full(v-if="hasPermissions([PERMISSIONS.EDIT_SETTINGS], app.permissions)")

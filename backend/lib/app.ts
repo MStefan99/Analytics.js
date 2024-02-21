@@ -128,7 +128,7 @@ class App {
 			name: this.name,
 			description: this.description,
 			permissions: this.permissions,
-			...(hasPermissions([PERMISSIONS.VIEW_SETTINGS], this.permissions) &&
+			...(hasPermissions([PERMISSIONS.VIEW_KEYS], this.permissions) &&
 				{
 					audienceKey: this.audienceKey,
 					telemetryKey: this.telemetryKey,

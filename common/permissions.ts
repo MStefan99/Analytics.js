@@ -4,7 +4,7 @@ export enum PERMISSIONS {
 	VIEW_CLIENT_LOGS,
 	VIEW_METRICS,
 	VIEW_FEEDBACK,
-	VIEW_SETTINGS,
+	VIEW_KEYS,
 	EDIT_SETTINGS,
 	EDIT_PERMISSIONS
 }
@@ -15,9 +15,9 @@ export const permissionDescriptions: Record<PERMISSIONS, string> = {
 	[PERMISSIONS.VIEW_CLIENT_LOGS]: 'View client logs',
 	[PERMISSIONS.VIEW_METRICS]: 'View system performance',
 	[PERMISSIONS.VIEW_FEEDBACK]: 'View feedback',
-	[PERMISSIONS.VIEW_SETTINGS]: 'View settings',
-	[PERMISSIONS.EDIT_SETTINGS]: 'Edit settings',
-	[PERMISSIONS.EDIT_PERMISSIONS]: 'Edit permissions'
+	[PERMISSIONS.VIEW_KEYS]: 'View keys',
+	[PERMISSIONS.EDIT_SETTINGS]: 'Change name and description',
+	[PERMISSIONS.EDIT_PERMISSIONS]: 'Change permissions'
 };
 
 function fromNumber(value: number): PERMISSIONS[] {

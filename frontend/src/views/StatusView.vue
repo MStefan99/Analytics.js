@@ -23,7 +23,7 @@
 					v-if="hasPermissions([PERMISSIONS.VIEW_METRICS], app.permissions)") System
 				RouterLink.btn(
 					:to="{name: 'settings', params: {id: $route.params.id}}"
-					v-if="hasPermissions([PERMISSIONS.VIEW_SETTINGS], app.permissions)") Settings
+					v-if="hasPermissions([PERMISSIONS.VIEW_KEYS, PERMISSIONS.EDIT_SETTINGS, PERMISSIONS.EDIT_PERMISSIONS], app.permissions, true)") Settings
 		.card(v-if="hasPermissions([PERMISSIONS.VIEW_AUDIENCE], app.permissions)")
 			h2 Audience
 			TimedChart(:data="audienceDataset" :y-stacked="false" :step-size="1000 * 60")
