@@ -47,8 +47,18 @@ export type App = NewApp & {
 	id: number;
 	audienceKey: string;
 	telemetryKey: string;
-	ownerID: number;
-	audience: {users: {[key: string]: number}; views: {[key: string]: number}};
+	permissions: number;
+};
+
+export type AppWithAudience = App & {
+	audience?: {users: {[key: string]: number}; views: {[key: string]: number}};
+};
+
+export type AppPermissions = {
+	userID: User['id'];
+	appID: App['id'];
+	permissions: number;
+	username: User['username'];
 };
 
 export type Overview = {

@@ -89,8 +89,8 @@ import type {App, DayAudience, RealtimeAudience} from '../scripts/types';
 import DatePicker from '../components/DatePicker.vue';
 import TimedChart from '../components/TimedChart.vue';
 import {alert, PopupColor} from '../scripts/popups';
-import {parseUA} from '../scripts/util';
 import {useQuery} from '../scripts/composables';
+import {parseUA} from '../scripts/util';
 
 const dayLength = 1000 * 60 * 60 * 24;
 const route = useRoute();
@@ -160,17 +160,17 @@ function formatTime(time: number): string {
 	return str;
 }
 
-Api.apps
-	.getByID(+route.params.id)
-	.then((a) => {
-		app.value = a;
-		window.document.title = a.name + ' audience | Crash Course';
-	})
-	.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
+Api.apps.getByID(+route.params.id).then((a) => {
+	app.value = a;
+	window.document.title = a.name + ' audience | Crash Course';
+});
 
 function loadAudience() {
 	today.value &&
-		Api.apps.getRealtimeAudience(+route.params.id).then((a) => (realtimeAudience.value = a));
+		Api.apps
+			.getRealtimeAudience(+route.params.id)
+			.then((a) => (realtimeAudience.value = a))
+			.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
 	Api.apps
 		.getDayAudience(+route.params.id, startTime.value.getTime())
 		.then((a) => (todayAudience.value = a));

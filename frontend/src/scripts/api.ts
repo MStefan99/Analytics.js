@@ -3,6 +3,8 @@ import demoData from '../assets/demo-data.json';
 
 import type {
 	App,
+	AppPermissions,
+	AppWithAudience,
 	AudienceAggregate,
 	AuthResponse,
 	DayAudience,
@@ -89,6 +91,7 @@ function getDemoData<T>(path: string, params: RequestParams): T {
 		}
 
 		if (!(prop in obj)) {
+			console.error('Could not find route', path);
 			throw notFound;
 		}
 
@@ -247,13 +250,30 @@ export const SessionAPI = {
 export const AppAPI = {
 	add: (app: NewApp) => request<App>('/apps', {auth: true, method: RequestMethod.POST, body: app}),
 	getAll: (audience: boolean = false) =>
-		request<App[]>('/apps', {
+		request<AppWithAudience[]>('/apps', {
 			auth: true,
 			query: {audience: audience ? 'true' : undefined}
 		}),
 	getByID: (id: App['id']) => request<App>('/apps/' + id, {auth: true}),
 	edit: (app: App) =>
 		request<App>('/apps/' + app.id, {auth: true, method: RequestMethod.PATCH, body: app}),
+	getPermissions: (id: App['id']) =>
+		request<AppPermissions[]>('/apps/' + id + '/permissions', {auth: true}),
+	setPermissions: (
+		id: App['id'],
+		username: User['username'],
+		permissions: AppPermissions['permissions']
+	) =>
+		request<AppPermissions[]>('/apps/' + id + '/permissions/' + username, {
+			auth: true,
+			method: RequestMethod.PUT,
+			body: {permissions}
+		}),
+	revokePermissions: (id: App['id'], username: User['username']) =>
+		request<AppPermissions[]>('/apps/' + id + '/permissions/' + username, {
+			auth: true,
+			method: RequestMethod.DELETE
+		}),
 	getOverview: (id: App['id'], period?: number) =>
 		request<Overview>('/apps/' + id + '/overview', {
 			auth: true,

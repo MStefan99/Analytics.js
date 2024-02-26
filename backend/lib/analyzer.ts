@@ -1,6 +1,7 @@
 'use strict';
 
 import App from './app.ts';
+import { hasPermissions, PERMISSIONS } from '../../common/permissions.ts';
 
 const divisionLength = 1000 * 60;
 
@@ -8,10 +9,10 @@ type Page = { url: string; referrer: string | null; time: number };
 type Session = { id: string; duration: number; ua: string; pages: Page[] };
 
 export type Overview = {
-	users: { [key: string]: number };
-	views: { [key: string]: number };
-	serverLogs: { [key: string]: { [key: string]: number } };
-	clientLogs: { [key: string]: { [key: string]: number } };
+	users?: { [key: string]: number };
+	views?: { [key: string]: number };
+	serverLogs?: { [key: string]: { [key: string]: number } };
+	clientLogs?: { [key: string]: { [key: string]: number } };
 };
 
 export type RealtimeAudience = {
@@ -37,7 +38,7 @@ export type AudienceAggregate = {
 export type LogAggregate = { [key: number]: { [key: number]: number } };
 
 export async function overview(
-	appID: App['id'],
+	app: App,
 	timePeriod: number,
 ): Promise<Overview | null> {
 	const userSets: { [key: string]: Set<string> } = {};
@@ -48,75 +49,84 @@ export async function overview(
 	const now = Date.now();
 	const startTime = now - timePeriod;
 
-	const app = await App.getByID(appID);
 	if (!app) {
 		return null;
 	}
 
-	const hits = await app.getHits(startTime, now);
-	const serverLogsRaw = await app.getServerLogs(startTime, now);
-	const clientLogsRaw = await app.getClientLogs(startTime, now);
+	if (hasPermissions([PERMISSIONS.VIEW_AUDIENCE], app.permissions)) {
+		const hits = await app.getHits(startTime, now);
+		for (const hit of hits) {
+			const timeSlot = now -
+				Math.floor((now - hit.time) / divisionLength) * divisionLength;
 
-	for (const hit of hits) {
-		const timeSlot = now -
-			Math.floor((now - hit.time) / divisionLength) * divisionLength;
+			if (!userSets[timeSlot]) {
+				userSets[timeSlot] = new Set([hit.clientID]);
+			} else {
+				!userSets[timeSlot].has(hit.clientID) &&
+					userSets[timeSlot].add(hit.clientID);
+			}
 
-		if (!userSets[timeSlot]) {
-			userSets[timeSlot] = new Set([hit.clientID]);
-		} else {
-			!userSets[timeSlot].has(hit.clientID) &&
-				userSets[timeSlot].add(hit.clientID);
-		}
-
-		views[timeSlot] = 1 + (views[timeSlot] || 0);
-	}
-
-	for (const serverLog of serverLogsRaw) {
-		const timeSlot = now -
-			Math.floor((now - serverLog.time) / divisionLength) *
-				divisionLength;
-
-		if (serverLogs[serverLog.level]) {
-			serverLogs[serverLog.level][timeSlot] = 1 +
-				(serverLogs[serverLog.level][timeSlot] ?? 0);
-		} else {
-			serverLogs[serverLog.level] = { [timeSlot]: 1 };
+			views[timeSlot] = 1 + (views[timeSlot] || 0);
 		}
 	}
 
-	for (const clientLog of clientLogsRaw) {
-		const timeSlot = now -
-			Math.floor((now - clientLog.time) / divisionLength) *
-				divisionLength;
+	if (hasPermissions([PERMISSIONS.VIEW_SERVER_LOGS], app.permissions)) {
+		const serverLogsRaw = await app.getServerLogs(startTime, now);
+		for (const serverLog of serverLogsRaw) {
+			const timeSlot = now -
+				Math.floor((now - serverLog.time) / divisionLength) *
+					divisionLength;
 
-		if (clientLogs[clientLog.level]) {
-			clientLogs[clientLog.level][timeSlot] = 1 +
-				(clientLogs[clientLog.level][timeSlot] ?? 0);
-		} else {
-			clientLogs[clientLog.level] = { [timeSlot]: 1 };
+			if (serverLogs[serverLog.level]) {
+				serverLogs[serverLog.level][timeSlot] = 1 +
+					(serverLogs[serverLog.level][timeSlot] ?? 0);
+			} else {
+				serverLogs[serverLog.level] = { [timeSlot]: 1 };
+			}
+		}
+	}
+
+	if (hasPermissions([PERMISSIONS.VIEW_CLIENT_LOGS], app.permissions)) {
+		const clientLogsRaw = await app.getClientLogs(startTime, now);
+		for (const clientLog of clientLogsRaw) {
+			const timeSlot = now -
+				Math.floor((now - clientLog.time) / divisionLength) *
+					divisionLength;
+
+			if (clientLogs[clientLog.level]) {
+				clientLogs[clientLog.level][timeSlot] = 1 +
+					(clientLogs[clientLog.level][timeSlot] ?? 0);
+			} else {
+				clientLogs[clientLog.level] = { [timeSlot]: 1 };
+			}
 		}
 	}
 
 	return {
-		users: Object.keys(userSets).reduce<Overview['users']>(
-			(u, c) => ({ ...u, [c]: userSets[c].size }),
-			{},
-		),
-		views,
-		serverLogs,
-		clientLogs,
+		...(hasPermissions([PERMISSIONS.VIEW_AUDIENCE], app.permissions) && {
+			users: Object.keys(userSets).reduce<Overview['users']>(
+				(u, c) => ({ ...u, [c]: userSets[c].size }),
+				{},
+			),
+			views,
+		}),
+		...(hasPermissions([PERMISSIONS.VIEW_SERVER_LOGS], app.permissions) && {
+			serverLogs,
+		}),
+		...(hasPermissions([PERMISSIONS.VIEW_CLIENT_LOGS], app.permissions) && {
+			clientLogs,
+		}),
 	};
 }
 
 export async function audienceRealtime(
-	appID: App['id'],
+	app: App,
 	timePeriod: number,
 ): Promise<RealtimeAudience | null> {
 	const userSets: { [key: string]: Set<string> } = {};
 	const views: RealtimeAudience['views'] = {};
 
-	const app = await App.getByID(appID);
-	if (!app) {
+	if (!app || !hasPermissions([PERMISSIONS.VIEW_AUDIENCE], app.permissions)) {
 		return null;
 	}
 
@@ -139,7 +149,7 @@ export async function audienceRealtime(
 	}
 
 	return {
-		users: Object.keys(userSets).reduce<Overview['users']>(
+		users: Object.keys(userSets).reduce<RealtimeAudience['users']>(
 			(u, c) => ({ ...u, [c]: userSets[c].size }),
 			{},
 		),
@@ -148,7 +158,7 @@ export async function audienceRealtime(
 }
 
 export async function audienceDetailed(
-	appID: App['id'],
+	app: App,
 	sessionLength: number,
 	startTime: number,
 	endTime: number = Date.now(),
@@ -160,8 +170,7 @@ export async function audienceDetailed(
 	const pages: DayAudience['pages'] = {};
 	const referrers: DayAudience['referrers'] = {};
 
-	const app = await App.getByID(appID);
-	if (!app) {
+	if (!app || !hasPermissions([PERMISSIONS.VIEW_AUDIENCE], app.permissions)) {
 		return null;
 	}
 
@@ -229,7 +238,7 @@ export async function audienceDetailed(
 		users: clients.size,
 		sessions,
 		bounceRate: sessionCount ? bounced / sessionCount : 0,
-		avgDuration: sessions.reduce(
+		avgDuration: sessions.reduce<DayAudience['avgDuration']>(
 			(avg, curr, i) => avg + (curr.duration - avg) / (i + 1),
 			0,
 		),
@@ -240,15 +249,14 @@ export async function audienceDetailed(
 }
 
 export async function audienceAggregate(
-	appID: App['id'],
+	app: App,
 	startTime: number,
 	endTime: number = Date.now(),
 ): Promise<AudienceAggregate | null> {
 	const users: AudienceAggregate['users'] = {};
 	const views: AudienceAggregate['views'] = {};
 
-	const app = await App.getByID(appID);
-	if (!app) {
+	if (!app || !hasPermissions([PERMISSIONS.VIEW_AUDIENCE], app.permissions)) {
 		return null;
 	}
 
@@ -266,15 +274,20 @@ export async function audienceAggregate(
 }
 
 export async function logAggregate(
-	appID: App['id'],
+	app: App,
 	type: 'server' | 'client',
 	startTime: number,
 	endTime: number = Date.now(),
 ): Promise<LogAggregate | null> {
 	const logs: LogAggregate = {};
 
-	const app = await App.getByID(appID);
-	if (!app) {
+	if (
+		!app ||
+		(type === 'server' &&
+			!hasPermissions([PERMISSIONS.VIEW_SERVER_LOGS], app.permissions)) ||
+		(type === 'client' &&
+			!hasPermissions([PERMISSIONS.VIEW_CLIENT_LOGS], app.permissions))
+	) {
 		return null;
 	}
 

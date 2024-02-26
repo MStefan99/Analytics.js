@@ -4,10 +4,10 @@
 	.row.py-3.sticky.top-0.glass
 		.input
 			label(for="date-start") Starting from
-			DatePicker#date-start.w-full(type="datetime" v-model="startTime" @change="loadMetrics()")
+			DatePicker#date-start.w-full(type="datetime" v-model="start" @change="loadMetrics()")
 		.input
 			label(for="level-end") Ending on
-			DatePicker#date-end.w-full(type="datetime" v-model="endTime" @change="loadMetrics()")
+			DatePicker#date-end.w-full(type="datetime" v-model="end" @change="loadMetrics()")
 	.row
 		.card
 			h2 CPU usage
@@ -46,8 +46,8 @@ const mb = 1024 * 1024;
 const route = useRoute();
 const metrics = ref<Metrics[]>([]);
 const sessionLength = 1000 * 60 * 30;
-const startTime = ref<Date>(new Date(Date.now() - sessionLength));
-const endTime = ref<Date>(new Date());
+const start = ref<Date>(new Date(Date.now() - sessionLength));
+const end = ref<Date>(new Date());
 const datasetOptions: {name: string; val(m: Metrics): number; label: string; color: string}[] = [
 	{
 		name: 'cpu',
@@ -93,16 +93,12 @@ const datasetOptions: {name: string; val(m: Metrics): number; label: string; col
 
 const {query} = useQuery(
 	computed(() => ({
-		startTime: startTime.value.toISOString(),
-		endTime: endTime.value.toISOString()
+		start: start.value.toISOString(),
+		end: end.value.toISOString()
 	}))
 );
-startTime.value = new Date(
-	Array.isArray(query.value.startTime) ? query.value.startTime[0] : query.value.startTime
-);
-endTime.value = new Date(
-	Array.isArray(query.value.endTime) ? query.value.endTime[0] : query.value.endTime
-);
+start.value = new Date(Array.isArray(query.value.start) ? query.value.start[0] : query.value.start);
+end.value = new Date(Array.isArray(query.value.end) ? query.value.end[0] : query.value.end);
 
 const chartDatasets = computed(() => {
 	const data: {[key: string]: Dataset} = {};
@@ -122,15 +118,15 @@ const chartDatasets = computed(() => {
 
 function loadMetrics() {
 	const now = Date.now();
-	if (Math.abs(now - endTime.value.getTime()) < 1000 * 60) {
-		endTime.value = new Date();
+	if (Math.abs(now - end.value.getTime()) < 1000 * 60) {
+		end.value = new Date();
 	}
-	if (Math.abs(now - sessionLength - startTime.value.getTime()) < 1000 * 60) {
-		startTime.value = new Date(Date.now() - sessionLength);
+	if (Math.abs(now - sessionLength - start.value.getTime()) < 1000 * 60) {
+		start.value = new Date(Date.now() - sessionLength);
 	}
 
 	return Api.apps
-		.getMetrics(+route.params.id, startTime.value.getTime(), endTime.value.getTime())
+		.getMetrics(+route.params.id, start.value.getTime(), end.value.getTime())
 		.then((m) => (metrics.value = m));
 }
 
@@ -140,4 +136,8 @@ const refreshInterval = setInterval(loadMetrics, 1000 * 30);
 onUnmounted(() => clearInterval(refreshInterval));
 </script>
 
-<style scoped></style>
+<style scoped>
+.row > .card {
+	flex-basis: 500px;
+}
+</style>

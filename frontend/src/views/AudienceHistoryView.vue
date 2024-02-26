@@ -4,10 +4,10 @@
 	.row.py-3.sticky.top-0.glass
 		.input
 			label(for="date-start") Starting from
-			DatePicker#date-start.w-full(v-model="startTime" @change="load()")
+			DatePicker#date-start.w-full(v-model="start" @change="load()")
 		.input
 			label(for="level-end") Ending on
-			DatePicker#date-end.w-full(v-model="endTime" @change="load()")
+			DatePicker#date-end.w-full(v-model="end" @change="load()")
 	.row
 		.card
 			h2 Audience history
@@ -45,21 +45,17 @@ const historicalAudience = ref<AudienceAggregate | null>(null);
 const pages = ref<PageAggregate | null>(null);
 const monthLength = 1000 * 60 * 60 * 24 * 30;
 const initialTime = new Date(Date.now() - monthLength);
-const startTime = ref<Date>(initialTime);
-const endTime = ref<Date>(new Date());
+const start = ref<Date>(initialTime);
+const end = ref<Date>(new Date());
 
 const {query} = useQuery(
 	computed(() => ({
-		startTime: startTime.value.toISOString(),
-		endTime: endTime.value.toISOString()
+		start: start.value.toISOString(),
+		end: end.value.toISOString()
 	}))
 );
-startTime.value = new Date(
-	Array.isArray(query.value.startTime) ? query.value.startTime[0] : query.value.startTime
-);
-endTime.value = new Date(
-	Array.isArray(query.value.endTime) ? query.value.endTime[0] : query.value.endTime
-);
+start.value = new Date(Array.isArray(query.value.start) ? query.value.start[0] : query.value.start);
+end.value = new Date(Array.isArray(query.value.end) ? query.value.end[0] : query.value.end);
 
 const audienceAggregate = computed(() => [
 	{
@@ -74,20 +70,18 @@ const audienceAggregate = computed(() => [
 	}
 ]);
 
-Api.apps
-	.getByID(+route.params.id)
-	.then((a) => {
-		app.value = a;
-		window.document.title = a.name + ' audience | Crash Course';
-	})
-	.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
+Api.apps.getByID(+route.params.id).then((a) => {
+	app.value = a;
+	window.document.title = a.name + ' audience | Crash Course';
+});
 
 function load() {
 	Api.apps
-		.getAudienceAggregate(+route.params.id, startTime.value.getTime(), endTime.value.getTime())
-		.then((a) => (historicalAudience.value = a));
+		.getAudienceAggregate(+route.params.id, start.value.getTime(), end.value.getTime())
+		.then((a) => (historicalAudience.value = a))
+		.catch((err) => alert('Failed to load the app', PopupColor.Red, err.message));
 	Api.apps
-		.getPageAggregate(+route.params.id, startTime.value.getTime(), endTime.value.getTime())
+		.getPageAggregate(+route.params.id, start.value.getTime(), end.value.getTime())
 		.then((p) => (pages.value = p));
 }
 
@@ -99,7 +93,7 @@ function openDayView(time: number) {
 </script>
 
 <style scoped>
-.row .card {
+.row > .card {
 	flex-basis: 400px;
 }
 </style>

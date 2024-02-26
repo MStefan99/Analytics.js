@@ -10,7 +10,7 @@
 				h2 {{app.name}}
 				p {{app.description}}
 			TimedChart(
-				v-if="dataset[app.id]"
+				v-if="hasPermissions([PERMISSIONS.VIEW_AUDIENCE], app.permissions) && dataset[app.id]"
 				:data="dataset[app.id]"
 				:y-stacked="false"
 				:step-size="dayLength"
@@ -41,13 +41,14 @@
 
 <script setup lang="ts">
 import {computed, ref} from 'vue';
-import type {App, NewApp} from '../scripts/types';
+import type {AppWithAudience, NewApp} from '../scripts/types';
 import Api from '../scripts/api';
 import {useRouter} from 'vue-router';
 import {alert, PopupColor} from '../scripts/popups';
 import TimedChart from '../components/TimedChart.vue';
+import {hasPermissions, PERMISSIONS} from '../../../common/permissions';
 
-const apps = ref<App[]>([]);
+const apps = ref<AppWithAudience[]>([]);
 const newApp = ref<NewApp | null>(null);
 const dataset = computed(() =>
 	Object.fromEntries(
@@ -57,12 +58,12 @@ const dataset = computed(() =>
 				{
 					label: app.name + ' users',
 					color: '#ef8105',
-					data: app.audience.users
+					data: app.audience?.users
 				},
 				{
 					label: app.name + ' views',
 					color: '#44c40c',
-					data: app.audience.views
+					data: app.audience?.views
 				}
 			]
 		])
@@ -97,7 +98,11 @@ function addApp() {
 }
 
 .app {
-	@apply flex flex-col flex-nowrap justify-between grow md:w-1/4;
+	@apply flex flex-col flex-nowrap justify-between grow;
+}
+
+.card {
+	flex-basis: 300px;
 }
 
 :deep(.chart) {
