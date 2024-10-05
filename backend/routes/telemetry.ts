@@ -18,7 +18,7 @@ router.post('/metrics', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 		return;
 	}
 
-	const body = await ctx.request.body({ type: 'json' }).value;
+	const body = await ctx.request.body.json();
 	await app.createMetrics({
 		device: body.device.toString().trim(),
 		cpu: +body.cpu,
@@ -45,7 +45,7 @@ router.post('/logs', hasBody(), auth.hasTelemetryKey(), async (ctx) => {
 		return;
 	}
 
-	const body = await ctx.request.body({ type: 'json' }).value;
+	const body = await ctx.request.body.json();
 	if (!body.message || typeof body.level !== 'number') {
 		ctx.response.status = 400;
 		ctx.response.body = {

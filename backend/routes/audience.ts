@@ -19,7 +19,7 @@ router.post('/hits', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 		return;
 	}
 
-	const body = await ctx.request.body({ type: 'json' }).value;
+	const body = await ctx.request.body.json();
 
 	if (!body.url) {
 		ctx.response.status = 400;
@@ -69,7 +69,7 @@ router.post('/logs', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 		return;
 	}
 
-	const body = await ctx.request.body({ type: 'json' }).value;
+	const body = await ctx.request.body.json();
 	if (!body.message || typeof body.level !== 'number') {
 		ctx.response.status = 400;
 		ctx.response.body = {
@@ -102,7 +102,7 @@ router.post('/feedback', hasBody(), auth.hasAudienceKey(), async (ctx) => {
 		return;
 	}
 
-	const body = await ctx.request.body({ type: 'json' }).value;
+	const body = await ctx.request.body.json();
 	if (!body.message) {
 		ctx.response.status = 400;
 		ctx.response.body = {

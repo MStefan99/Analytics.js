@@ -44,8 +44,8 @@
 		"proseWrap": "preserve"
 	},
 	"tasks": {
-		"dev": "deno run --allow-net --allow-env --allow-read --allow-write --watch index.ts",
-		"start": "deno run --allow-net --allow-env --allow-read --allow-write index.ts",
+		"dev": "deno run --allow-net --allow-env --allow-read='./db' --allow-write='./db' --watch index.ts",
+		"start": "deno run --allow-net --allow-env --allow-read='./db' --allow-write='./db' index.ts",
 		"build": "echo 'Nothing to build'",
 		"lint": "deno check index.ts && deno lint && deno fmt --check",
 		"fmt": "deno fmt"

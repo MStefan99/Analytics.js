@@ -1,24 +1,23 @@
 import { Context, Middleware } from '../deps.ts';
 
-export async function getBody(ctx: Context) {
+async function getBodyLength(ctx: Context) {
 	try {
-		return (await ctx.request.body({ type: 'json' }).value);
+		return (await ctx.request.body.text()).length;
 	} catch {
-		return null;
+		return 0;
 	}
 }
 
 export function hasBody(): Middleware {
 	return async (ctx, next) => {
-		if (await getBody(ctx)) {
-			await ctx.request.body().value;
+		if (await getBodyLength(ctx)) {
 			await next();
 		} else {
 			ctx.response.status = 400;
 			ctx.response.body = {
-				error: 'INVALID_BODY',
+				error: 'NO_BODY',
 				message:
-					'Failed to parse request body. Check for errors and try again.',
+					'Required information must be provided in the request body',
 			};
 		}
 	};
@@ -26,8 +25,8 @@ export function hasBody(): Middleware {
 
 export function hasCredentials(): Middleware {
 	return async (ctx, next) => {
-		if (await getBody(ctx)) {
-			const body = await ctx.request.body({ type: 'json' }).value;
+		if (await getBodyLength(ctx)) {
+			const body = await ctx.request.body.json();
 
 			if (!body.username?.length) {
 				ctx.response.status = 400;

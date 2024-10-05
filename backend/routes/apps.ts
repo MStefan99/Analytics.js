@@ -141,7 +141,7 @@ router.post(
 			return;
 		}
 
-		const body = await ctx.request.body({ type: 'json' }).value;
+		const body = await ctx.request.body.json();
 		if (!body.name) {
 			ctx.response.status = 400;
 			ctx.response.body = {
@@ -194,7 +194,7 @@ router.patch(
 			return;
 		}
 
-		const body = await ctx.request.body({ type: 'json' }).value;
+		const body = await ctx.request.body.json();
 		if (body.name) {
 			app.name = body.name.toString().trim();
 		}
@@ -254,7 +254,7 @@ router.put(
 			return;
 		}
 
-		const body = await ctx.request.body({ type: 'json' }).value;
+		const body = await ctx.request.body.json();
 		const permissions = +body.permissions;
 		if (isNaN(permissions) || permissions < 0) {
 			ctx.response.status = 400;
