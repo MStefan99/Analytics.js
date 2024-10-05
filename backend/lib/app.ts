@@ -1,6 +1,6 @@
 import openDB, { deleteDB } from './db.ts';
 import User from './user.ts';
-import { encode as hexEncode } from '../deps.ts';
+import { encodeHex } from '../deps.ts';
 import {
 	applyPermissions,
 	encodePermissions,
@@ -9,10 +9,9 @@ import {
 } from '../../common/permissions.ts';
 
 function getRandomString(byteCount: number): string {
-	const dec = new TextDecoder();
 	const data = crypto.getRandomValues(new Uint8Array(byteCount));
 
-	return dec.decode(hexEncode(data));
+	return encodeHex(data);
 }
 
 export type Client = {
